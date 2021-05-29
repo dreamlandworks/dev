@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\User\Controllers;
+namespace Modules\User\Controllers\api;
 
 use CodeIgniter\RESTful\ResourceController;
 use Modules\User\Models\UsersModel;

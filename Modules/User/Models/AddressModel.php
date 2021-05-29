@@ -100,5 +100,7 @@ class AddressModel extends Model
 		} else {
 			return 0;
 		}
+		
+		
 	}
 }

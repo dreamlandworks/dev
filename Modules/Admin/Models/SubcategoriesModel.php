@@ -1,13 +1,13 @@
 <?php
 
-namespace Modules\User\Models;
+namespace Modules\Admin\Models;
 
 use CodeIgniter\Model;
 
-class TempUserModel extends Model
+class SubcategoriesModel extends Model
 {
 	protected $DBGroup              = 'default';
-	protected $table                = 'temp_user';
+	protected $table                = 'subcategories';
 	protected $primaryKey           = 'id';
 	protected $useAutoIncrement     = true;
 	protected $insertID             = 0;
@@ -15,7 +15,7 @@ class TempUserModel extends Model
 	protected $useSoftDeletes       = false;
 	protected $protectFields        = true;
 	protected $allowedFields        = [
-		"id", "fname", "lname", "mobile", "otp", "datetime"
+		"id","sub_name","image","category_id"
 	];
 
 	// Dates
@@ -42,50 +42,63 @@ class TempUserModel extends Model
 	protected $beforeDelete         = [];
 	protected $afterDelete          = [];
 
-	//Require an Array with fname,lname,mobile,otp fields
-	//Return Id
-	public function add_temp_user($array)
-	{
+	
+	public function add($name,$image,$category_id){
 
-		if (($this->insert($array)) != null) {
-			return $this->getInsertID();
-		} else {
-			return null;
+		$array = [
+			"sub_name" => $name,
+			"image" => $image,
+			"category_id" => $category_id
+		];
+
+		$res = $this->insert($array);
+		if($res){
+			return "Success";
 		}
+		else{
+			return "Fail";
+		}
+
 	}
 
-	public function search_by_mobile($mobile)
+	public function showAll()
 	{
+		return $this->findAll();
+	}
 
-		$res = $this->where("mobile", $mobile)->first();
-		if ($res) {
+
+	public function search($id)
+	{
+		if(($res = $this->where('id', $id)->first()) != null){
 			return $res;
-		} else {
-			return null;
+		}
+		else{
+			return "No Record Found";
 		}
 	}
 
-	public function update_data($id, $array)
-	{
-		if ($this->update($id, $array)) {
-			return 1;
-		} else {
-			return 0;
+
+	public function update_sub($id,$array){
+
+		if($this->update($id,$array)){
+			return "Succesfull Updated";
+		}
+		else{
+			return "Failed to Update Record";
+		}
+
+	}
+
+	public function delete_sub($id){
+		if($this->delete($id)){
+			return "Successfully Deleted";
+		}
+		else{
+			return "Failed to Delete";
 		}
 	}
 
-	public function delete_temp($mobile)
-	{
 
-		$db      = \Config\Database::connect();
-		$builder = $db->table('temp_user');
 
-		if($builder->delete(["mobile"=>$mobile])){
-			return 1;
-		}else{
-			return 0;
-		}
-		
 
-	}
 }

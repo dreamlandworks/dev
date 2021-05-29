@@ -42,8 +42,8 @@ class UsersModel extends Model
 	protected $beforeDelete         = [];
 	protected $afterDelete          = [];
 
+	
 	//Function to search whether user exists and his credentials are valid
-
 	public function login_user($id, $type, $pass)
 	{
 		switch ($type) {
@@ -60,6 +60,7 @@ class UsersModel extends Model
 			return $user;
 	}
 
+	//Model for Creating New User
 	public function create_user($array){
 
 		$data=[
@@ -82,40 +83,49 @@ class UsersModel extends Model
 
 	}
 
+	//Model for Searching User based on Email
 	public function search_email($id){
 	
 		$res = $this->where("email", $id)->first();
 		
 		if ($res==null) {
-			$rep = 1;
-			return $rep;
+			return null;
 		} else {
-			$rep = 0;
-			return $rep;
+			return $res;
 		}
 	
 	}
 
+	//Model for Searching User based on Mobile
 	public function search_mobile($id){
 	
 		$res = $this->where("userid", $id)->first();
 
 		if ($res==null) {
-			$rep = 1;
-			return $rep;
+			return null;
 		} else {
-			$rep = 0;
-			return $rep;
+			return $res;
 		}
 	
 	}
 
+	//Model for Searching User based on ID
 	public function search_user($id){
 	
 		return $this->where("id", $id)->first();
 
 			}
 
+	//Model for Updating Password
+	public function update_pass($id,$pass){
+		
+		if($this->update($id,["password"=>$pass])){
+			return 1;
+		}	
+		else{
+			return 0;
+		}
 
+	}
 		
 }

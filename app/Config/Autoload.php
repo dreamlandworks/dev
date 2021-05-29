@@ -42,7 +42,12 @@ class Autoload extends AutoloadConfig
 	public $psr4 = [
 		APP_NAMESPACE => APPPATH, // For custom app namespace
 		'Config'      => APPPATH . 'Config',
-		'Modules\User'=> ROOTPATH. 'Modules/User' //Autoload path for User Module
+		'Modules\User'=> ROOTPATH. 'Modules/User', //Autoload path for User Module
+		'Modules\User\api' => ROOTPATH. 'Modules/User/Controllers/api', //Autoload path API Controller of User
+		'Modules\User\web' => ROOTPATH. 'Modules/User/Controllers/web', //Autoload path Controller of User
+		'Modules\Provider' => ROOTPATH. 'Modules/Provider', //Autoload path for User Module
+		'Modules\Admin' => ROOTPATH. 'Modules/Admin' //Autoload path for User Module
+
 	];
 
 	/**
@@ -82,7 +87,7 @@ class Autoload extends AutoloadConfig
 	 * @var array<int, string>
 	 */
 	public $files = [];
-	protected $helpers = ["html",'url','file'];
+	protected $helpers = ["html",'url','file','date','security'];
 	protected $libraries = ['database'];
 	
 }

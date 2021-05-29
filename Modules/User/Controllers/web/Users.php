@@ -1,8 +1,8 @@
 <?php
 
-namespace Modules\User\Controllers;
+namespace Modules\User\web;
 
-use CodeIgniter\RESTful\ResourceController;
+use App\Controllers\BaseController;
 
 //Models required for registration
 use Modules\User\Models\ZipcodeModel;
@@ -15,21 +15,11 @@ use Modules\User\Models\UsersModel;
 
 use function PHPUnit\Framework\isEmpty;
 
-class UsersController extends ResourceController
+class Users extends BaseController
 {
-    public function new_user()
+	public function new_user()
     {
        
-       if($this->request->getMethod() != 'post'){
-
-            $this->respond([
-                "status" => 405,
-                "message" => "Method Not Allowed" 
-            ]);
-
-       }
-       {
-
         //creating New Models
         $zip_model = new ZipcodeModel();
         $city_model = new CityModel();
@@ -39,26 +29,23 @@ class UsersController extends ResourceController
         $userdetails_model = new UserDetailsModel();
         $users_model = new UsersModel();
 
-        //getting JSON data from API
-        $json = $this->request->getJSON();
-
         //JSON Objects declared into variables
-        $fname = $json->first_name;
-        $lname = $json->last_name;
-        $mobile = $json->mobile_no;
-        $email = $json->email_id;
-        $dob = $json->dob;
-        $facebook_id = $json->facebook_id;
-        $twitter_id = $json->twitter_id;
-        $google_id = $json->google_id;
-        $password = $json->password;
-        $city = $json->city;
-        $state = $json->state;
-        $country = $json->country;
-        $zip = $json->postal_code;
-        $address = $json->address;
-        $latitude = $json->user_lat;
-        $longitude = $json->user_long;
+        $fname = $this->input->post('first_name');
+        $lname = $this->input->post('last_name');
+        $mobile = $this->input->post('mobile');
+        $email = $this->input->post('email');
+        $dob = $this->input->post('dob');
+        $facebook_id = $this->input->post('facebook_id');
+        $twitter_id = $this->input->post('twitter_id');
+        $google_id = $this->input->post('google_id');
+        $password = $this->input->post('password');
+        $city = $this->input->post('city');
+        $state = $this->input->post('state');
+        $country = $this->input->post('country');
+        $zip = $this->input->post('zip');
+        $address = $this->input->post('address');
+        $latitude = $this->input->post('latitude');
+        $longitude = $this->input->post('longitude');
 
 
         $re = $users_model->search_mobile($mobile);
@@ -159,48 +146,31 @@ class UsersController extends ResourceController
 
                     $address_model->update_address_by_id($address_id,["users_id"=>$user_id]);
 
-                    return $this->respond([
-                        "status" => 201,
-                        "message" => "User Successfully Created",
-                        "userId" => $user_id
-                    ]);
+                    return $user_id;
                 }
             } else {
                 $message = "Email Address Already Exists";
-                return $this->respond([
-                    "status" => 409,
-                    "message" => $message    
-                ]);
+                return $message;
             }
         } else {
             $message = "User Already Exists with this Mobile Number";
-            return $this->respond([
-                "status" => 409,
-                "message" => $message
-            ]);
+            return $message;
         }
     }
 
-}
 
-    public function show($id = null)
+	public function show($id = null)
 	{
 		$data = new UsersModel();
 		$user = $data->search_user($id);
 		
         if($user != null){
-        return $this->respond([
-				"status"=>200,
-                "message"=>"Success",
-				"data"=>$user
-		]);
-    }
+        return $user;
+	    }
     else{
-        return $this->respond([
-            "status"=>404,
-            "message"=>"User Not Found"
-        ]);
-            }
+            return "User Not Found";
+        }
 	}
 
 }
+

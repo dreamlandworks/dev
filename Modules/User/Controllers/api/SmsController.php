@@ -1,10 +1,12 @@
 <?php
 
-namespace Modules\User\Controllers;
+namespace Modules\User\Controllers\api;
 
 use CodeIgniter\RESTful\ResourceController;
 use Modules\User\Models\SmsTemplateModel;
 use Modules\User\Models\TempUserModel;
+use Modules\User\Models\UsersModel;
+
 
 class SmsController extends ResourceController
 {
@@ -53,11 +55,7 @@ class SmsController extends ResourceController
 		}
 	}
 
-	/**
-	 * Create a new resource object, from "posted" parameters
-	 *
-	 * @return mixed
-	 */
+	
 	//Required array with fields->pe_id,header_id,template_id,name,content,var=(no of var objects in content)
 	//Example of json: -
 	// {
@@ -107,22 +105,6 @@ class SmsController extends ResourceController
 		}
 	}
 
-	public function update($id = null)
-	{
-		//
-	}
-
-	/**
-	 * Delete the designated resource object from the model
-	 *
-	 * @return mixed
-	 */
-	public function delete($id = null)
-	{
-		//
-	}
-
-
 	//function to send SMS
 	public function sendSms($data)
 	{
@@ -145,6 +127,7 @@ class SmsController extends ResourceController
 		$fname = $json->fname;
 		$lname = $json->lname;
 		$phone = $json->mobile;
+		$ref_id = $json->ref;
 
 
 		$otp = random_int(1000, 9999);
@@ -189,4 +172,52 @@ class SmsController extends ResourceController
 			}
 		}
 	}
+	//Function to generate and send SMS of Forgot Password OTP
+	public function forgot_sms(){
+
+		
+		$mobile = $this->request->getJsonVar('mobile');
+		
+		$new = new UsersModel();
+		if($new->search_mobile($mobile) != null ){
+
+			$name = 'User';
+			$otp = random_int(1000, 9999);
+
+			$data = [
+				"name" => "Forgot_OTP",
+				"mobile" => $mobile,
+				"dat" => [
+					"var1" => $name,
+					"var2" => $otp
+				]
+			];
+
+			if (($res = $this->sendSms($data)) != null) {
+
+				return $this->respond([
+					"status" => 200,
+					"message" => "OK",
+					"response" => $res,
+					"OTP" => $otp
+				]);
+			} else {
+
+				return $this->respond([
+					"status" => 404,
+					"message" => "Not Successful",
+					"response" => $res,
+					"OTP" => "null"
+				]);
+			}
+		}
+		else{
+		
+			return $this->respond([
+				"status" => 404,
+				"message" => "User Not Found",
+				]);
+		}
+	}
+
 }
