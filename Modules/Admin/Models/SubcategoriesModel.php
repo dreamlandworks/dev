@@ -73,7 +73,27 @@ class SubcategoriesModel extends Model
 			return $res;
 		}
 		else{
-			return "No Record Found";
+			return Null;
+		}
+	}
+
+	public function get_by_cat($category_id){
+		
+		if(($res = $this->where('category_id', $category_id)->showAll()) != null){
+			return $res;
+		}
+		else{
+			return null;
+		}
+	}
+
+	public function search_by_name($name)
+	{
+		if(($res = $this->where('sub_name', $name)->first()) != null){
+			return $res;
+		}
+		else{
+			return Null;
 		}
 	}
 
@@ -81,17 +101,17 @@ class SubcategoriesModel extends Model
 	public function update_sub($id,$array){
 
 		if($this->update($id,$array)){
-			return "Succesfull Updated";
+			return "Success";
 		}
 		else{
-			return "Failed to Update Record";
+			return "Fail";
 		}
 
 	}
 
 	public function delete_sub($id){
 		if($this->delete($id)){
-			return "Successfully Deleted";
+			return "Success";
 		}
 		else{
 			return "Failed to Delete";

@@ -7,6 +7,8 @@ use Modules\User\Models\SmsTemplateModel;
 use Modules\User\Models\TempUserModel;
 use Modules\User\Models\UsersModel;
 
+helper("Modules\User\custom");
+
 
 class SmsController extends ResourceController
 {
@@ -100,22 +102,21 @@ class SmsController extends ResourceController
 			return $this->respond([
 				"status" => 200,
 				"message" => "Successfully Inserted",
-				"SMS ID" => $res
+				"sms id" => $res
 			]);
 		}
 	}
 
-	//function to send SMS
-	public function sendSms($data)
-	{
+	// //function to send SMS
+	// public function sendSms($data)
+	// {
 
-		$sms_model = new SmsTemplateModel();
+	// 	$sms_model = new SmsTemplateModel();
 
-		$res = $sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
+	// 	$res = $sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
 
-		return $res;
-	}
-
+	// 	return $res;
+	// }
 
 	//Function to create OTP and save during registration
 	public function reg_sms()
@@ -153,13 +154,13 @@ class SmsController extends ResourceController
 				]
 			];
 
-			if (($res = $this->sendSms($data)) != null) {
+			if (($res = sendSms($data)) != null) {
 
 				return $this->respond([
 					"status" => 200,
 					"message" => "OK",
 					"response" => $res,
-					"OTP" => $otp
+					"otp" => $otp
 				]);
 			} else {
 
@@ -167,7 +168,7 @@ class SmsController extends ResourceController
 					"status" => 404,
 					"message" => "Not Successful",
 					"response" => $res,
-					"OTP" => "null"
+					"otp" => "null"
 				]);
 			}
 		}
@@ -179,9 +180,10 @@ class SmsController extends ResourceController
 		$mobile = $this->request->getJsonVar('mobile');
 		
 		$new = new UsersModel();
-		if($new->search_mobile($mobile) != null ){
+		if(($rep = $new->search_mobile($mobile)) != null ){
 
 			$name = 'User';
+			$id = $rep['id'];
 			$otp = random_int(1000, 9999);
 
 			$data = [
@@ -193,13 +195,14 @@ class SmsController extends ResourceController
 				]
 			];
 
-			if (($res = $this->sendSms($data)) != null) {
+			if (($res = sendSms($data)) != null) {
 
 				return $this->respond([
 					"status" => 200,
 					"message" => "OK",
 					"response" => $res,
-					"OTP" => $otp
+					"otp" => $otp,
+					"id" => $id
 				]);
 			} else {
 
@@ -207,7 +210,7 @@ class SmsController extends ResourceController
 					"status" => 404,
 					"message" => "Not Successful",
 					"response" => $res,
-					"OTP" => "null"
+					"otp" => "null"
 				]);
 			}
 		}

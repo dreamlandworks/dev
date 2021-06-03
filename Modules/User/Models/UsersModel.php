@@ -127,5 +127,15 @@ class UsersModel extends Model
 		}
 
 	}
+
+	public function update_email($id,$email){
+		if($this->update($id,['email'=> $email])){
+			$res = $this->search_user($id);
+			return $res['users_id'];
+		}
+		else{
+			return 0;
+		}
+	}
 		
 }

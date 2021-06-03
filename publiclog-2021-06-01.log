@@ -1,0 +1,2 @@
+ERROR - 2021-06-01 11:47:27 --> Cannot delete or update a parent row: a foreign key constraint fails (`mydb`.`keywords`, CONSTRAINT `fk_keywords_subcategories1` FOREIGN KEY (`subcategories_id`) REFERENCES `subcategories` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)
+ERROR - 2021-06-01 11:53:09 --> Cannot delete or update a parent row: a foreign key constraint fails (`mydb`.`keywords`, CONSTRAINT `fk_keywords_subcategories1` FOREIGN KEY (`subcategories_id`) REFERENCES `subcategories` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)

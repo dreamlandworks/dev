@@ -22,7 +22,7 @@ class LoginController extends ResourceController
 			return $this->respond( [
 				"status" => 200,
 				"message" => "User Exists",
-				"User id" => $var['id']
+				"user id" => $var['id']
 			]);
 
 		} else {

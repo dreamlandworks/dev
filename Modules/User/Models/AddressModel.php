@@ -15,7 +15,7 @@ class AddressModel extends Model
 	protected $useSoftDeletes       = false;
 	protected $protectFields        = true;
 	protected $allowedFields        = [
-		'id', 'name','flat_no', 'apartment_name', 'landmark', 'locality', 'latitude', 'longitude', 'zipcode_id','users_id'
+		'id', 'name', 'flat_no', 'apartment_name', 'landmark', 'locality', 'latitude', 'longitude', 'zipcode_id', 'users_id'
 	];
 
 	// Dates
@@ -66,21 +66,44 @@ class AddressModel extends Model
 		}
 	}
 
+
+	//Function to search Address by user ID
+	//Returns address if available or else '0' if not available
+	public function get_by_user_id($id)
+	{
+
+		$res = $this->select('address.id,address.name,address.flat_no,address.apartment_name,
+							address.landmark,address.locality,zipcode.zipcode,city.city,
+							state.state,country.country')
+			->join('zipcode', 'address.zipcode_id=zipcode.id')
+			->join('city', 'zipcode.city_id=city.id')
+			->join('state', 'city.state_id=state.id')
+			->join('country', 'state.country_id=country.id')
+			->where('users_id', $id)->findAll();
+
+		if ($res) {
+			return $res;
+		} else {
+			return null;
+		}
+	}
+
+	
 	//Function to create address
 	//Creates Address required name,flat,apartment,landmark,locality,latitude,longitude,pin_code
 	public function create_address($array)
 	{
-		$data=[
-			'name'=> $array['name'],
-			'flat_no'=> $array['flat'], 
-			'apartment_name'=> $array['apartment'], 
-			'landmark'=> $array['landmark'], 
-			'locality'=> $array['locality'], 
-			'latitude'=> $array['latitude'], 
-			'longitude'=> $array['longitude'], 
-			'zipcode_id'=> $array['pin_code']
+		$data = [
+			'name' => $array['name'],
+			'flat_no' => $array['flat'],
+			'apartment_name' => $array['apartment'],
+			'landmark' => $array['landmark'],
+			'locality' => $array['locality'],
+			'latitude' => $array['latitude'],
+			'longitude' => $array['longitude'],
+			'zipcode_id' => $array['pin_code']
 		];
-		
+
 		$res = $this->insert($data);
 		$insertID = $this->getInsertID();
 
@@ -91,16 +114,25 @@ class AddressModel extends Model
 		}
 	}
 
-	public function update_address_by_id($id,$array)
+	public function update_address_by_id($id, $array)
 	{
-			
-		$res = $this->update($id,$array);
+
+		$res = $this->update($id, $array);
 		if ($res != null) {
 			return 1;
 		} else {
 			return 0;
 		}
-		
-		
+	}
+
+	public function delete_address($id){
+
+		if($this->delete($id)){
+			return 1;
+		}else{
+			return 0;
+		}
+
+
 	}
 }

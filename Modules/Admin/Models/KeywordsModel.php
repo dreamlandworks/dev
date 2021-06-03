@@ -71,7 +71,17 @@ class KeywordsModel extends Model
 			return $res;
 		}
 		else{
-			return "No Record Found";
+			return Null;
+		}
+	}
+
+	public function search_by_name($name)
+	{
+		if(($res = $this->where('keyword', $name)->first()) != null){
+			return $res;
+		}
+		else{
+			return Null;
 		}
 	}
 
@@ -79,20 +89,20 @@ class KeywordsModel extends Model
 	public function update_keyword($id,$array){
 
 		if($this->update($id,$array)){
-			return "Succesfully Updated";
+			return "Success";
 		}
 		else{
-			return "Failed to Update Record";
+			return "Fail";
 		}
 
 	}
 
-	public function delete_cat($id){
+	public function delete_key($id){
 		if($this->delete($id)){
-			return "Successfully Deleted";
+			return "Success";
 		}
 		else{
-			return "Failed to Delete";
+			return "Fail";
 		}
 	}
 

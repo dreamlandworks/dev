@@ -10,6 +10,7 @@ use Modules\User\Models\CityModel;
 use Modules\User\Models\StateModel;
 use Modules\User\Models\CountryModel;
 use Modules\User\Models\AddressModel;
+use Modules\User\Models\ReferralModel;
 use Modules\User\Models\TempUserModel;
 use Modules\User\Models\UserDetailsModel;
 use Modules\User\Models\UsersModel;
@@ -19,7 +20,19 @@ use function PHPUnit\Framework\isEmpty;
 class UsersController extends ResourceController
 {
 
-    //Function to create New Users
+    //-----------------------------------------------NEW USER REGISTRATION STARTS----------------------------------------------------------
+    //-----------------------------------------------****************************----------------------------------------------------------
+
+    /**
+     * Function to Create New User
+     * 
+     * Call to this function will create new user.
+     * @param mixed first_name, @param mixed last_name, @param mixed email
+     * @param mixed mobile, @param mixed dob, @param mixed facebook_id, @param mixed twitter_id
+     * @param mixed google_id, @param mixed password, @param mixed city, @param mixed state, @param mixed referral_id
+     * @param string country, @param mixed zip, @param mixed address, @param double latitude, @param double longitude
+     * @return [JSON] @var User ID & @var Referral ID
+     */
     public function new_user()
     {
 
@@ -165,13 +178,15 @@ class UsersController extends ResourceController
                         $aa = $address_model->update_address_by_id($address_id, ["users_id" => $user_id]);
                         $bb = $this->create_ref($fname, $mobile, $referral_id, $user_id);
                         $cc = $this->delete_temp($mobile);
+                        $dd = $userdetails_model->update_user_details($users_id,['referral_id'=>$bb]);
 
-                        if ($aa != 0 && $bb === "Success" && $cc != 0) {
+                        if ($aa != 0 && $bb != null && $cc != 0 && $dd != null) {
 
                             return $this->respond([
                                 "status" => 201,
                                 "message" => "User Successfully Created",
-                                "userId" => $user_id
+                                "user_id" => $user_id,
+                                "referral_id" => $bb
                             ]);
                         } else {
 
@@ -198,34 +213,27 @@ class UsersController extends ResourceController
         }
     }
 
-    //Function to show user details
+    //-----------------------------------------------NEW USER REGISTRATION ENDS------------------------------------------------------------
 
-    public function show($id = null)
-    {
-        $data = new UsersModel();
-        $user = $data->search_user($id);
+      
+    //--------------------------------------------------CREATE REFERRAL ID STARTS------------------------------------------------------------
 
-        if ($user != null) {
-            return $this->respond([
-                "status" => 200,
-                "message" => "Success",
-                "data" => $user
-            ]);
-        } else {
-            return $this->respond([
-                "status" => 404,
-                "message" => "User Not Found"
-            ]);
-        }
-    }
-
-    //Function to create referral ID
+    /**
+     * Function to Create Referral ID
+     * 
+     * @param mixed $fname
+     * @param mixed $mobile
+     * @param mixed $referred_by
+     * @param mixed $user_id
+     *  
+     * @return [Array] -> Referral ID | Null
+     */
     public function create_ref($fname, $mobile, $referred_by, $user_id)
     {
         //output -> referral_id (first four letters of fname + first four numbers of mobile) for uniqueness
         //		 -> referred_by (referral id of person referred)
         // 		 -> User_id for user
-        $db = \Config\Database::connect();
+        $db = new ReferralModel();
         $referral_id = substr($fname, 0, 4) . substr($mobile, 0, 4);
 
         $data = [
@@ -234,48 +242,73 @@ class UsersController extends ResourceController
             "user_id" => $user_id
         ];
 
-        $builder = $db->table('referral');
-        if ($builder->insert($data)) {
-            return "Success";
+        if ($res = $db->creat_ref($data)) {
+            return $res;
         } else {
-            return "Fail";
+            return null;
         }
     }
 
+    //--------------------------------------------------FUNCTION ENDS ---------------------------------------------------------------------
+
+    //--------------------------------------------------DELETE TEMPORARY USER STARTS HERE ------------------------------------------------- 
+    /**
+     * Function to delete Temporary Users
+     * 
+     * Call this function with 'id' deletes temporary users
+     * @param string $mobile
+     * 
+     * @return [Int] -> 0|1
+     */
     public function delete_temp($mobile = null)
     {
         $new = new TempUserModel();
         $res = $new->delete_temp($mobile);
         if ($res != 0) {
             return $res;
-        }
-        else{
+        } else {
             return 0;
         }
-        
     }
 
-    public function update_pass(){
-        
+
+    //--------------------------------------------------FUNCTION ENDS ---------------------------------------------------------------------
+
+    //--------------------------------------------------UPDATE USER PASSWORD STARTS HERE ------------------------------------------------- 
+
+
+    /**
+     * Function to update password
+     * 
+     * Call to this function to change user password
+     * @param int $id, @param mixed $password
+     * @method POST
+     * @return [JSON]
+     */
+    public function update_pass()
+    {
+
         $new = new UsersModel();
-        
+
         $id = $this->request->getJsonVar("id");
         $pass = $this->request->getJsonVar("password");
 
-        $res = $new->update_pass($id,$pass);
+        $res = $new->update_pass($id, $pass);
 
-        if($res !=0 ){
+        if ($res != 0) {
             return $this->respond([
                 "status" => 200,
-                "Message"=> "Success"
+                "message" => "Success"
             ]);
-        }
-        else{
+        } else {
             return $this->respond([
-                "status"=> 404,
-                "Message" => "Not able to update Password"
+                "status" => 404,
+                "message" => "Not able to update Password"
             ]);
         }
-
     }
+
+    //-------------------------------------------------------------FUNCTION ENDS ---------------------------------------------------------
+
+    
 }

@@ -17,7 +17,7 @@ class UserDetailsModel extends Model
 	protected $allowedFields        = [
 		"id", "fname", "lname", "mobile",
 		"dob", "profile_pic", "reg_status", "registered_on",
-		"address_id", "referred_id", "points_count"
+		"referral_id", "points_count"
 	];
 
 	// Dates
@@ -80,6 +80,15 @@ class UserDetailsModel extends Model
 		}
 	}
 
+	public function update_user_details($id,$array){
+		
+		if($this->update($id,$array)){
+			return 1;
+		}
+		else{
+			return null;
+		}
+	}
 	
 
 }

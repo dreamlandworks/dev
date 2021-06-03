@@ -1,0 +1,2 @@
+ERROR - 2021-06-02 07:54:18 --> Table 'mydb.referrals' doesn't exist
+ERROR - 2021-06-02 10:53:44 --> Cannot add or update a child row: a foreign key constraint fails (`mydb`.`address`, CONSTRAINT `fk_user_id` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)

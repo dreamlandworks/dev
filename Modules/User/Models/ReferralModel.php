@@ -7,14 +7,14 @@ use CodeIgniter\Model;
 class ReferralModel extends Model
 {
 	protected $DBGroup              = 'default';
-	protected $table                = 'referrals';
+	protected $table                = 'referral';
 	protected $primaryKey           = 'id';
 	protected $useAutoIncrement     = true;
 	protected $insertID             = 0;
 	protected $returnType           = 'array';
 	protected $useSoftDeletes       = false;
 	protected $protectFields        = true;
-	protected $allowedFields        = ["referral_link","referred_by"];
+	protected $allowedFields        = ["id","referral_id","referred_by","user_id"];
 
 	// Dates
 	protected $useTimestamps        = false;
@@ -39,4 +39,29 @@ class ReferralModel extends Model
 	protected $afterFind            = [];
 	protected $beforeDelete         = [];
 	protected $afterDelete          = [];
+
+	public function creat_ref($array){
+		
+		$res = $this->insert($array);
+		$insertID = $this->getInsertID();
+
+		if ($res) {
+			return $insertID;
+		} else {
+			return 0;
+		}
+	}
+
+	public function get_details($id){
+		
+		$res = $this->where('id', $id)->first();
+		if($res != null){
+			return $res;
+		}
+		else{
+			return null;
+		}
+		
+		}
+	
 }

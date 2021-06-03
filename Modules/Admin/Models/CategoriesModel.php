@@ -43,7 +43,7 @@ class CategoriesModel extends Model
 	protected $afterDelete          = [];
 
 
-	public function add($category, $image)
+	public function add_category($category, $image)
 	{
 
 		$arrray = [
@@ -72,7 +72,7 @@ class CategoriesModel extends Model
 			return $res;
 		}
 		else{
-			return "No Record Found";
+			return Null;
 		}
 	}
 
