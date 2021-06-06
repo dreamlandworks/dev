@@ -10,6 +10,7 @@ use Modules\User\Models\CityModel;
 use Modules\User\Models\StateModel;
 use Modules\User\Models\CountryModel;
 use Modules\User\Models\AddressModel;
+use Modules\User\Models\AlertModel;
 use Modules\User\Models\ReferralModel;
 use Modules\User\Models\TempUserModel;
 use Modules\User\Models\UserDetailsModel;
@@ -52,6 +53,7 @@ class UsersController extends ResourceController
             $address_model = new AddressModel();
             $userdetails_model = new UserDetailsModel();
             $users_model = new UsersModel();
+            $alert_model = new AlertModel();
 
             //getting JSON data from API
             $json = $this->request->getJSON();
@@ -178,15 +180,20 @@ class UsersController extends ResourceController
                         $aa = $address_model->update_address_by_id($address_id, ["users_id" => $user_id]);
                         $bb = $this->create_ref($fname, $mobile, $referral_id, $user_id);
                         $cc = $this->delete_temp($mobile);
-                        $dd = $userdetails_model->update_user_details($users_id,['referral_id'=>$bb]);
+                        $dd = $userdetails_model->update_user_details($users_id, ['referral_id' => $bb['id']]);
+                        $ale = $alert_model->create_record([
+                            "alert_id" => 4,
+                            "sub_id" => 1,
+                            "users_id" => $user_id
+                        ]);
 
-                        if ($aa != 0 && $bb != null && $cc != 0 && $dd != null) {
+                        if ($aa != 0 && $bb != null && $cc != 0 && $dd != null && $ale != null) {
 
                             return $this->respond([
                                 "status" => 201,
                                 "message" => "User Successfully Created",
                                 "user_id" => $user_id,
-                                "referral_id" => $bb
+                                "referral_id" => $bb['referral_id']
                             ]);
                         } else {
 
@@ -215,7 +222,7 @@ class UsersController extends ResourceController
 
     //-----------------------------------------------NEW USER REGISTRATION ENDS------------------------------------------------------------
 
-      
+
     //--------------------------------------------------CREATE REFERRAL ID STARTS------------------------------------------------------------
 
     /**
@@ -234,15 +241,15 @@ class UsersController extends ResourceController
         //		 -> referred_by (referral id of person referred)
         // 		 -> User_id for user
         $db = new ReferralModel();
-        $referral_id = substr($fname, 0, 4) . substr($mobile, 0, 4);
-
+        //$referral_id = substr($fname, 0, 4) . substr($mobile, 0, 4);
+        $referral_id = $mobile;
         $data = [
             "referral_id" => $referral_id,
             "referred_by" => $referred_by,
             "user_id" => $user_id
         ];
 
-        if ($res = $db->creat_ref($data)) {
+        if (($res = $db->creat_ref($data)) != 0) {
             return $res;
         } else {
             return null;
@@ -310,5 +317,65 @@ class UsersController extends ResourceController
 
     //-------------------------------------------------------------FUNCTION ENDS ---------------------------------------------------------
 
-    
+
+    //---------------------------------------------------------RETRIEVE USER ALERTS HERE ------------------------------------------------- 
+
+    /**
+     * Retrieves User Alerts based on ID & TYPE
+     * 
+     * This function will be used to get alerts based on user id & action type
+     * @param int $id = User Id
+     * @param int $type = 1|2 => 1 for Non Actionable & 2 for Actionable
+     * @return string [JSON] => ID, Alert Type, Description, Created ons
+     */
+    public function get_alerts()
+    {
+
+        $alert = new AlertModel();
+        $id = $this->request->getJsonVar('id');
+        $type = $this->request->getJsonVar('type');
+
+        $res = $alert->unread_alerts($id, $type);
+
+        if ($res != null) {
+            return $this->respond([
+                "status" => 200,
+                "message" => "Success",
+                "data" => $res
+            ]);
+        } else {
+            return $this->respond([
+                "status" => 404,
+                "message" => "No Data to show"
+            ]);
+        }
+    }
+
+
+    //-------------------------------------------------------------FUNCTION ENDS ---------------------------------------------------------
+
+
+    //---------------------------------------------------------UPDATE ALERTS STATUS HERE ------------------------------------------------- 
+
+    public function update_alert()
+    {
+
+        $alerts = new AlertModel();
+
+        $id = $this->request->getJsonVar('id');
+        $date = date('Y-m-d H:m:s', time());
+        $res = $alerts->update_alert($id, $date);
+
+        if ($res == "Success") {
+            return $this->respond([
+                "id" => 200,
+                "message" => "Successfully Updated"
+            ]);
+        } else {
+            return $this->respond([
+                "id" => 400,
+                "message" => "Failed to Update"
+            ]);
+        }
+    }
 }

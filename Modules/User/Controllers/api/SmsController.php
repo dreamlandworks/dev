@@ -128,9 +128,7 @@ class SmsController extends ResourceController
 		$fname = $json->fname;
 		$lname = $json->lname;
 		$phone = $json->mobile;
-		$ref_id = $json->ref;
-
-
+		
 		$otp = random_int(1000, 9999);
 
 		$array = [

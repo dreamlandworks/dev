@@ -40,5 +40,5 @@ function generateImage($img)
     $name = date('Ymd') . uniqid() . '.png';
     $file = $folderPath . $name;
     file_put_contents($file, $image_base64);
-    return "/images/" . $name;
+    return "images/" . $name;
 }

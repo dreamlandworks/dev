@@ -73,7 +73,7 @@ class UserProfileController extends ResourceController
                 "fname" => $fname,
                 "lname" => $lname,
                 "mobile" => $mobile,
-                "email" => $email,
+                "email_id" => $email,
                 "dob" => $dob,
                 "profile_pic" => $profile_pic,
                 "referral_id" => $referral_id,
@@ -124,12 +124,7 @@ class UserProfileController extends ResourceController
         if ($file != null) {
 
             $image = generateImage($file);
-        }
-
-        if (($res = $con->update_email($id, $email)) != 0) {
-
-            $users_id = $res;
-
+            
             $array = [
                 "fname" =>  $fname,
                 "lname" =>  $lname,
@@ -137,6 +132,20 @@ class UserProfileController extends ResourceController
                 "profile_pic" =>  $image
             ];
 
+        }else{
+
+            $array = [
+                "fname" =>  $fname,
+                "lname" =>  $lname,
+                "dob" =>  $dob              
+            ];
+        }
+
+        if (($res = $con->update_email($id, $email)) != 0) {
+
+            $users_id = $res;
+
+            
             if ($con1->update_user_details($users_id, $array) != null) {
 
                 return $this->respond([
@@ -161,6 +170,7 @@ class UserProfileController extends ResourceController
 //--------------------------------------------------DELETE USER ADDRESS START------------------------------------------------------------
 
 public function delete_address(){
+    
     $con = new AddressModel();
 
     $id = $this->request->getJsonVar('id');
@@ -173,7 +183,7 @@ public function delete_address(){
     }
 }
 
-
-
 //--------------------------------------------------DELETE USER ADDRESS END------------------------------------------------------------
+
+
 }

@@ -46,7 +46,7 @@ class ReferralModel extends Model
 		$insertID = $this->getInsertID();
 
 		if ($res) {
-			return $insertID;
+			return ['id' => $insertID,'referral_id'=>$array['referral_id']];
 		} else {
 			return 0;
 		}

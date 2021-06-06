@@ -1,0 +1,2 @@
+ERROR - 2021-06-06 07:39:23 --> Cannot add or update a child row: a foreign key constraint fails (`mydb`.`address`, CONSTRAINT `fk_address_zipcode1` FOREIGN KEY (`zipcode_id`) REFERENCES `zipcode` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)
+ERROR - 2021-06-06 08:44:51 --> Unknown column 'user_id' in 'where clause'

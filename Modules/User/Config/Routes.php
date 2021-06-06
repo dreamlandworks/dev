@@ -10,6 +10,7 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     //Routes pertaining to User Profile, Updation and Address Deletion
     $routes->post("show", "UserProfileController::show_user"); //Get User Data by ID
     $routes->post("update", "UserProfileController::update_profile"); //For Change Password API
+    $routes->post("delete/address", "UserProfileController::delete_address"); //For Delete Address API
    
        //Routes pertaining to SMS Functionality
     $routes->get("sms/show/(:any)", "SmsController::show/$1"); //Get SMS Template details by ID/Name
@@ -23,8 +24,9 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     $routes->get("subcat", "MiscController::getSub"); //Get all the Sub-Categories
     $routes->post("subcat/id", "MiscController::get_sub_by_cat"); //Get Sub-Categories by Category ID
 
-    //Routes pertaining to Temporary User
-    $routes->get("del_temp/(:num)","UsersController::delete_temp/$1");
-    $routes->post("temp","UsersController::update_profile");
+    //Routes pertaining to Alerts
+    $routes->post("alerts/get","UsersController::get_alerts");// Get Unread Alerts by ID
+    $routes->post("alerts/update","UsersController::update_alert");// Update Alerts Status to read by ID
 
+   
 });

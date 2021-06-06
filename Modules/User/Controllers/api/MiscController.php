@@ -8,6 +8,10 @@ use Modules\Admin\Models\SubcategoriesModel;
 
 class MiscController extends ResourceController
 {
+
+	//------------------------------------------------------GET LIST OF SUB CATEGORIES HERE ---------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
 	/**
 	 * Get the list of Categories
 	 * 
@@ -37,6 +41,13 @@ class MiscController extends ResourceController
 		}
 	}
 
+
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+
+
+	//---------------------------------------------------------GET LIST CATEGORIES HERE -------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
 	public function getCat()
 	{
 		$cat = new CategoriesModel();
@@ -56,6 +67,10 @@ class MiscController extends ResourceController
 		}
 	}
 
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+
+	
+	
 	public function getSub()
 	{
 		$cat = new SubcategoriesModel();
