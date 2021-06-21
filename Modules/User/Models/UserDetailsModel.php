@@ -15,7 +15,7 @@ class UserDetailsModel extends Model
 	protected $useSoftDeletes       = false;
 	protected $protectFields        = true;
 	protected $allowedFields        = [
-		"id", "fname", "lname", "mobile",
+		"id", "fname", "lname", "mobile","gender",
 		"dob", "profile_pic", "reg_status", "registered_on",
 		"referral_id", "points_count"
 	];
@@ -67,6 +67,7 @@ class UserDetailsModel extends Model
 			'lname' => $array['lname'],
 			'mobile' => $array['mobile'],
 			'dob' => $array['dob'],
+			'gender' => $array['gender'],
 			'reg_status' => $array['reg_status']
 					];
 

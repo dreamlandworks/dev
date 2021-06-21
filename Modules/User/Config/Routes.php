@@ -30,3 +30,11 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
 
    
 });
+
+$routes->group("",["namespace" => "\Modules\User\Controllers\web"],function($routes){
+
+    $routes->get("/", "Home::index"); //Get Home Page
+    $routes->get("/categories", "Category::index"); //Get Categories Page
+
+
+});

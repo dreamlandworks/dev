@@ -1,6 +1,6 @@
 <?php
 
-$routes->group("admin", ["namespace" => "\Modules\Admin\Controllers"], function ($routes) {
+$routes->group("admin", ["namespace" => "\Modules\Admin\Controllers\api"], function ($routes) {
 
     // Routes pertaining to Categories Module
     $routes->post("addcat","CategoryController::add_category"); // Create New

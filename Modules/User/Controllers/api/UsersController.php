@@ -64,6 +64,7 @@ class UsersController extends ResourceController
             $mobile = $json->mobile_no;
             $email = $json->email_id;
             $dob = $json->dob;
+            $gender = $json->gender;
             $facebook_id = $json->facebook_id;
             $twitter_id = $json->twitter_id;
             $google_id = $json->google_id;
@@ -159,6 +160,7 @@ class UsersController extends ResourceController
                         'lname' => $lname,
                         'mobile' => $mobile,
                         'dob' => $dob,
+                        'gender'=>strtolower($gender),
                         'reg_status' => $reg_status,
                     ];
 
