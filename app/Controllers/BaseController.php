@@ -8,6 +8,7 @@ use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use CodeIgniter\Config\Services;
 
 /**
  * Class BaseController
@@ -36,7 +37,8 @@ class BaseController extends Controller
 	 *
 	 * @var array
 	 */
-	protected $helpers = [];
+	protected $helpers = ['utility'];
+	protected $session;
 
 	/**
 	 * Constructor.
@@ -54,5 +56,9 @@ class BaseController extends Controller
 		// Preload any models, libraries, etc, here.
 		//--------------------------------------------------------------------
 		// E.g.: $this->session = \Config\Services::session();
+
+		if(session_status() == PHP_SESSION_NONE){
+			$this->session = Services::session();
+		}
 	}
 }

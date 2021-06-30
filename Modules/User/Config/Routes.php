@@ -35,6 +35,7 @@ $routes->group("",["namespace" => "\Modules\User\Controllers\web"],function($rou
 
     $routes->get("/", "Home::index"); //Get Home Page
     $routes->get("/categories", "Category::index"); //Get Categories Page
-
+    $routes->post("login","Login::login"); //Login User
+    $routes->post("logout","Login::logout"); //Logout Functionality
 
 });

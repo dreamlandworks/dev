@@ -145,7 +145,7 @@ ul.breadcrumb li a:hover {
 .nav-container {
     padding-left: 100px;
     margin-top: 20px;
-    }
+}
 
 .nav-container h2 {
     font-weight: bold;
@@ -183,4 +183,142 @@ ul.breadcrumb li a:hover {
 .card-body a:hover {
     color: rgba(0, 122, 255);
     text-decoration: underline;
+}
+
+.borderless {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    height: 5rem;
+    margin: auto;
+    display: flex;
+}
+
+
+.borderless__input {
+    position: absolute;
+    padding: 5px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 14px;
+    padding-left: 40px;
+    height: 40px;
+    width: 90%;
+    border: none;
+    margin-top: 10px;
+    border-bottom: 0.5px solid gray;
+}
+
+.borderless__label {
+    position: relative;
+    left: 0.1rem;
+    top: 1rem;
+    color: gray;
+    background-color: white;
+    margin-left: 30px;
+    padding-left: 12px;
+    padding-right: 5px;
+    height: 7px;
+}
+
+.borderless__input:focus~.borderless__label,
+.borderless__input:not(:placeholder-shown).borderless__input:not(focus)~.borderless__label {
+    color: black;
+    font-size: 15px;
+    top: -0.65rem;
+    margin-left: 0px;
+    font-weight: bold;
+    padding-left: 2px;
+    padding-bottom: 5px;
+    transition: top 200ms ease-in, font-size 200ms ease-in, margin-left 200ms ease-in, font-weight 200ms ease-in;
+}
+
+.borderless .login1 {
+
+    position: absolute;
+    top: 2.8rem;
+    color: black;
+    padding-left: 7px;
+    /* padding-left:-10rem; */
+
+}
+
+.borderless .login2 {
+
+    position: absolute;
+    top: 7.7rem;
+    color: black;
+    padding-left: 7px;
+    /* padding-left:-10rem; */
+
+}
+
+.login_img {
+    /* height:50%; */
+    width: 90%;
+    padding: 20px;
+    margin: 30px;
+}
+
+.dropbtn {
+    color: black;
+    margin-left: 15px;
+    font-size: 16px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: X-large;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 100px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    padding-left: 20px;
+    text-decoration: none;
+    display: block;
+
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    color: gray;
+    transition: gray ease-in 200ms;
+}
+
+.long-button{
+    position:relative;
+    width:300px;
+    margin-left:5px;
+    background:rgba(0, 122, 255);
+    color:white;
+    height:40px;
+    font-weight: bold;
+}
+
+.error-text{
+    position:absolute;
+    margin-top:50px;
+    left:20px;
+    color:red;
 }

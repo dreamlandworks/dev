@@ -88,7 +88,7 @@ class Autoload extends AutoloadConfig
 	 */
 	public $files = [];
 	protected $helpers = ["html",'url','file','date','security'];
-	protected $libraries = ['database'];
+	protected $libraries = ['database','session'];
 	
 }
 

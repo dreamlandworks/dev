@@ -3,76 +3,74 @@
 namespace Modules\Provider\Controllers\Api;
 
 use CodeIgniter\RESTful\ResourceController;
+use Modules\Provider\Models\ActivationModel;
 
 class Activation extends ResourceController
 {
-	/**
-	 * Return an array of resource objects, themselves in array format
-	 *
-	 * @return mixed
-	 */
-	public function index()
+	function sp_activation()
 	{
-		//
-	}
 
-	/**
-	 * Return the properties of a resource object
-	 *
-	 * @return mixed
-	 */
-	public function show($id = null)
-	{
-		//
-	}
+		$con = new ActivationModel();
 
-	/**
-	 * Return a new resource object, with default properties
-	 *
-	 * @return mixed
-	 */
-	public function new()
-	{
-		//
-	}
+		//Get JSON Data to variables
+		$data = $this->request->getJson();
+		$users_id = $data->id;
+		$profession = $data->profession;
+		$qualification = $data->qualification;
+		$experience = $data->experience;
+		$about = $data->about;
+		$key = $data->keywords;
 
-	/**
-	 * Create a new resource object, from "posted" parameters
-	 *
-	 * @return mixed
-	 */
-	public function create()
-	{
-		//
-	}
+		//Get Profession Id by Profession
+		$p = $con->get_profession($profession);
+		$p_id = '';
 
-	/**
-	 * Return the editable properties of a resource object
-	 *
-	 * @return mixed
-	 */
-	public function edit($id = null)
-	{
-		//
-	}
+		if ($p != null) {
+			$p_id = $p['id'];
+		}
 
-	/**
-	 * Add or update a model resource, from "posted" properties
-	 *
-	 * @return mixed
-	 */
-	public function update($id = null)
-	{
-		//
-	}
+		//Get Qualification ID by Qualification
+		$q = $con->get_qual_id($qualification);
+		$q_id = '';
 
-	/**
-	 * Delete the designated resource object from the model
-	 *
-	 * @return mixed
-	 */
-	public function delete($id = null)
-	{
-		//
+		if ($q != null) {
+			$q_id = $q['id'];
+		}
+
+		//Get Qualification ID by Qualification
+		$exp = $con->get_exp_id($experience);
+		$exp_id = '';
+
+		if ($exp != null) {
+			$exp_id = $exp['id'];
+		}
+
+		$load = [
+			'users_id' => $users_id,
+			'profession_id' => $p_id,
+			'qual_id' => $q_id,
+			'exp_id' => $exp_id,
+			'about_me' => $about
+		];
+
+		//Add data into sp_det table
+		if (($con->add_sp_det($load)) != null) {
+			//Add Keywords in sp_skill tables
+			if (($con->add_sp_skill($users_id, $key)) != null) {
+				//Add Other functionality
+
+				
+			} else {
+				return $this->respond([
+					"status" => 400,
+					"message" => "Failed to add data in sp_skill table"
+				]);
+			}
+		} else {
+			return $this->respond([
+				"status" => 400,
+				"message" => "Failed to add data in sp_det table"
+			]);
+		}
 	}
 }
