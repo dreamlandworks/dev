@@ -27,6 +27,8 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     //Routes pertaining to Alerts
     $routes->post("alerts/get","UsersController::get_alerts");// Get Unread Alerts by ID
     $routes->post("alerts/update","UsersController::update_alert");// Update Alerts Status to read by ID
+    
+    $routes->post("testkey", "TestController::testkey");
 
    
 });
@@ -36,6 +38,6 @@ $routes->group("",["namespace" => "\Modules\User\Controllers\web"],function($rou
     $routes->get("/", "Home::index"); //Get Home Page
     $routes->get("/categories", "Category::index"); //Get Categories Page
     $routes->post("login","Login::login"); //Login User
-    $routes->post("logout","Login::logout"); //Logout Functionality
+    $routes->get("logout","Login::logout"); //Logout Functionality
 
 });

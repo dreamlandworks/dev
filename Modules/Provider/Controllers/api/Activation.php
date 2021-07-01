@@ -58,7 +58,6 @@ class Activation extends ResourceController
 			//Add Keywords in sp_skill tables
 			if (($con->add_sp_skill($users_id, $key)) != null) {
 				//Add Other functionality
-
 				
 			} else {
 				return $this->respond([

@@ -11,6 +11,9 @@ class Login extends BaseController
 	// User Login Function 
 	public function login()
 	{
+		// $type = $this->input->post('type');
+		// $id = $this->input->post('username');
+		// $pass = $this->input->post('password');
 
 		$type = $this->request->getVar('type');
 		$id = $this->request->getVar('mobile');
@@ -23,6 +26,8 @@ class Login extends BaseController
 		$log = new UsersModel();
 		$var = $log->login_user($id, $type, $pass);
 
+		$session = session();
+
 		if ($var != null) {
 			log_message('info', $var['id']);
 
@@ -30,37 +35,23 @@ class Login extends BaseController
 			$user = $res->user_details_by_id($var['id']);
 			$name = $user['fname'] . " " . $user['lname'];
 
-			$data = [
-				'id' => $var['id'],
-				'name' => $name,
-				'type' => $type
-			];
+			$session->setFlashdata('id', $var['id']);
+			$session->setFlashdata('name', $name);
 
-			session()->set($data);
-			if ($type == 'google' || $type == 'login') {
-				return "success";
-			}
 			return redirect('/');
 		} else {
 
-			$error = "Looks like you don't have account. Create yours for free!";
-			session()->setFlashdata('error', $error);
-			return "fail";
+			$session->setFlashdata('error', "Looks like you don't have account. Create yours for free!");
 			log_message('error', "User Not Found");
 		}
 	}
 
-	function logout()
-	{
-		
-		$type = $this->request->getVar('type');
+	function logout() {
+			
+			$session = session();
+			$session->setFlashdata('id', "");
+			$session->setFlashdata('name', "");
 
-
-		session()->destroy();
-
-			return "success";
-		
-
-		return redirect('/');
+			return redirect('/');
 	}
 }
