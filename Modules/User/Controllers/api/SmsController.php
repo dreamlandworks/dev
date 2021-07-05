@@ -121,55 +121,78 @@ class SmsController extends ResourceController
 	//Function to create OTP and save during registration
 	public function reg_sms()
 	{
-		$new = new TempUserModel();
-
 		$json = $this->request->getJSON();
-
-		$fname = $json->fname;
-		$lname = $json->lname;
-		$phone = $json->mobile;
-		
-		$otp = random_int(1000, 9999);
-
-		$array = [
-			"fname" => $fname,
-			"lname" => $lname,
-			"mobile" => $phone,
-			"otp" => $otp
-		];
-
-		$res = $new->add_temp_user($array);
-
-		if ($res == null) {
-			$res = null;
-		} else {
-			$data = [
-				"name" => "Register_OTP",
-				"mobile" => $phone,
-				"dat" => [
-					"var1" => $fname,
-					"var2" => $otp
-				]
-			];
-
-			if (($res = sendSms($data)) != null) {
-
-				return $this->respond([
-					"status" => 200,
-					"message" => "OK",
-					"response" => $res,
-					"otp" => $otp
-				]);
-			} else {
-
-				return $this->respond([
-					"status" => 404,
-					"message" => "Not Successful",
-					"response" => $res,
-					"otp" => "null"
-				]);
-			}
+        if(!array_key_exists('fname',$json) || !array_key_exists('lname',$json) || !array_key_exists('mobile',$json) || !array_key_exists('key',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
 		}
+		else {
+		    $fname = $json->fname;
+    		$lname = $json->lname;
+    		$phone = $json->mobile;
+    		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+    
+        		$new = new TempUserModel();
+
+        		$otp = random_int(1000, 9999);
+        
+        		$array = [
+        			"fname" => $fname,
+        			"lname" => $lname,
+        			"mobile" => $phone,
+        			"otp" => $otp
+        		];
+        
+        		$res = $new->add_temp_user($array);
+        
+        		if ($res == null) {
+        			$res = null;
+        		} else {
+        			$data = [
+        				"name" => "Register_OTP",
+        				"mobile" => $phone,
+        				"dat" => [
+        					"var1" => $fname,
+        					"var2" => $otp
+        				]
+        			];
+        
+        			if (($res = sendSms($data)) != null) {
+        
+        				return $this->respond([
+        					"status" => 200,
+        					"message" => "OK",
+        					"response" => $res,
+        					"otp" => $otp
+        				]);
+        			} else {
+        
+        				return $this->respond([
+        					"status" => 404,
+        					"message" => "Not Successful",
+        					"response" => $res,
+        					"otp" => "null"
+        				]);
+        			}
+        		}
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
+		}
+		
+		
 	}
 	//Function to generate and send SMS of Forgot Password OTP
 	public function forgot_sms(){

@@ -115,7 +115,37 @@ class AlertModel extends Model
 			return "Fail";
 		}
 
-	} 
+	}
+	
+	//--------------------------------------------------------GET ALL ALERTS STARTS---------------------------------------------------
+	//-----------------------------------------------------------***************------------------------------------------------------------    
+
+	public function all_alerts($id, $type,$status)
+	{
+
+		$builder = $this->db->table('alert_details');
+		$builder->select('alert_details.id,alert.alert_type,status,alert_sub.description,alert_details.created_on');
+		$builder->join('alert', 'alert_details.alert_id = alert.id');
+		$builder->join('alert_sub', 'alert_details.sub_id = alert_sub.id');
+		$builder->where('users_id', $id);
+		if($status > 0) {
+		    $builder->where('status', $status); // 1 >> Unread, 2 >> Read
+		}
+		
+		$builder->where('alert_sub.action', $type);
+		$query = $builder->get();
+
+		$res = $query->getResultArray();
+
+		if ($res != null) {
+			return $res;
+		} else {
+			return null;
+		}
+	}
+
+
+	//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
 
 
 }

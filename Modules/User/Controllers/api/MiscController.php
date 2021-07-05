@@ -23,21 +23,43 @@ class MiscController extends ResourceController
 	 */
 	public function get_sub_by_cat()
 	{
-		$id = $this->request->getJsonVar('id');
-		$cat = new SubcategoriesModel();
-		$res = $cat->get_by_cat($id);
-
-		if ($res != null) {
-			return $this->respond([
-				"status" => 200,
-				"message" => "Success",
-				"data" => $res
-			]);
-		} else {
-			return $this->respond([
-				"status" => 200,
-				"message" => "No Data to Show"
-			]);
+		$json = $this->request->getJSON();
+		if(!array_key_exists('id',$json) || !array_key_exists('key',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    $id = $json->id;
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+    		    $cat = new SubcategoriesModel();
+        		$res = $cat->get_by_cat($id);
+        
+        		if ($res != null) {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "Success",
+        				"data" => $res
+        			]);
+        		} else {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "No Data to Show"
+        			]);
+        		}
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
 		}
 	}
 
@@ -50,16 +72,15 @@ class MiscController extends ResourceController
 
 	public function getCat()
 	{
-		$json = ($this->request->getJSON() == "") ? array() : $this->request->getJSON();
-		
-		if(!array_key_exists('key',$json)) {
+		$validate_key = $this->request->getVar('key');
+		if($validate_key == "") {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
     		]);
 		}
 		else {
-		    $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
 		    
 		    $apiconfig = new \Config\ApiConfig();
 		
@@ -99,20 +120,44 @@ class MiscController extends ResourceController
 	
 	public function getSub()
 	{
-		$cat = new SubcategoriesModel();
-		$res = $cat->showAll();
-
-		if ($res != null) {
-			return $this->respond([
-				"status" => 200,
-				"message" => "Success",
-				"data" => $res
-			]);
-		} else {
-			return $this->respond([
-				"status" => 200,
-				"message" => "No Data to Show"
-			]);
+		$validate_key = $this->request->getVar('key');
+		if($validate_key == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
 		}
+		else {
+		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+		
+        		$cat = new SubcategoriesModel();
+        		$res = $cat->showAll();
+        
+        		if ($res != null) {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "Success",
+        				"data" => $res
+        			]);
+        		} else {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "No Data to Show"
+        			]);
+        		}
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
+		}		
 	}
 }

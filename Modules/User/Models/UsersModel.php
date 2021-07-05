@@ -137,5 +137,21 @@ class UsersModel extends Model
 			return 0;
 		}
 	}
+	
+	public function search_by_email_mobile($email,$mobile){
+	    $db      = \Config\Database::connect();
+	    
+        $builder = $db->table('users');
+        $query = $builder->select('*')
+                ->where('email', $email)
+                ->orWhere('userid', $mobile)
+                 ->get();
+        if($query->getRow() != '') {
+            return $query->getRow(); 
+        }
+	    else {
+	        return 'failure'; 
+	    }
+    }
 		
 }

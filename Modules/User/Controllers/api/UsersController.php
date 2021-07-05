@@ -57,169 +57,209 @@ class UsersController extends ResourceController
 
             //getting JSON data from API
             $json = $this->request->getJSON();
-
-            //JSON Objects declared into variables
-            $fname = $json->first_name;
-            $lname = $json->last_name;
-            $mobile = $json->mobile_no;
-            $email = $json->email_id;
-            $dob = $json->dob;
-            $gender = $json->gender;
-            $facebook_id = $json->facebook_id;
-            $twitter_id = $json->twitter_id;
-            $google_id = $json->google_id;
-            $password = $json->password;
-            $city = $json->city;
-            $state = $json->state;
-            $country = $json->country;
-            $zip = $json->postal_code;
-            $address = $json->address;
-            $latitude = $json->user_lat;
-            $longitude = $json->user_long;
-            $referral_id = $json->referral_id;
-
-            if (empty($referral_id)) {
-                $referral_id = "NoRef";
-            }
-
-            $re = $users_model->search_mobile($mobile);
-
-            if ($re == null) {
-
-                $res = $users_model->search_email($email);
-
-                if ($res == null) {
-
-
-                    //clause to check whether zip code exists
-
-                    $zip_id = $zip_model->search_by_zipcode($zip);
-
-                    if ($zip_id == 0) {
-
-                        $city_id = $city_model->search_by_city($city);
-
-                        if ($city_id == 0) {
-
-                            $state_id = $state_model->search_by_state($state);
-
-                            if ($state_id == 0) {
-
-                                $country_id = $country_model->search_by_country($country);
-
-                                if ($country_id == 0) {
-
-                                    $country_id = $country_model->create_country($country);
+            
+            if(!array_key_exists('first_name',$json) || !array_key_exists('last_name',$json) || !array_key_exists('mobile_no',$json) 
+                            || !array_key_exists('email_id',$json) || !array_key_exists('dob',$json) || !array_key_exists('gender',$json)
+                            || !array_key_exists('facebook_id',$json) || !array_key_exists('twitter_id',$json) 
+                            || !array_key_exists('google_id',$json) || !array_key_exists('password',$json) || !array_key_exists('city',$json)
+                            || !array_key_exists('state',$json) || !array_key_exists('country',$json) || !array_key_exists('postal_code',$json) 
+                            || !array_key_exists('address',$json) || !array_key_exists('user_lat',$json) || !array_key_exists('user_long',$json)
+                            || !array_key_exists('referral_id',$json) || !array_key_exists('key',$json)
+                            ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->user_key;
+    		    
+    		    if($key == $api_key) {
+                
+                    //JSON Objects declared into variables
+                    $fname = $json->first_name;
+                    $lname = $json->last_name;
+                    $mobile = $json->mobile_no;
+                    $email = $json->email_id;
+                    $dob = $json->dob;
+                    $gender = $json->gender;
+                    $facebook_id = $json->facebook_id;
+                    $twitter_id = $json->twitter_id;
+                    $google_id = $json->google_id;
+                    $password = $json->password;
+                    $city = $json->city;
+                    $state = $json->state;
+                    $country = $json->country;
+                    $zip = $json->postal_code;
+                    $address = $json->address;
+                    $latitude = $json->user_lat;
+                    $longitude = $json->user_long;
+                    $referral_id = $json->referral_id;
+        
+                    if (empty($referral_id)) {
+                        $referral_id = "NoRef";
+                    }
+                    
+                    $validate_user_result = $users_model->search_by_email_mobile($email,$mobile);
+                    //echo "<br> str ".$users_model->getLastQuery();exit;
+                    
+                    $existing_mobile = "";
+                    $existing_email = "";
+                    
+                    if($validate_user_result != 'failure') {
+                        $existing_mobile = $validate_user_result->userid;
+                        $existing_email = $validate_user_result->email;
+                    }
+                    
+                    /*echo "<pre>";
+                    print_r($validate_user_result);
+                    echo "</pre>";*/
+                    /*exit;*/
+                    //$re = $users_model->search_mobile($mobile);
+        
+                    if ($existing_mobile != $mobile) {
+        
+                        if ($existing_email != $email) {
+                            //clause to check whether zip code exists
+        
+                            $zip_id = $zip_model->search_by_zipcode($zip);
+        
+                            if ($zip_id == 0) {
+        
+                                $city_id = $city_model->search_by_city($city);
+        
+                                if ($city_id == 0) {
+        
+                                    $state_id = $state_model->search_by_state($state);
+        
+                                    if ($state_id == 0) {
+        
+                                        $country_id = $country_model->search_by_country($country);
+        
+                                        if ($country_id == 0) {
+        
+                                            $country_id = $country_model->create_country($country);
+                                        } else {
+        
+                                            $state_id = $state_model->create_state($state, $country_id);
+                                        }
+                                    } else {
+                                        $city_id = $city_model->create_city($city, $state_id);
+                                    }
                                 } else {
-
-                                    $state_id = $state_model->create_state($state, $country_id);
+                                    $zip_id = $zip_model->create_zip($zip, $city_id);
+                                }
+                            }
+        
+                            //name,flatno,apartment_name,landmark will be added later 
+                            //after observing the realtime data from google api
+        
+                            $data = [
+                                'name' => "",
+                                'flat' => "",
+                                'apartment' => "",
+                                'landmark' => "",
+                                'locality' => $address,
+                                'latitude' => $latitude,
+                                'longitude' => $longitude,
+                                'pin_code' => $zip_id
+                            ];
+        
+                            $address_id = $address_model->create_address($data);
+        
+                            if (empty($facebook_id)) {
+        
+                                if (empty($google_id)) {
+        
+                                    if (empty($twitter_id)) {
+                                        $reg_status = 1;
+                                    } else {
+                                        $reg_status = 4;
+                                    }
+                                } else {
+                                    $reg_status = 2;
                                 }
                             } else {
-                                $city_id = $city_model->create_city($city, $state_id);
+                                $reg_status = 3;
+                            }
+        
+                            $data1 = [
+        
+                                'fname' => $fname,
+                                'lname' => $lname,
+                                'mobile' => $mobile,
+                                'dob' => $dob,
+                                'gender'=>strtolower($gender),
+                                'reg_status' => $reg_status,
+                            ];
+        
+                            $users_id = $userdetails_model->create_user_details($data1);
+        
+                            $data2 = [
+                                'mobile' => $mobile,
+                                'password' => $password,
+                                'email' => $email,
+                                'facebook_id' => $facebook_id,
+                                'twitter_id' => $twitter_id,
+                                'users_id' => $users_id
+                            ];
+        
+                            $user_id = $users_model->create_user($data2);
+        
+                            if ($user_id) {
+        
+                                $aa = $address_model->update_address_by_id($address_id, ["users_id" => $user_id]);
+                                $bb = $this->create_ref($fname, $mobile, $referral_id, $user_id);
+                                $cc = $this->delete_temp($mobile);
+                                $dd = $userdetails_model->update_user_details($users_id, ['referral_id' => $bb['id']]);
+                                $ale = $alert_model->create_record([
+                                    "alert_id" => 4,
+                                    "sub_id" => 1,
+                                    "users_id" => $user_id
+                                ]);
+        
+                                if ($aa != 0 && $bb != null && $cc != 0 && $dd != null && $ale != null) {
+        
+                                    return $this->respond([
+                                        "status" => 200,
+                                        "message" => "User Successfully Created",
+                                        "user_id" => $user_id,
+                                        "referral_id" => $bb['referral_id']
+                                    ]);
+                                } else {
+        
+                                    return $this->respond([
+                                        "status" => 404,
+                                        "message" => "There is problem with address or referral_id"
+                                    ]);
+                                }
                             }
                         } else {
-                            $zip_id = $zip_model->create_zip($zip, $city_id);
-                        }
-                    }
-
-                    //name,flatno,apartment_name,landmark will be added later 
-                    //after observing the realtime data from google api
-
-                    $data = [
-                        'name' => "",
-                        'flat' => "",
-                        'apartment' => "",
-                        'landmark' => "",
-                        'locality' => $address,
-                        'latitude' => $latitude,
-                        'longitude' => $longitude,
-                        'pin_code' => $zip_id
-                    ];
-
-                    $address_id = $address_model->create_address($data);
-
-                    if (empty($facebook_id)) {
-
-                        if (empty($google_id)) {
-
-                            if (empty($twitter_id)) {
-                                $reg_status = 1;
-                            } else {
-                                $reg_status = 4;
-                            }
-                        } else {
-                            $reg_status = 2;
+                            $message = "Email Address Already Exists";
+                            return $this->respond([
+                                "status" => 409,
+                                "message" => $message
+                            ]);
                         }
                     } else {
-                        $reg_status = 3;
-                    }
-
-                    $data1 = [
-
-                        'fname' => $fname,
-                        'lname' => $lname,
-                        'mobile' => $mobile,
-                        'dob' => $dob,
-                        'gender'=>strtolower($gender),
-                        'reg_status' => $reg_status,
-                    ];
-
-                    $users_id = $userdetails_model->create_user_details($data1);
-
-                    $data2 = [
-                        'mobile' => $mobile,
-                        'password' => $password,
-                        'email' => $email,
-                        'facebook_id' => $facebook_id,
-                        'twitter_id' => $twitter_id,
-                        'users_id' => $users_id
-                    ];
-
-                    $user_id = $users_model->create_user($data2);
-
-                    if ($user_id) {
-
-                        $aa = $address_model->update_address_by_id($address_id, ["users_id" => $user_id]);
-                        $bb = $this->create_ref($fname, $mobile, $referral_id, $user_id);
-                        $cc = $this->delete_temp($mobile);
-                        $dd = $userdetails_model->update_user_details($users_id, ['referral_id' => $bb['id']]);
-                        $ale = $alert_model->create_record([
-                            "alert_id" => 4,
-                            "sub_id" => 1,
-                            "users_id" => $user_id
+                        $message = "User Already Exists with this Mobile Number";
+                        return $this->respond([
+                            "status" => 409,
+                            "message" => $message
                         ]);
-
-                        if ($aa != 0 && $bb != null && $cc != 0 && $dd != null && $ale != null) {
-
-                            return $this->respond([
-                                "status" => 201,
-                                "message" => "User Successfully Created",
-                                "user_id" => $user_id,
-                                "referral_id" => $bb['referral_id']
-                            ]);
-                        } else {
-
-                            return $this->respond([
-                                "status" => 404,
-                                "message" => "There is problem with address or referral_id"
-                            ]);
-                        }
                     }
-                } else {
-                    $message = "Email Address Already Exists";
-                    return $this->respond([
-                        "status" => 409,
-                        "message" => $message
-                    ]);
-                }
-            } else {
-                $message = "User Already Exists with this Mobile Number";
-                return $this->respond([
-                    "status" => 409,
-                    "message" => $message
-                ]);
+    		    }
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
             }
-        }
+        }    
     }
 
     //-----------------------------------------------NEW USER REGISTRATION ENDS------------------------------------------------------------
@@ -296,25 +336,47 @@ class UsersController extends ResourceController
      */
     public function update_pass()
     {
+        $json = $this->request->getJSON();
+        if(!array_key_exists('id',$json) || !array_key_exists('password',$json) || !array_key_exists('key',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $id = $json->id;
+    		$pass = $json->password;
+    		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+    
+        		$new = new UsersModel();
 
-        $new = new UsersModel();
-
-        $id = $this->request->getJsonVar("id");
-        $pass = $this->request->getJsonVar("password");
-
-        $res = $new->update_pass($id, $pass);
-
-        if ($res != 0) {
-            return $this->respond([
-                "status" => 200,
-                "message" => "Success"
-            ]);
-        } else {
-            return $this->respond([
-                "status" => 404,
-                "message" => "Not able to update Password"
-            ]);
-        }
+                $res = $new->update_pass($id, $pass);
+        
+                if ($res != 0) {
+                    return $this->respond([
+                        "status" => 200,
+                        "message" => "Success"
+                    ]);
+                } else {
+                    return $this->respond([
+                        "status" => 404,
+                        "message" => "Not able to update Password"
+                    ]);
+                }
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
+		}
     }
 
     //-------------------------------------------------------------FUNCTION ENDS ---------------------------------------------------------
@@ -332,28 +394,50 @@ class UsersController extends ResourceController
      */
     public function get_alerts()
     {
-
-        $alert = new AlertModel();
-        $id = $this->request->getJsonVar('id');
-        $type = $this->request->getJsonVar('type');
-
-        $res = $alert->unread_alerts($id, $type);
-
-        if ($res != null) {
-            return $this->respond([
-                "status" => 200,
-                "message" => "Success",
-                "data" => $res
-            ]);
-        } else {
-            return $this->respond([
-                "status" => 404,
-                "message" => "No Data to show"
-            ]);
-        }
+        $json = $this->request->getJSON();
+        if(!array_key_exists('id',$json) || !array_key_exists('type',$json) || !array_key_exists('status',$json) || !array_key_exists('key',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $id = $json->id;
+    		$type = $json->type;
+    		$status = $json->status;
+    		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+    
+        		$alert = new AlertModel();
+                
+                $res = $alert->all_alerts($id, $type,$status);
+        
+                if ($res != null) {
+                    return $this->respond([
+                        "status" => 200,
+                        "message" => "Success",
+                        "data" => $res
+                    ]);
+                } else {
+                    return $this->respond([
+                        "status" => 404,
+                        "message" => "No Data to show"
+                    ]);
+                }
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
+		}
     }
-
-
     //-------------------------------------------------------------FUNCTION ENDS ---------------------------------------------------------
 
 
@@ -361,23 +445,47 @@ class UsersController extends ResourceController
 
     public function update_alert()
     {
+        $json = $this->request->getJSON();
+        
+        if(!array_key_exists('id',$json) || !array_key_exists('key',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $id = $json->id;
+    		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+    
+        		$alerts = new AlertModel();
 
-        $alerts = new AlertModel();
-
-        $id = $this->request->getJsonVar('id');
-        $date = date('Y-m-d H:m:s', time());
-        $res = $alerts->update_alert($id, $date);
-
-        if ($res == "Success") {
-            return $this->respond([
-                "id" => 200,
-                "message" => "Successfully Updated"
-            ]);
-        } else {
-            return $this->respond([
-                "id" => 400,
-                "message" => "Failed to Update"
-            ]);
-        }
+                $date = date('Y-m-d H:m:s', time());
+                $res = $alerts->update_alert($id, $date);
+        
+                if ($res == "Success") {
+                    return $this->respond([
+                        "id" => 200,
+                        "message" => "Successfully Updated"
+                    ]);
+                } else {
+                    return $this->respond([
+                        "id" => 400,
+                        "message" => "Failed to Update"
+                    ]);
+                }
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
+		}
     }
 }
