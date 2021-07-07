@@ -8,6 +8,8 @@ use Modules\Admin\Models\CategoriesModel;
 use Modules\Admin\Models\SubcategoriesModel;
 use Modules\Admin\Models\KeywordsModel;
 
+helper('Modules\User\custom');
+
 class CategoryController extends ResourceController
 {
 
@@ -26,62 +28,50 @@ class CategoryController extends ResourceController
 	 * 
 	 */
 	public function add_category()
-	{
-
-		$cat = new CategoriesModel();
-
-		$name = $this->request->getVar('name');
-		$file = $this->request->getFile('image');
-		$image_name = $file->getName();
-
-		//Process for security to change extension of uploaded file. 
-		//If user uploads any file other than image file, validation will not proceed.
-
-		$image = '';
-
-		// (file_exists($file || is_uploaded_file($file))
-		if (isset($file) && !empty($file->getPath())) {
-
-			$type = $file->getMimeType();
-
-			if (in_array($type, array(
-				"image/jpg", "image/jpeg", "image/gif", "image/png"
-			))) {
-
-				if ($file->move("images", date("Y-m-d") . "_" . $image_name)) {
-
-					$image = "/images/" . date("Y-m-d") . "_" . $image_name;
-				} else {
-					return $this->respond([
-						"status" => 400,
-						"message" => "Unable to upload Image"
-					]);
-				}
-			} else {
-				return $this->respond([
-					"status" => 400,
-					"message" => "Please upload valid image file"
-				]);
-			}
-
-			$res = $cat->add_category($name, $image);
-
-			if ($res == "Success") {
-				return $this->respond([
-					"status" => 200,
-					"message" => "Category Successfully Created"
-				]);
-			} else {
-				return $this->respond([
-					"status" => 404,
-					"message" => "Failed to create New Category"
-				]);
-			}
-		} else {
-			return $this->respond([
-				"status" => 404,
-				"message" => "Please upload Image"
-			]);
+	{ 
+        $json = $this->request->getJSON();
+		if(!array_key_exists('name',$json) || !array_key_exists('image',$json) || !array_key_exists('key',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($json->key); //JXQ3txpXH34txjLfwnpnrVAF78zZEH27
+		    $name = $json->name;
+		    $file = $json->image;
+            $image = '';
+            
+            $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->admin_key;
+    		
+    		if($key == $api_key) {
+    		    if ($file != null) {
+                    $image = generateDynamicImage("images/categories",$file);
+                }
+                
+                $cat = new CategoriesModel();
+                $res = $cat->add_category($name, $image);
+        
+    			if ($res == "Success") {
+    				return $this->respond([
+    					"status" => 200,
+    					"message" => "Category Successfully Created"
+    				]);
+    			} else {
+    				return $this->respond([
+    					"status" => 404,
+    					"message" => "Failed to create New Category"
+    				]);
+    			}
+        	}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
 		}
 	}
 
@@ -98,17 +88,39 @@ class CategoryController extends ResourceController
 	 */
 	public function showCat()
 	{
-
-		$cat = new CategoriesModel();
-		$res = $cat->showAll();
-
-		return $this->respond([
-			"status" => 200,
-			"message" => "Success",
-			"data" => $res
-		]);
-	}
-
+        $json = $this->request->getJSON();
+		if(!array_key_exists('key',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    
+		    $key = md5($json->key); //JXQ3txpXH34txjLfwnpnrVAF78zZEH27
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->admin_key;
+    
+        if($key == $api_key) {
+    		$cat = new CategoriesModel();
+    		$res = $cat->showAll();
+    
+    		return $this->respond([
+    			"status" => 200,
+    			"message" => "Success",
+    			"data" => $res
+    		]);
+        }
+        
+        else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
+		}
+}
 	/**
 	 * Update Categories
 	 * 
@@ -119,83 +131,80 @@ class CategoryController extends ResourceController
 	 */
 	public function updateCat()
 	{
-
-		$cat = new CategoriesModel();
-
-		$id = $this->request->getVar('id');
-
-		if (($cat->search($id) != null)) {
-
-			$name = $this->request->getVar('name');
-			$file = $this->request->getFile('image');
-			$image_name = $file->getName();
-
-			//Process for security to change extension of uploaded file. 
-			//If user uploads any file other than image file, validation will not proceed.
-
-			$image = '';
-
-			// (file_exists($file || is_uploaded_file($file))
-			if (isset($file) && !empty($file->getPath())) {
-
-				$type = $file->getMimeType();
-
-				if (in_array($type, array(
-					"image/jpg", "image/jpeg", "image/gif", "image/png"
-				))) {
-
-					if ($file->move("images", date("Y-m-d") . "_" . $image_name)) {
-
-						$image = "/images/" . date("Y-m-d") . "_" . $image_name;
-					} else {
-						return $this->respond([
-							"status" => 400,
-							"message" => "Unable to upload Image"
-						]);
-					}
-				} else {
-					return $this->respond([
-						"status" => 400,
-						"message" => "Please upload valid image file"
-					]);
-				}
-			}
-
-			if ($image == null && $name != null) {
-
-				$array = [
-					"category" => $name
-				];
-			} elseif ($name == null && $image != null) {
-				$array = [
-					"image" => $image
-				];
-			} elseif ($image != null && $name !== null) {
-				$array = [
-					"category" => $name,
-					"image" => $image
-				];
-			}
-
-			$res = $cat->update_cat($id, $array);
-
-			if ($res == "Succesfully Updated") {
-
-				return $this->respond([
-					"status" => 200,
-					"message" => $res
-				]);
-			} else {
-				return $this->respond([
-					"status" => 400,
-					"message" => $res
-				]);
-			}
-		} else {
-			return $this->respond([
-				"status" => 404,
-				"message" => "Category Not Found"
-			]);
+        $json = $this->request->getJSON();
+		if(!array_key_exists('id',$json) || !array_key_exists('key',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($json->key); //JXQ3txpXH34txjLfwnpnrVAF78zZEH27
+		    $id = $json->id;
+		    $name = "";
+		    $file = "";
+            $image = '';
+            
+            $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->admin_key;
+    		
+    		if($key == $api_key) {
+    		    if (array_key_exists('image',$json)) {
+                    $file = $json->image;
+                }
+                if (array_key_exists('name',$json)) {
+                    $name = $json->name;
+                }
+            
+    		    $cat = new CategoriesModel();
+    		    if (($cat->search($id) != null)) {
+    		        if ($file != null) {
+                        $image = generateDynamicImage("images/categories",$file);
+                    }
+                    
+                    if ($image == null && $name != null) {
+                        $array = [
+        					"category" => $name
+        				];
+        			} elseif ($name == null && $image != null) {
+        				$array = [
+        					"image" => $image
+        				];
+        			} elseif ($image != null && $name !== null) {
+        				$array = [
+        					"category" => $name,
+        					"image" => $image
+        				];
+        			}
+    
+    			    $res = $cat->update_cat($id, $array);
+            
+        			if ($res == "Succesfully Updated") {
+                        return $this->respond([
+        					"status" => 200,
+        					"message" => $res
+        				]);
+        			} else {
+        				return $this->respond([
+        					"status" => 400,
+        					"message" => $res
+        				]);
+        			}
+    		    }
+    		    else {
+    		        return $this->respond([
+        				"status" => 404,
+        				"message" => "Category Not Found"
+        			]);
+    		    }
+        	}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
 		}
 	}
 
@@ -211,30 +220,71 @@ class CategoryController extends ResourceController
 
 	public function deleteCat()
 	{
-		$cat = new CategoriesModel();
-		$id = $this->request->getVar('id');
-
-		if ($cat->search($id) != null) {
-
-			if (($res = $cat->delete_cat($id)) == "Successfully Deleted") {
-				return $this->respond([
-					"status" => 200,
-					"message" => $res
-				]);
-			} else {
-				return $this->respond([
-					"status" => 400,
-					"message" => $res
-				]);
-			}
-		} else {
-
-			return $this->respond([
-				"status" => 400,
-				"message" => "No Category Found with this ID"
-			]);
+	    $json = $this->request->getJSON();
+		if(!array_key_exists('id',$json) || !array_key_exists('key',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    
+		    $key = md5($json->key); //JXQ3txpXH34txjLfwnpnrVAF78zZEH27
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->admin_key;
+            if($key == $api_key) {
+            $id = $json->id;
+		    $cat = new CategoriesModel();
+		    $subcat = new SubcategoriesModel();
+		    
+		    //$id = $this->request->getVar('id');
+            
+    		if ($cat->search($id) != null) {
+                if ($subcat->search_catid($id) != null) {
+                if (($res = $subcat->delete_by_cat($id)) == "Successfully Sub category Deleted") {
+                    if (($res = $cat->delete_cat($id)) == "Successfully category Deleted") {
+    				return $this->respond([
+    					"status" => 200,
+    					"message" => $res
+    				]);
+    			} else {
+    				return $this->respond([
+    					"status" => 400,
+    					"message" => $res
+    				]);
+    			}
+    			
+    		} 
+    		}
+    		else {
+                if (($res = $cat->delete_cat($id)) == "Successfully category Deleted") {
+    			return $this->respond([
+    					"status" => 200,
+    					"message" => $res
+    			]);
+    		    }
+    			
+            }
+    		}
+            else {
+    
+    			return $this->respond([
+    				"status" => 400,
+    				"message" => "No Category Found with this ID"
+    			]);
+    		}
+            }
+        else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
 		}
 	}
+
 
 	//------------------------------------------- CATEGORY PART END ---------------------------------------------------------------------
 	//--------------------------------------------*****************----------------------------------------------------------------------

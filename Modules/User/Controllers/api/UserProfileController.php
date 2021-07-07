@@ -25,7 +25,7 @@ class UserProfileController extends ResourceController
      * @param int $id
      * @return [JSON]
      */
-   public function show_user()
+    public function show_user()
     {
         $json = $this->request->getJSON();
         if(!array_key_exists('id',$json) || !array_key_exists('key',$json)) {
@@ -115,7 +115,7 @@ class UserProfileController extends ResourceController
     		}
         
 		}
-    
+    }
 
     //--------------------------------------------------GET USER DETAILS ENDS------------------------------------------------------------
 
@@ -224,21 +224,49 @@ class UserProfileController extends ResourceController
 
 //--------------------------------------------------DELETE USER ADDRESS START------------------------------------------------------------
 
-public function delete_address(){
+public function delete_address()
+{
     
-    $con = new AddressModel();
-
-    $id = $this->request->getJsonVar('id');
-
-    if($con->delete_address($id) != 0){
-        return $this->respond([
-            "status" => 200,
-            "message" =>  "Successfully Deleted"
-        ]);
+    $json = $this->request->getJSON();
+    if(!array_key_exists('id',$json) || !array_key_exists('key',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+    else
+    {
+        $id = $this->request->getJsonVar('id');
+        $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		$apiconfig = new \Config\ApiConfig();
+		
+    	$api_key = $apiconfig->user_key;
+    		$con = new AddressModel();
+        	if($key == $api_key)
+        	{
+            
+            $id = $json->id;
+            if($con->delete_address($id) != 0){
+            return $this->respond([
+                "status" => 200,
+                "message" =>  "Successfully Deleted"
+            ]);
+           }
+            else{
+            return $this->respond([
+                        "status" => 400,
+                        "message" =>  "Failed to delete"
+                    ]);
+            }
+            }
+        else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
     }
 }
-
-//--------------------------------------------------DELETE USER ADDRESS END------------------------------------------------------------
-
-
 }
+//--------------------------------------------------DELETE USER ADDRESS END------------------------------------------------------------

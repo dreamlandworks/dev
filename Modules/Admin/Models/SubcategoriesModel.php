@@ -76,6 +76,16 @@ class SubcategoriesModel extends Model
 			return Null;
 		}
 	}
+	
+	public function search_catid($id)
+	{
+		if(($res = $this->where('category_id', $id)->first()) != null){
+			return $res;
+		}
+		else{
+			return Null;
+		}
+	}
 
 	public function get_by_cat($category_id){
 		
@@ -115,6 +125,16 @@ class SubcategoriesModel extends Model
 		}
 		else{
 			return "Failed to Delete";
+		}
+	}
+	
+	public function delete_by_cat($category_id){
+		
+		if($this->where('category_id', $category_id)->delete()){
+			return "Successfully Sub category Deleted";;
+		}
+		else{
+			return null;
 		}
 	}
 

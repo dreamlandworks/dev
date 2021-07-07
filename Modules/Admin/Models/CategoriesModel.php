@@ -90,7 +90,7 @@ class CategoriesModel extends Model
 
 	public function delete_cat($id){
 		if($this->delete($id)){
-			return "Successfully Deleted";
+			return "Successfully category Deleted";
 		}
 		else{
 			return "Failed to Delete";

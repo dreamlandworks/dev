@@ -197,10 +197,26 @@ class SmsController extends ResourceController
 	//Function to generate and send SMS of Forgot Password OTP
 	public function forgot_sms(){
 
-		
-		$mobile = $this->request->getJsonVar('mobile');
+		$json = $this->request->getJSON();
+        if(!array_key_exists('mobile',$json) || !array_key_exists('key',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else{
+		//$mobile = $this->request->getJsonVar('mobile');
+		$mobile = $json->mobile;
 		
 		$new = new UsersModel();
+		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		$apiconfig = new \Config\ApiConfig();
+		
+    	$api_key = $apiconfig->user_key;
+    		
+    	if($key == $api_key)
+    	{
 		if(($rep = $new->search_mobile($mobile)) != null ){
 
 			$name = 'User';
@@ -242,6 +258,13 @@ class SmsController extends ResourceController
 				"message" => "User Not Found",
 				]);
 		}
+    	}
+    	else{
+    	    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    	}
 	}
-
+}
 }

@@ -42,3 +42,26 @@ function generateImage($img)
     file_put_contents($file, $image_base64);
     return "images/" . $name;
 }
+
+/**
+ *  Function to generate Image File from Base64
+ * 
+ *  Just pass the Image String to the function
+ * 
+ *  @param mixed $img
+ * 
+ *  @return [String] File Name
+ */
+function generateDynamicImage($folder,$img)
+{
+
+    $folderPath = "./".$folder.'/';
+    // $image_parts = explode(";base64,", $img);
+    // $image_type_aux = explode("./images/", $image_parts[0]);
+    $image_base64 = base64_decode($img);
+    $name = date('Ymd') . uniqid() . '.png';
+    $file = $folderPath . $name;
+    file_put_contents($file, $image_base64);
+    return '/'.$folder."/".$name;
+}
+
