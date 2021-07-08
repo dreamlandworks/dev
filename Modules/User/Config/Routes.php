@@ -23,12 +23,13 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     $routes->get("cat", "MiscController::getCat"); //Get all the Categories
     $routes->get("subcat", "MiscController::getSub"); //Get all the Sub-Categories
     $routes->post("subcat/id", "MiscController::get_sub_by_cat"); //Get Sub-Categories by Category ID
+    $routes->get("keywords", "MiscController::get_keywords"); //Get Sub-Categories by Category ID
 
     //Routes pertaining to Alerts
     $routes->post("alerts/get","UsersController::get_alerts");// Get Unread Alerts by ID
     $routes->post("alerts/update","UsersController::update_alert");// Update Alerts Status to read by ID
     
-    $routes->post("testkey", "TestController::testkey");
+   
 
    
 });

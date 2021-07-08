@@ -44,17 +44,6 @@ class UsersController extends ResourceController
                 "message" => "Method Not Allowed"
             ]);
         } else {
-
-            //creating New Models
-            $zip_model = new ZipcodeModel();
-            $city_model = new CityModel();
-            $state_model = new StateModel();
-            $country_model = new CountryModel();
-            $address_model = new AddressModel();
-            $userdetails_model = new UserDetailsModel();
-            $users_model = new UsersModel();
-            $alert_model = new AlertModel();
-
             //getting JSON data from API
             $json = $this->request->getJSON();
             
@@ -78,6 +67,15 @@ class UsersController extends ResourceController
     		    $api_key = $apiconfig->user_key;
     		    
     		    if($key == $api_key) {
+    		        //creating New Models
+                    $zip_model = new ZipcodeModel();
+                    $city_model = new CityModel();
+                    $state_model = new StateModel();
+                    $country_model = new CountryModel();
+                    $address_model = new AddressModel();
+                    $userdetails_model = new UserDetailsModel();
+                    $users_model = new UsersModel();
+                    $alert_model = new AlertModel();
                 
                     //JSON Objects declared into variables
                     $fname = $json->first_name;

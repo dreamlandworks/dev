@@ -5,6 +5,7 @@ namespace Modules\User\Controllers\api;
 use CodeIgniter\RESTful\ResourceController;
 use Modules\Admin\Models\CategoriesModel;
 use Modules\Admin\Models\SubcategoriesModel;
+use Modules\User\Models\keywordModel;
 
 class MiscController extends ResourceController
 {
@@ -138,6 +139,49 @@ class MiscController extends ResourceController
 		
         		$cat = new SubcategoriesModel();
         		$res = $cat->showAll();
+        
+        		if ($res != null) {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "Success",
+        				"data" => $res
+        			]);
+        		} else {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "No Data to Show"
+        			]);
+        		}
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
+		}		
+	}
+	
+	public function get_keywords()
+	{
+		$validate_key = $this->request->getVar('key');
+		if($validate_key == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+		
+        		$keyword = new keywordModel();
+        		$res = $keyword->showAll();
         
         		if ($res != null) {
         			return $this->respond([
