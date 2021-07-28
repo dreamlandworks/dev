@@ -165,6 +165,51 @@ class MiscController extends ResourceController
 	public function get_keywords()
 	{
 		$validate_key = $this->request->getVar('key');
+		$subcategories_id = $this->request->getVar('subcat_id');
+		if($validate_key == "" || $subcategories_id == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+		        
+        		$keyword = new keywordModel();
+        		$res = $keyword->showAll($subcategories_id);
+        
+        		if ($res != null) {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "Success",
+        				"data" => $res
+        			]);
+        		} else {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "No Data to Show",
+        				"data" => array()
+        			]);
+        		}
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
+		}		
+	}
+	
+	public function get_keywords_autocomplete()
+	{
+		$validate_key = $this->request->getVar('key');
 		if($validate_key == "") {
 		    return $this->respond([
     				'status' => 403,
@@ -181,7 +226,7 @@ class MiscController extends ResourceController
     		if($key == $api_key) {
 		
         		$keyword = new keywordModel();
-        		$res = $keyword->showAll();
+        		$res = $keyword->get_keywords();
         
         		if ($res != null) {
         			return $this->respond([

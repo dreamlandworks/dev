@@ -10,6 +10,7 @@ use Modules\Admin\Models\KeywordsModel;
 
 helper('Modules\User\custom');
 
+
 class CategoryController extends ResourceController
 {
 
@@ -158,7 +159,14 @@ class CategoryController extends ResourceController
                 }
             
     		    $cat = new CategoriesModel();
-    		    if (($cat->search($id) != null)) {
+    		    $category =$cat->search($id);
+    		  //  $existing_image = $category['image'];
+    		  //  $path=$_SERVER['SERVER_NAME'];
+    		  //  $path = $path.$existing_image;
+    		  //  unlink('dev.satrango.com/images/categories/2021071460eef2ac8d288.png');
+    		  //  exit;
+    		    if ($category != null) {
+    		       
     		        if ($file != null) {
                         $image = generateDynamicImage("images/categories",$file);
                     }

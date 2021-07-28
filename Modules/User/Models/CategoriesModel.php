@@ -63,7 +63,8 @@ class CategoriesModel extends Model
 	}
 	
 	public function showAll(){
-		return $this->findAll();
+		return $this->where('status', 'Active')
+                   ->findAll();
 	}
 
 

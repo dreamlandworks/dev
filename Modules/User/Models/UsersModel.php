@@ -153,5 +153,24 @@ class UsersModel extends Model
 	        return 'failure'; 
 	    }
     }
+    
+    public function validate_user($email,$mobile){
+	    $db      = \Config\Database::connect();
+	    
+        $builder = $db->table('users');
+        $builder->select('id');
+        $builder->where('userid', $mobile);
+        if($email != "") {
+            $builder->where('email', $email);
+        }    
+        $query = $builder->get();
+                
+        if($query->getRow() != '') {
+            return $query->getRow(); 
+        }
+	    else {
+	        return 'failure'; 
+	    }
+    }
 		
 }

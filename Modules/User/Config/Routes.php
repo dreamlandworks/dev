@@ -6,6 +6,7 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     $routes->post("login", "LoginController::login"); // User Login API   
     $routes->post("newuser", "UsersController::new_user"); //For New User Registration API
     $routes->post("changepwd", "UsersController::update_pass"); //For Change Password API
+    $routes->post("verify", "LoginController::verify"); // User Verification API   
     
     //Routes pertaining to User Profile, Updation and Address Deletion
     $routes->post("show", "UserProfileController::show_user"); //Get User Data by ID
@@ -24,6 +25,7 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     $routes->get("subcat", "MiscController::getSub"); //Get all the Sub-Categories
     $routes->post("subcat/id", "MiscController::get_sub_by_cat"); //Get Sub-Categories by Category ID
     $routes->get("keywords", "MiscController::get_keywords"); //Get Sub-Categories by Category ID
+    $routes->get("autocomplete", "MiscController::get_keywords_autocomplete"); //Get keyword and Sub-Categories
 
     //Routes pertaining to Alerts
     $routes->post("alerts/get","UsersController::get_alerts");// Get Unread Alerts by ID

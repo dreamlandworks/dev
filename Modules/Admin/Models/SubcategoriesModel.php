@@ -63,13 +63,13 @@ class SubcategoriesModel extends Model
 
 	public function showAll()
 	{
-		return $this->findAll();
+		return $this->where('status', 'Active')->findAll();
 	}
 
 
 	public function search($id)
 	{
-		if(($res = $this->where('id', $id)->first()) != null){
+		if(($res = $this->where('id', $id)->where('status', 'Active')->first()) != null){
 			return $res;
 		}
 		else{
@@ -79,7 +79,7 @@ class SubcategoriesModel extends Model
 	
 	public function search_catid($id)
 	{
-		if(($res = $this->where('category_id', $id)->first()) != null){
+		if(($res = $this->where('category_id', $id)->where('status', 'Active')->first()) != null){
 			return $res;
 		}
 		else{
@@ -89,7 +89,7 @@ class SubcategoriesModel extends Model
 
 	public function get_by_cat($category_id){
 		
-		if(($res = $this->where('category_id', $category_id)->showAll()) != null){
+		if(($res = $this->where('category_id', $category_id)->where('status', 'Active')->showAll()) != null){
 			return $res;
 		}
 		else{
@@ -99,7 +99,7 @@ class SubcategoriesModel extends Model
 
 	public function search_by_name($name)
 	{
-		if(($res = $this->where('sub_name', $name)->first()) != null){
+		if(($res = $this->where('sub_name', $name)->where('status', 'Active')->first()) != null){
 			return $res;
 		}
 		else{
