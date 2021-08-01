@@ -31,9 +31,9 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     $routes->post("alerts/get","UsersController::get_alerts");// Get Unread Alerts by ID
     $routes->post("alerts/update","UsersController::update_alert");// Update Alerts Status to read by ID
     
-   
+    //Routes pertaining to Search
+    $routes->post("search_result","SearchProvider::search_result");// Get List of SP matching the keyword and city
 
-   
 });
 
 $routes->group("",["namespace" => "\Modules\User\Controllers\web"],function($routes){

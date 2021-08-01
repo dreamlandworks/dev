@@ -57,6 +57,7 @@ class UserProfileController extends ResourceController
         if (($user = $con->search_user($id)) != null) {
 
             $email = $user['email'];
+            $sp_activated = $user['sp_activated'];
 
             //Get User Details
             if (($res = $con1->user_details_by_id($id)) != 0) {
@@ -97,7 +98,8 @@ class UserProfileController extends ResourceController
                 "dob" => $dob,
                 "profile_pic" => $profile_pic,
                 "referral_id" => $referral_id,
-                "address" => $address
+                "address" => $address,
+                "sp_activated" => $sp_activated
             ];
 
             return $this->respond([

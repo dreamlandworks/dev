@@ -11,5 +11,7 @@ $routes->group("provider", ["namespace" => "\Modules\Provider\Controllers\api"],
     
     $routes->post("confirm_activation", "Activation::confirm_activation"); //For SP Registration API
     $routes->post("video_verification", "Activation::video_verification"); //For SP Registration video verificationAPI
+    
+    $routes->post("update_location", "Location::update_location"); //For SP Location Update API
 
 });

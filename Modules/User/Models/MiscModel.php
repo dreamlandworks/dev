@@ -39,7 +39,40 @@ function get_login_activity($id)
 }
 //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
 
+//---------------------------------------------------GET Search Results STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_search_results($keyword_id,$city)
+{
 
+    $builder = $this->db->table('sp_location');
+    $builder->select('sp_location.*, user_details.*,sp_det.about_me,qualification,list_profession.name as profession,exp,
+                      per_hour,per_day,min_charges,extra_charge');
+    $builder->join('user_details', 'user_details.id = sp_location.users_id');
+    $builder->join('users', 'users.users_id = user_details.id AND users.users_id = sp_location.users_id');
+    $builder->join('sp_det', 'sp_det.users_id = sp_location.users_id AND sp_det.users_id = user_details.id');
+    $builder->join('sp_skill', 'sp_skill.users_id = sp_location.users_id AND sp_skill.users_id = user_details.id');
+    $builder->join('tariff', 'tariff.users_id = sp_location.users_id AND tariff.users_id = user_details.id');
+    $builder->join('sp_qual', 'sp_qual.id = sp_det.qual_id');
+    $builder->join('list_profession', 'list_profession.id = sp_det.profession_id');
+    $builder->join('sp_exp', 'sp_exp.id = sp_det.exp_id');
+    $builder->join('city', 'city.id = sp_location.city');
+    $builder->where('sp_location.id in (select max(id) from sp_location group by users_id)');
+    $builder->where('keywords_id',$keyword_id);
+    $builder->where('city.city',$city);
+    //$builder->where('sp_activated',3);
+    //$builder->where('online_status_id',1);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = $builder->countAllResults();
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
 
 
 
