@@ -4,7 +4,13 @@ namespace Modules\User\Controllers\api;
 
 use CodeIgniter\RESTful\ResourceController;
 use Config\Mimes;
-//Models required for registration
+
+use Modules\User\Models\keywordModel;
+use Modules\User\Models\AddressModel;
+use Modules\User\Models\ZipcodeModel;
+use Modules\User\Models\CityModel;
+use Modules\User\Models\StateModel;
+use Modules\User\Models\CountryModel;
 use Modules\Provider\Models\CommonModel;
 use Modules\User\Models\MiscModel;
 
@@ -36,7 +42,8 @@ class SearchProvider extends ResourceController
             //getting JSON data from API
             $json = $this->request->getJSON();
             
-            if(!array_key_exists('keyword_id',$json) || !array_key_exists('city',$json) 
+            
+            if(!array_key_exists('keyword_id',$json) || !array_key_exists('city',$json) //keyword_id == search_phrase_id
                 || !array_key_exists('state',$json) || !array_key_exists('country',$json) || !array_key_exists('postal_code',$json) 
                 || !array_key_exists('address',$json) || !array_key_exists('user_lat',$json) || !array_key_exists('user_long',$json)
                 || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
@@ -57,25 +64,79 @@ class SearchProvider extends ResourceController
                     //JSON Objects declared into variables
                     $keyword_id = $json->keyword_id ;
                     $city = $json->city;
-                    $latitude = $json->user_lat;
-                    $longitude = $json->user_long;
-                    $users_id= $json->users_id;
+                    
+                    $zip_model = new ZipcodeModel();
+                    $city_model = new CityModel();
+                    $state_model = new StateModel();
+                    $country_model = new CountryModel();
+                    
+                    $country_id = $country_model->search_by_country($json->country);
+    		        $state_id = $state_model->search_by_state($json->state);
+    		        $city_id = $city_model->search_by_city($json->city);
+    		        $zip_id = $zip_model->search_by_zipcode($json->postal_code);
+        
+                    if ($country_id == 0) {
+                        $country_id = $country_model->create_country($json->country);
+                    }
+    		        if ($state_id == 0) {
+                        $state_id = $state_model->create_state($json->state, $country_id);
+                    }
+    		        if ($city_id == 0) {
+    		            $city_id = $city_model->create_city($json->city, $state_id);
+                    }
+                    if ($zip_id == 0) {
+                        $zip_id = $zip_model->create_zip($json->postal_code, $city_id);
+                    }
+                    //JSON Objects declared into variables
+                    $data = [
+                        'locality' => $json->address,
+                        'latitude' => $json->user_lat,
+                        'longitude' => $json->user_long,
+                        'city_id' => $city_id,
+                        'state_id' => $state_id,
+                        'country_id' => $country_id,
+                        'zipcode_id' => $zip_id,
+                        'users_id' => $json->users_id
+                    ];
+                    $common = new CommonModel();
+                    $temp_address_id = $common->insert_records_dynamically('user_temp_address', $data);
                     
                     $misc_model = new MiscModel();
         
                     //Check whether any SP is available, if yes process the details
                     $arr_search_result = $misc_model->get_search_results($keyword_id,$city);
                     
+                    //Save to search_results
+                    //JSON Objects declared into variables
+                    $data = [
+                        'keywords_id' => ($keyword_id > 0) ? $keyword_id : 0,
+                        'search_query' => ($keyword_id > 0) ? "" : $keyword_id,
+                        'results_show' => ($arr_search_result != 'failure') ? count($arr_search_result) : 0,
+                        'latitude' => $json->user_lat,
+                        'longitude' => $json->user_long,
+                        'users_id' => $json->users_id,
+                        'city' => $city,
+                        'state' => $json->state,
+                        'country' => $json->country,
+                        'postal_code' => $json->postal_code,
+                        'address' => $json->address,
+                    ];
+                    $search_results_id = $common->insert_records_dynamically('search_results', $data);
+                    
                     if ($arr_search_result != 'failure') {
-            			return $this->respond([
+                        return $this->respond([
             				"status" => 200,
             				"message" => "Success",
-            				"data" => $arr_search_result
+            				"data" => $arr_search_result,
+            				"search_results_id" => $search_results_id,
+            				"temp_address_id" => $temp_address_id
             			]);
             		} else {
             			return $this->respond([
             				"status" => 200,
-            				"message" => "No Data to Show"
+            				"message" => "No Data to Show",
+            				"search_results_id" => $search_results_id,
+            				"temp_address_id" => $temp_address_id
             			]);
             		}
         		}
@@ -89,230 +150,6 @@ class SearchProvider extends ResourceController
         }    
     }
 
-    //-----------------------------------------------NEW USER REGISTRATION ENDS------------------------------------------------------------
+    //-----------------------------------------------SEARCH RESULT ENDS------------------------------------------------------------
 
-
-    //--------------------------------------------------CREATE REFERRAL ID STARTS------------------------------------------------------------
-
-    /**
-     * Function to Create Referral ID
-     * 
-     * @param mixed $fname
-     * @param mixed $mobile
-     * @param mixed $referred_by
-     * @param mixed $user_id
-     *  
-     * @return [Array] -> Referral ID | Null
-     */
-    public function create_ref($fname, $mobile, $referred_by, $user_id)
-    {
-        //output -> referral_id (first four letters of fname + first four numbers of mobile) for uniqueness
-        //		 -> referred_by (referral id of person referred)
-        // 		 -> User_id for user
-        $db = new ReferralModel();
-        //$referral_id = substr($fname, 0, 4) . substr($mobile, 0, 4);
-        $referral_id = $mobile;
-        $data = [
-            "referral_id" => $referral_id,
-            "referred_by" => $referred_by,
-            "user_id" => $user_id
-        ];
-
-        if (($res = $db->creat_ref($data)) != 0) {
-            return $res;
-        } else {
-            return null;
-        }
-    }
-
-    //--------------------------------------------------FUNCTION ENDS ---------------------------------------------------------------------
-
-    //--------------------------------------------------DELETE TEMPORARY USER STARTS HERE ------------------------------------------------- 
-    /**
-     * Function to delete Temporary Users
-     * 
-     * Call this function with 'id' deletes temporary users
-     * @param string $mobile
-     * 
-     * @return [Int] -> 0|1
-     */
-    public function delete_temp($mobile = null)
-    {
-        $new = new TempUserModel();
-        $res = $new->delete_temp($mobile);
-        if ($res != 0) {
-            return $res;
-        } else {
-            return 0;
-        }
-    }
-
-
-    //--------------------------------------------------FUNCTION ENDS ---------------------------------------------------------------------
-
-    //--------------------------------------------------UPDATE USER PASSWORD STARTS HERE ------------------------------------------------- 
-
-
-    /**
-     * Function to update password
-     * 
-     * Call to this function to change user password
-     * @param int $id, @param mixed $password
-     * @method POST
-     * @return [JSON]
-     */
-    public function update_pass()
-    {
-        $json = $this->request->getJSON();
-        if(!array_key_exists('id',$json) || !array_key_exists('password',$json) || !array_key_exists('key',$json)) {
-		    return $this->respond([
-    				'status' => 403,
-                    'message' => 'Invalid Parameters'
-    		]);
-		}
-		else {
-		    $id = $json->id;
-    		$pass = $json->password;
-    		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
-		    
-		    $apiconfig = new \Config\ApiConfig();
-		
-    		$api_key = $apiconfig->user_key;
-    		
-    		if($key == $api_key) {
-    
-        		$new = new UsersModel();
-
-                $res = $new->update_pass($id, $pass);
-        
-                if ($res != 0) {
-                    return $this->respond([
-                        "status" => 200,
-                        "message" => "Success"
-                    ]);
-                } else {
-                    return $this->respond([
-                        "status" => 404,
-                        "message" => "Not able to update Password"
-                    ]);
-                }
-    		}
-    		else {
-    		    return $this->respond([
-        				'status' => 403,
-                        'message' => 'Access Denied ! Authentication Failed'
-        			]);
-    		}
-		}
-    }
-
-    //-------------------------------------------------------------FUNCTION ENDS ---------------------------------------------------------
-
-
-    //---------------------------------------------------------RETRIEVE USER ALERTS HERE ------------------------------------------------- 
-
-    /**
-     * Retrieves User Alerts based on ID & TYPE
-     * 
-     * This function will be used to get alerts based on user id & action type
-     * @param int $id = User Id
-     * @param int $type = 1|2 => 1 for Non Actionable & 2 for Actionable
-     * @return string [JSON] => ID, Alert Type, Description, Created ons
-     */
-    public function get_alerts()
-    {
-        $json = $this->request->getJSON();
-        if(!array_key_exists('id',$json) || !array_key_exists('type',$json) || !array_key_exists('status',$json) || !array_key_exists('key',$json)) {
-		    return $this->respond([
-    				'status' => 403,
-                    'message' => 'Invalid Parameters'
-    		]);
-		}
-		else {
-		    $id = $json->id;
-    		$type = $json->type;
-    		$status = $json->status;
-    		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
-		    
-		    $apiconfig = new \Config\ApiConfig();
-		
-    		$api_key = $apiconfig->user_key;
-    		
-    		if($key == $api_key) {
-    
-        		$alert = new AlertModel();
-                
-                $res = $alert->all_alerts($id, $type,$status);
-        
-                if ($res != null) {
-                    return $this->respond([
-                        "status" => 200,
-                        "message" => "Success",
-                        "data" => $res
-                    ]);
-                } else {
-                    return $this->respond([
-                        "status" => 404,
-                        "message" => "No Data to show"
-                    ]);
-                }
-    		}
-    		else {
-    		    return $this->respond([
-        				'status' => 403,
-                        'message' => 'Access Denied ! Authentication Failed'
-        			]);
-    		}
-		}
-    }
-    //-------------------------------------------------------------FUNCTION ENDS ---------------------------------------------------------
-
-
-    //---------------------------------------------------------UPDATE ALERTS STATUS HERE ------------------------------------------------- 
-
-    public function update_alert()
-    {
-        $json = $this->request->getJSON();
-        
-        if(!array_key_exists('id',$json) || !array_key_exists('key',$json)) {
-		    return $this->respond([
-    				'status' => 403,
-                    'message' => 'Invalid Parameters'
-    		]);
-		}
-		else {
-		    $id = $json->id;
-    		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
-		    
-		    $apiconfig = new \Config\ApiConfig();
-		
-    		$api_key = $apiconfig->user_key;
-    		
-    		if($key == $api_key) {
-    
-        		$alerts = new AlertModel();
-
-                $date = date('Y-m-d H:m:s', time());
-                $res = $alerts->update_alert($id, $date);
-        
-                if ($res == "Success") {
-                    return $this->respond([
-                        "id" => 200,
-                        "message" => "Successfully Updated"
-                    ]);
-                } else {
-                    return $this->respond([
-                        "id" => 400,
-                        "message" => "Failed to Update"
-                    ]);
-                }
-    		}
-    		else {
-    		    return $this->respond([
-        				'status' => 403,
-                        'message' => 'Access Denied ! Authentication Failed'
-        			]);
-    		}
-		}
-    }
 }

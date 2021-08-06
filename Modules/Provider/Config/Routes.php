@@ -13,5 +13,8 @@ $routes->group("provider", ["namespace" => "\Modules\Provider\Controllers\api"],
     $routes->post("video_verification", "Activation::video_verification"); //For SP Registration video verificationAPI
     
     $routes->post("update_location", "Location::update_location"); //For SP Location Update API
+    
+    //Routes pertaining to FAQ
+    $routes->get("sp_faq", "MiscController::sp_faq"); //Get all the User related Faq
 
 });

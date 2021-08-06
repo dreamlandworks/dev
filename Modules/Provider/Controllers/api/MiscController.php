@@ -18,7 +18,8 @@ class MiscController extends ResourceController
 	 * This function can be used to get the list of 
 	 * Professions for SP.
 	 * <code>
-	 * getCat();
+	 * get_profession_list();
+	 * @param key
 	 * </code>
 	 */
 	public function get_profession_list()
@@ -73,9 +74,7 @@ class MiscController extends ResourceController
 	 * 
 	 * This function can be used to get the list of 
 	 * Qualifications for SP.
-	 * <code>
-	 * getCat();
-	 * </code>
+	 * 
 	 */
 	public function get_qualification_list()
 	{
@@ -237,13 +236,10 @@ class MiscController extends ResourceController
 	//-------------------------------------------------------------**************** -----------------------------------------------------
 
 	/**
-	 * Get the list of Language
+	 * Get the day slot lits
 	 * 
 	 * This function can be used to get the list of 
-	 * Language for SP.
-	 * <code>
-	 * getCat();
-	 * </code>
+	 * day slots for SP.
 	 */
 	public function get_day_slot_list()
 	{
@@ -346,5 +342,53 @@ class MiscController extends ResourceController
     		}
 		}
 	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------GET LIST of SP Faq HERE -------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function sp_faq()
+	{
+		$validate_key = $this->request->getVar('key');
+		if($validate_key == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->provider_key;
+    		
+    		if($key == $api_key) {
+    		    $common = new CommonModel();
+        		$res = $common->get_table_details_dynamically('faq_sp', 'id', 'ASC');
+        
+        		if ($res != 'failure') {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "Success",
+        				"data" => $res
+        			]);
+        		} else {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "No Faq to Show"
+        			]);
+        		}
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}	
+		}
+		
+		
+	}
+
 	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
 }

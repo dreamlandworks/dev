@@ -163,7 +163,11 @@ class UsersController extends ResourceController
                                 'locality' => $address,
                                 'latitude' => $latitude,
                                 'longitude' => $longitude,
-                                'pin_code' => $zip_id
+                                'city_id' => $city_id,
+                                'state_id' => $state_id,
+                                'country_id' => $country_id,
+                                'zipcode_id' => $zip_id
+                                
                             ];
         
                             $address_id = $address_model->create_address($data);

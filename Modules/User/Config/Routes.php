@@ -26,6 +26,7 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     $routes->post("subcat/id", "MiscController::get_sub_by_cat"); //Get Sub-Categories by Category ID
     $routes->get("keywords", "MiscController::get_keywords"); //Get Sub-Categories by Category ID
     $routes->get("autocomplete", "MiscController::get_keywords_autocomplete"); //Get keyword and Sub-Categories
+    $routes->get("phrase", "MiscController::get_search_phrase"); //Get Search Phrases to use for user search queries
 
     //Routes pertaining to Alerts
     $routes->post("alerts/get","UsersController::get_alerts");// Get Unread Alerts by ID
@@ -33,6 +34,16 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     
     //Routes pertaining to Search
     $routes->post("search_result","SearchProvider::search_result");// Get List of SP matching the keyword and city
+    
+    //Routes pertaining to FAQ
+    $routes->get("user_faq", "MiscController::user_faq"); //Get all the User related Faq
+    
+    //Routes pertaining to User changing address
+    $routes->post("change_address", "MiscController::change_address"); //Change temporary address for search location
+    $routes->post("user_temp_address", "MiscController::user_temp_address"); //Get List of users temp address
+    
+    //Routes pertaining to User Booking
+    $routes->post("single_move_booking", "BookingController::single_move_booking"); //Get List of users temp address
 
 });
 

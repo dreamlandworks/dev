@@ -10,26 +10,7 @@ helper('Modules\User\custom');
 
 class Activation extends ResourceController
 {
-	/**
-	 * Return an array of resource objects, themselves in array format
-	 *
-	 * @return mixed
-	 */
-	public function index()
-	{
-		//
-	}
-
-	/**
-	 * Return the properties of a resource object
-	 *
-	 * @return mixed
-	 */
-	public function show($id = null)
-	{
-		//
-	}
-
+	
 	/**
 	 * Register Service Provider
 	 *
@@ -86,7 +67,8 @@ class Activation extends ResourceController
     		        //Check whether Profession exists in list_profession, if not create
     		        if($json['profession_responses'][0]['prof_id'] == 0) {
     		            $arr_ins_profession_det = array(
-    		                'name' => $json['profession_responses'][0]['name']
+    		                'name' => $json['profession_responses'][0]['name'],
+							'subcategory_id' => 0
         		        );
         		        $json['profession_responses'][0]['prof_id'] = $common->insert_records_dynamically('list_profession', $arr_ins_profession_det);
     		        }
@@ -155,7 +137,8 @@ class Activation extends ResourceController
                             //Check whether keyword exists in keywords, if not create
             		        $arr_ins_keywords_master_det = array(
         		                'keyword' => $keywords_data['name'],
-        		                'subcategories_id' => 6, //Temporary subvategory, needs admin approval
+        		                'profession_id' => $json['profession_responses'][0]['prof_id'],
+								//'subcategories_id' => 6, //Temporary subvategory, needs admin approval
         		                'status' => 'Inactive'
             		        );
             		        /*echo "<pre>";

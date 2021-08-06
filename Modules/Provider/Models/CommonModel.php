@@ -16,8 +16,9 @@ class CommonModel extends Model
             $builder->orderBy($order_by_field, $oder_by);
         }
         $result = $builder->get()->getResultArray();
+        //echo "<br> str ".$this->db->getLastQuery();exit;      
         $count = $builder->countAllResults();
-                
+          
         if($count > 0) {
             return $result; 
         }
@@ -68,6 +69,7 @@ class CommonModel extends Model
         $builder = $db->table($table_name);
         $builder->where($where_field, $field_value);
         $builder->delete();
+        //echo "<br> str ".$this->db->getLastQuery();exit;  
     }
     
     public function batch_insert_records_dynamically($table_name, $data) {
