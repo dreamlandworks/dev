@@ -192,7 +192,14 @@ class Activation extends ResourceController
                     //echo '<br> sp_tariff_id  '.$sp_tariff_id;
                     
                     //*****************user_time_slot
-                    
+                    //Get master time slot
+                    $arr_time_slots = array();
+                    $arr_time_slot_details = $common->get_table_details_dynamically('time_slot', 'id', 'ASC');
+    		        if($arr_time_slot_details != 'failure') {
+    		            foreach($arr_time_slot_details as $time_data) {
+    		                $arr_time_slots[$time_data['from']] = $time_data['id'];
+    		            }
+    		        }
                     $common->delete_records_dynamically('user_time_slot', 'users_id', $json['user_id']);
                     
                     foreach($json['timeslot_responses'] as $timeslot_key => $timeslot_data) {
@@ -201,8 +208,7 @@ class Activation extends ResourceController
                             $arr_ins_timeslot_det[] = array(
         		                'users_id' => $json['user_id'],
         		                'day_slot' => $day_id,
-        		                'time_slot_from' => $timeslot_data['from'],
-        		                'time_slot_to' => $timeslot_data['to'],
+        		                'time_slot_id' => $arr_time_slots[$timeslot_data['from']],
         		            );
                         }
                     }

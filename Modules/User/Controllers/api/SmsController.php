@@ -108,15 +108,15 @@ class SmsController extends ResourceController
 	}
 
 	// //function to send SMS
-	// public function sendSms($data)
-	// {
+	 public function sendSms($data)
+	 {
 
-	// 	$sms_model = new SmsTemplateModel();
+	 	$sms_model = new SmsTemplateModel();
 
-	// 	$res = $sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
+	 	$res = $sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
 
-	// 	return $res;
-	// }
+	 	return $res;
+	 }
 
 	//Function to create OTP and save during registration
 	public function reg_sms()

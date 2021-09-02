@@ -46,7 +46,7 @@ class SearchProvider extends ResourceController
             if(!array_key_exists('keyword_id',$json) || !array_key_exists('city',$json) //keyword_id == search_phrase_id
                 || !array_key_exists('state',$json) || !array_key_exists('country',$json) || !array_key_exists('postal_code',$json) 
                 || !array_key_exists('address',$json) || !array_key_exists('user_lat',$json) || !array_key_exists('user_long',$json)
-                || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
+                || !array_key_exists('subcat_id',$json) || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
                             ) {
     		    return $this->respond([
         				'status' => 403,
@@ -60,9 +60,16 @@ class SearchProvider extends ResourceController
     		    $api_key = $apiconfig->user_key;
     		    
     		    if($key == $api_key) {
+    		        $common = new CommonModel();
+    		        $misc_model = new MiscModel();
     		        
                     //JSON Objects declared into variables
-                    $keyword_id = $json->keyword_id ;
+                    $search_phrase_id = $json->keyword_id; //SEarch_phrase is sent from app instead of keyword
+                    $subcat_id = $json->subcat_id;
+                    $keyword_id = 0;
+                    //Fetch keyword_id
+                    $keyword_id = $misc_model->get_keywords_id($search_phrase_id,$subcat_id);
+                    
                     $city = $json->city;
                     
                     $zip_model = new ZipcodeModel();
@@ -98,13 +105,56 @@ class SearchProvider extends ResourceController
                         'zipcode_id' => $zip_id,
                         'users_id' => $json->users_id
                     ];
-                    $common = new CommonModel();
+                    
                     $temp_address_id = $common->insert_records_dynamically('user_temp_address', $data);
                     
-                    $misc_model = new MiscModel();
-        
                     //Check whether any SP is available, if yes process the details
-                    $arr_search_result = $misc_model->get_search_results($keyword_id,$city);
+                    $arr_search_result = $misc_model->get_search_results($search_phrase_id,$city,$json->user_lat,$json->user_long);
+                    $ar_sp_id = array();
+                    $arr_preferred_time_slots = array();
+                    $arr_temp = array();
+                    $arr_temp_blocked = array();
+                    $arr_slots_data = array();
+                    $arr_slots_single_data = array();
+                    
+                    if($arr_search_result != 'failure') {
+                        foreach($arr_search_result as $search_data) {
+                            $ar_sp_id[$search_data['users_id']] = $search_data['users_id'];
+                        }
+                        //Get SP's preferred day/timeslot data
+                        $arr_preferred_time_slots_list = $misc_model->get_sp_preferred_time_slot($ar_sp_id);
+                        if($arr_preferred_time_slots_list != 'failure') {
+                            foreach($arr_preferred_time_slots_list as $key => $slot_data) {
+                                $arr_temp[$slot_data['users_id']][$key]['day_slot'] = $slot_data['day_slot'];
+                                $arr_temp[$slot_data['users_id']][$key]['time_slot_from'] = $slot_data['from'];
+                            }
+                        }
+                        
+                        //Get SP's blocked data
+                        $arr_blocked_time_slots_list = $misc_model->get_sp_blocked_time_slot($ar_sp_id);
+                        if($arr_blocked_time_slots_list != 'failure') {
+                            foreach($arr_blocked_time_slots_list as $key => $blocked_data) {
+                                $arr_temp_blocked[$slot_data['users_id']][$key]['time_slot_from'] = $blocked_data['from'];
+                                $arr_temp_blocked[$slot_data['users_id']][$key]['date'] = $blocked_data['date'];
+                            }
+                        }
+                        
+                        if(count($ar_sp_id) > 0) {
+                            foreach($ar_sp_id as $sp_id) {
+                                if(array_key_exists($sp_id,$arr_temp)) {
+                                    array_push($arr_slots_data,array("user_id" => $sp_id,"preferred_time_slots" => $arr_temp[$slot_data['users_id']],
+                                                                        "blocked_time_slots" => $arr_temp_blocked[$slot_data['users_id']]));
+                                }
+                            }
+                        }
+                        
+                        //echo "<pre>";
+                        //print_r($arr_temp);
+                        //print_r($arr_slots_data);
+                        //echo "</pre>";
+                        //exit;
+                    }
+                    
                     
                     //Save to search_results
                     //JSON Objects declared into variables
@@ -128,6 +178,8 @@ class SearchProvider extends ResourceController
             				"status" => 200,
             				"message" => "Success",
             				"data" => $arr_search_result,
+            				//"sp_ids" => $ar_sp_id,
+            				"slots_data" => $arr_slots_data,
             				"search_results_id" => $search_results_id,
             				"temp_address_id" => $temp_address_id
             			]);

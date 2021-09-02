@@ -62,9 +62,9 @@ class keywordModel extends Model
 	
 // 	}
 	
-	public function showAll($subcategories_id = NULL){
-	    if($subcategories_id != NULL) {
-	        return $this->where('subcategories_id', $subcategories_id)->where('status', 'Active')->findAll();
+	public function showAll($profession_id = NULL){
+	    if($profession_id != NULL) {
+	        return $this->where('profession_id', $profession_id)->where('status', 'Active')->findAll();
 	    }
 	    else {
 	        return $this->findAll();
@@ -76,8 +76,8 @@ class keywordModel extends Model
 	    $db      = \Config\Database::connect();
 	    
 	    $builder = $db->table('keywords');
-	    $builder->select('keyword,sub_name');
-	    $builder->join('subcategories', 'subcategories.id = keywords.subcategories_id');
+	    $builder->select('keywords.id as keyword_id,keyword,name,subcategory_id,category_id,keywords.profession_id');
+	    $builder->join('list_profession', 'list_profession.id = keywords.profession_id');
 	    $builder->where('keywords.status', 'Active');
         $query   = $builder->get();
         $result = $query->getResult();

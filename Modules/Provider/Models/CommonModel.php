@@ -17,7 +17,7 @@ class CommonModel extends Model
         }
         $result = $builder->get()->getResultArray();
         //echo "<br> str ".$this->db->getLastQuery();exit;      
-        $count = $builder->countAllResults();
+        $count = count($result);
           
         if($count > 0) {
             return $result; 
@@ -36,7 +36,7 @@ class CommonModel extends Model
             $builder->orderBy($order_by_field, $oder_by);
         }
         $result = $builder->get()->getResultArray();
-        $count = $builder->countAllResults();
+        $count = count($result);
                 
         if($count > 0) {
             return $result; 
