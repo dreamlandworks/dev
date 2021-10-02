@@ -4,7 +4,7 @@ namespace Modules\Provider\Controllers\Api;
 
 use CodeIgniter\RESTful\ResourceController;
 use Modules\Provider\Models\CommonModel;
-
+use Modules\Provider\Models\AlertModel;
 
 class MiscController extends ResourceController
 {
@@ -320,6 +320,7 @@ class MiscController extends ResourceController
         		$res['qualification'] = $common->get_table_details_dynamically('sp_qual', 'qualification', 'ASC');
         		$res['experience'] = $common->get_table_details_dynamically('sp_exp', 'id', 'ASC');
         		$res['language'] = $common->get_table_details_dynamically('language', 'name', 'ASC');
+        		$res['keywords'] = $common->get_table_details_dynamically('keywords', 'keyword', 'ASC');
         		
         		if ($res != 'failure') {
         			return $this->respond([
@@ -356,7 +357,7 @@ class MiscController extends ResourceController
     		]);
 		}
 		else {
-		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    $key = md5($validate_key); //Dld0F54x99UeL8nZkByWC0BwUEi4aF4O
 		    
 		    $apiconfig = new \Config\ApiConfig();
 		
@@ -391,4 +392,179 @@ class MiscController extends ResourceController
 	}
 
 	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------Add user reviews HERE -------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function post_user_review()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            
+            if(!array_key_exists('overall_rating',$json) || !array_key_exists('user_rating',$json) || !array_key_exists('booking_rating',$json) 
+                || !array_key_exists('app_review',$json)  || !array_key_exists('job_satisfaction',$json) || !array_key_exists('feedback',$json) 
+                || !array_key_exists('booking_id',$json) || !array_key_exists('user_id',$json) || !array_key_exists('key',$json)
+                            ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->provider_key;
+    		    
+    		    if($key == $api_key) { //Dld0F54x99UeL8nZkByWC0BwUEi4aF4O
+    		        $common = new CommonModel();
+    		        
+    		        //Insert into user_review table
+    		        $arr_sp_review = array(
+    		              'overall_rating' => $json->overall_rating,
+    		              'user_rating' => $json->user_rating,
+    		              'booking_rating' => $json->booking_rating,
+        		          'app_review' => $json->app_review,
+                          'job_satisfaction' => $json->job_satisfaction,
+                          'feedback' => $json->feedback,
+                          'booking_id' => $json->booking_id,
+                          'user_id' => $json->user_id,
+                    );
+                    $review_id = $common->insert_records_dynamically('sp_review', $arr_sp_review);
+                    
+                    if ($review_id > 0) {
+                        return $this->respond([
+            			    "review_id" => $review_id,
+            				"status" => 200,
+            				"message" => "Success",
+            			]);
+            		}
+            		else {
+            		    return $this->respond([
+        					"status" => 404,
+        					"message" => "Failed to create Review"
+        				]);
+            		}
+            	}
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------RETRIEVE SP ALERTS HERE ------------------------------------------------- 
+
+    /**
+     * Retrieves SP Alerts based on ID & TYPE
+     * 
+     * This function will be used to get alerts based on user id & action type
+     * @param int $id = SP Id
+     * @param int $type = 1|2 => 1 for Non Actionable & 2 for Actionable
+     * @return string [JSON] => ID, Alert Type, Description, Created ons
+     */
+    public function get_sp_alerts()
+    {
+        $json = $this->request->getJSON();
+        if(!array_key_exists('sp_id',$json) || !array_key_exists('type',$json) || !array_key_exists('status',$json) || !array_key_exists('key',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $id = $json->sp_id;
+    		$type = $json->type;
+    		$status = $json->status;
+    		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->provider_key;
+    		
+    		if($key == $api_key) {
+    
+        		$alert = new AlertModel();
+                
+                $res = $alert->all_alerts($id, $type,$status);
+        
+                if ($res != null) {
+                    return $this->respond([
+                        "status" => 200,
+                        "message" => "Success",
+                        "data" => $res
+                    ]);
+                } else {
+                    return $this->respond([
+                        "status" => 404,
+                        "message" => "No Data to show"
+                    ]);
+                }
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
+		}
+    }
+    //-------------------------------------------------------------FUNCTION ENDS ---------------------------------------------------------
+    //---------------------------------------------------------UPDATE ALERTS STATUS HERE ------------------------------------------------- 
+
+    public function update_sp_alert()
+    {
+        $json = $this->request->getJSON();
+        
+        if(!array_key_exists('id',$json) || !array_key_exists('key',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $id = $json->id;
+    		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->provider_key;
+    		
+    		if($key == $api_key) {
+    
+        		$alerts = new AlertModel();
+
+                $date = date('Y-m-d H:m:s', time());
+                $res = $alerts->update_alert($id, $date);
+        
+                if ($res == "Success") {
+                    return $this->respond([
+                        "id" => 200,
+                        "message" => "Successfully Updated"
+                    ]);
+                } else {
+                    return $this->respond([
+                        "id" => 400,
+                        "message" => "Failed to Update"
+                    ]);
+                }
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
+		}
+    }
+    //-------------------------------------------------------------FUNCTION ENDS ---------------------------------------------------------
 }

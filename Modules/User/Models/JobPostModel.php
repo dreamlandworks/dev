@@ -329,4 +329,393 @@ function get_sp_jobs_completed_count_by_jobpost_id($post_job_id)
     }
 }
 //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Discussion Details by post id STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_discussion_details_by_jobpost_id($post_job_id)
+{
+
+    $builder = $this->db->table('discussion_tbl');
+    $builder->select('discussion_tbl.* ,user_details.fname,user_details.lname,user_details.mobile,,profile_pic,file_name');
+    $builder->join('user_details', 'user_details.id = discussion_tbl.users_id');
+    $builder->join('post_attach_disc_chat', 'post_attach_disc_chat.disc_id = discussion_tbl.id','LEFT');
+    $builder->where('discussion_tbl.post_job_id',$post_job_id);
+    $builder->orderBy('discussion_tbl.id');
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Discussion like count STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_discussion_like_count($discussion_tbl_id)
+{
+    $builder = $this->db->table('disc_like');
+    $builder->select('count(disc_like.disc_like_id) as like_count');
+    $builder->where('discussion_tbl_id',$discussion_tbl_id);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result[0]['like_count']; 
+    }
+    else {
+        return 0; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Job Post Bid Details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_goals_installments_list($post_job_id)
+{
+
+    $builder = $this->db->table('installment_det');
+    $builder->select('installment_det.*,description');
+    $builder->join('goals', 'goals.goal_id = installment_det.goal_id');  
+    $builder->where('installment_det.inst_paid_status','Paid');
+    $builder->where('installment_det.post_job_id',$post_job_id);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Job Post Bid Details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_goals_installments_requested_list($post_job_id)
+{
+
+    $builder = $this->db->table('installment_det');
+    $builder->select('installment_det.*');
+    $builder->join('goals', 'goals.goal_id = installment_det.goal_id');  
+    $builder->where('installment_det.inst_paid_status','Paid');
+    $builder->where('installment_det.post_job_id',$post_job_id);
+    $builder->where('installment_det.inst_request_status_id',33); //Request Installment
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET SP jobs completed by sp id STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_sp_jobs_completed_count_by_sp_id($sp_id)
+{
+    $builder = $this->db->table('bid_det');
+    $builder->select('bid_det.users_id,count(booking.id) as jobs_completed');
+    $builder->join('post_job', 'post_job.id = bid_det.post_job_id');
+    $builder->join('booking', 'booking.id = post_job.booking_id');
+    $builder->where('bid_det.users_id',$sp_id);
+    $builder->where('completed_at != ','0000-00-00 00:00:00');
+    $builder->where('started_at != ','0000-00-00 00:00:00');
+    $builder->where('post_job.status_id',27); //Awarded
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Job Post Details by sp id STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_job_post_details_by_sp_id($sp_id,$category_id)
+{
+
+    $builder = $this->db->table('booking');
+    $builder->select('booking.*, post_job.*,post_job.id as post_job_id,booking_status_code.name as status,bid_range.name as bid_range_name,range_slots,
+                    user_details.fname,user_details.lname,user_details.mobile,fcm_token,
+                    time_slot.from,estimate_type.name as estimate_type,booking.id as booking_id,profile_pic,booking.users_id as booking_user_id');
+    $builder->join('post_job', 'post_job.booking_id = booking.id');  
+    $builder->join('bid_range', 'bid_range.bid_range_id = post_job.bid_range_id');  
+    $builder->join('booking_status_code', 'booking_status_code.id = post_job.status_id');  
+    $builder->join('user_details', 'user_details.id = booking.users_id');
+    $builder->join('users', 'users.users_id = booking.users_id');
+    $builder->join('time_slot', 'time_slot.id = booking.time_slot_id');
+    $builder->join('estimate_type', 'estimate_type.id = booking.estimate_type_id');
+    if($category_id == 1) { //Single Move
+        $builder->select('single_move.job_description,single_move.id as single_move_id,single_move.address_id,address.locality,address.latitude,address.longitude,city,state,country,zipcode');
+        $builder->join('single_move', 'single_move.booking_id = booking.id');
+        $builder->join('address', 'address.id = single_move.address_id');
+        $builder->join('country', 'country.id = address.country_id','LEFT');
+        $builder->join('state', 'state.id = address.state_id','LEFT');
+        $builder->join('city', 'city.id = address.city_id','LEFT');
+        $builder->join('zipcode', 'zipcode.id = address.zipcode_id','LEFT');
+    }
+    if($category_id == 2) { //Blue Collar
+        $builder->select('blue_collar.id as blue_collar_id,blue_collar.job_description');
+        $builder->join('blue_collar', 'blue_collar.booking_id = booking.id');
+    }
+    $builder->where('booking.category_id',$category_id);
+    $builder->where('post_job.id in(SELECT distinct post_job_id FROM bid_det where users_id = '.$sp_id.')');
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET SP Data-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_sp_details($sp_id)
+{
+
+    $builder = $this->db->table('sp_det');
+    $builder->select('user_details.fname,user_details.lname,user_details.mobile,fcm_token,profile_pic,gender,
+    ,sp_det.about_me,qualification,list_profession.name as profession,exp,category_id');
+    $builder->join('user_details', 'user_details.id = sp_det.users_id');
+    $builder->join('users', 'users.users_id = sp_det.users_id');
+    $builder->join('sp_qual', 'sp_qual.id = sp_det.qual_id');
+    $builder->join('list_profession', 'list_profession.id = sp_det.profession_id');
+    $builder->join('sp_exp', 'sp_exp.id = sp_det.exp_id');
+    //$builder->join('user_lang_list', 'user_lang_list.users_id = bid_det.users_id');
+    //$builder->join('language', 'language.id = user_lang_list.language_id');
+    $builder->where('sp_det.users_id',$sp_id);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Job Post Bid Details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_job_post_bid_details_by_sp_id($sp_id)
+{
+
+    $builder = $this->db->table('bid_det');
+    $builder->select('bid_det.*');
+    $builder->join('post_job', 'post_job.id = bid_det.post_job_id');  
+    $builder->join('booking', 'booking.id = post_job.booking_id'); 
+    $builder->where('post_job_id in(SELECT distinct post_job_id FROM bid_det where users_id = '.$sp_id.')');
+    
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Multi move Booking Details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_job_post_multi_move_details($sp_id)
+{
+    $builder = $this->db->table('booking');
+    $builder->select('multi_move.booking_id,post_job.id as post_job_id,multi_move.id,multi_move.address_id,multi_move.sequence_no,job_description,weight_type,
+    address.locality,address.latitude,address.longitude,city,state,country,zipcode');
+    $builder->join('post_job', 'post_job.booking_id = booking.id');  
+    $builder->join('multi_move', 'multi_move.booking_id = booking.id');  
+    $builder->join('address', 'address.id = multi_move.address_id');
+    $builder->join('country', 'country.id = address.country_id');
+    $builder->join('state', 'state.id = address.state_id');
+    $builder->join('city', 'city.id = address.city_id');
+    $builder->join('zipcode', 'zipcode.id = address.zipcode_id');
+    $builder->where('post_job.id in(SELECT distinct post_job_id FROM bid_det where users_id = '.$sp_id.')');
+    $builder->orderBy('multi_move.booking_id,sequence_no', 'ASC');
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Job Post List STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_job_post_list($sp_id,$category_id,$arr_sp_keywords_id,$sp_city,$sp_latitude,$sp_longitude)
+{
+
+    $builder = $this->db->table('booking');
+    $builder->select('booking.*, post_job.*,post_job.id as post_job_id,booking_status_code.name as status,bid_range.name as bid_range_name,range_slots,
+                    user_details.fname,user_details.lname,user_details.mobile,fcm_token,
+                    time_slot.from,estimate_type.name as estimate_type,booking.id as booking_id,profile_pic,booking.users_id as booking_user_id,
+                    DATE_ADD(post_job.created_dts, INTERVAL bids_period DAY) as bid_end_date');
+    $builder->join('post_job', 'post_job.booking_id = booking.id');  
+    $builder->join('bid_range', 'bid_range.bid_range_id = post_job.bid_range_id');  
+    $builder->join('booking_status_code', 'booking_status_code.id = post_job.status_id');  
+    $builder->join('user_details', 'user_details.id = booking.users_id');
+    $builder->join('users', 'users.users_id = booking.users_id');
+    $builder->join('time_slot', 'time_slot.id = booking.time_slot_id');
+    $builder->join('estimate_type', 'estimate_type.id = booking.estimate_type_id');
+    $builder->join('post_req_keyword', 'post_req_keyword.post_job_id = post_job.id');
+    if($category_id == 1) { //Single Move
+        $builder->select('single_move.job_description,single_move.id as single_move_id,single_move.address_id,address.locality,
+                            address.latitude,address.longitude,city,state,country,zipcode,,
+                            (3959 * acos (cos ( radians('.$sp_latitude.') ) * cos( radians( address.latitude ) ) * cos( radians( address.longitude ) - radians('.$sp_longitude.') )
+                            + sin ( radians('.$sp_latitude.') ) * sin( radians( address.latitude ) ) )) AS distance_miles');
+        $builder->join('single_move', 'single_move.booking_id = booking.id');
+        $builder->join('address', 'address.id = single_move.address_id');
+        $builder->join('country', 'country.id = address.country_id','LEFT');
+        $builder->join('state', 'state.id = address.state_id','LEFT');
+        $builder->join('city', 'city.id = address.city_id','LEFT');
+        $builder->join('zipcode', 'zipcode.id = address.zipcode_id','LEFT');
+        $builder->where('address.city_id',$sp_city);
+    }
+    if($category_id == 2) { //Blue Collar
+        $builder->select('blue_collar.id as blue_collar_id,blue_collar.job_description');
+        $builder->join('blue_collar', 'blue_collar.booking_id = booking.id');
+    }
+    if($category_id == 3) { //Multi Move
+        $builder->select('multi_move.job_description,multi_move.id as multi_move_id,multi_move.address_id,address.locality,
+                            address.latitude,address.longitude,city,state,country,zipcode,,
+                            (3959 * acos (cos ( radians('.$sp_latitude.') ) * cos( radians( address.latitude ) ) * cos( radians( address.longitude ) - radians('.$sp_longitude.') )
+                            + sin ( radians('.$sp_latitude.') ) * sin( radians( address.latitude ) ) )) AS distance_miles');
+        $builder->join('multi_move', 'multi_move.booking_id = booking.id');
+        $builder->join('address', 'address.id = multi_move.address_id');
+        $builder->join('country', 'country.id = address.country_id','LEFT');
+        $builder->join('state', 'state.id = address.state_id','LEFT');
+        $builder->join('city', 'city.id = address.city_id','LEFT');
+        $builder->join('zipcode', 'zipcode.id = address.zipcode_id','LEFT');
+        $builder->where('address.city_id',$sp_city);
+        $builder->groupBy('multi_move.booking_id');
+        $builder->orderBy('multi_move.sequence_no');
+        
+    }
+    $builder->where('booking.sp_id',0);
+    $builder->where('booking.category_id',$category_id);
+    $builder->where('DATE_ADD(post_job.created_dts, INTERVAL bids_period DAY) > NOW()');
+    $builder->where('post_job.id not in(SELECT distinct post_job_id FROM bid_det where users_id = '.$sp_id.')');
+    $builder->whereIn('keywords_id', $arr_sp_keywords_id);
+    
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Bulk Job Post Bid Details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_job_post_bid_details_by_category($sp_id,$category_id)
+{
+
+    $builder = $this->db->table('bid_det');
+    $builder->select('bid_det.*');
+    $builder->join('post_job', 'post_job.id = bid_det.post_job_id');  
+    $builder->join('booking', 'booking.id = post_job.booking_id'); 
+    $builder->where('booking.sp_id',0);
+    $builder->where('booking.category_id',$category_id);
+    $builder->where('DATE_ADD(post_job.created_dts, INTERVAL bids_period DAY) > NOW()');
+    $builder->where('post_job.id not in(SELECT distinct post_job_id FROM bid_det where users_id = '.$sp_id.')');
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET SP Data with location-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_sp_location_details($sp_id)
+{
+
+    $builder = $this->db->table('sp_det');
+    $builder->select('user_details.fname,user_details.lname,user_details.mobile,fcm_token,profile_pic,gender,
+                        ,sp_det.about_me,qualification,list_profession.name as profession,exp,category_id,
+                        city,sp_location.latitude,sp_location.longitude,GROUP_CONCAT(keywords_id) as keywords_id');
+    $builder->join('user_details', 'user_details.id = sp_det.users_id');
+    $builder->join('users', 'users.users_id = sp_det.users_id');
+    $builder->join('sp_qual', 'sp_qual.id = sp_det.qual_id');
+    $builder->join('list_profession', 'list_profession.id = sp_det.profession_id');
+    $builder->join('sp_exp', 'sp_exp.id = sp_det.exp_id');
+    $builder->join('sp_location', 'sp_location.users_id = sp_det.users_id');
+    $builder->join('sp_skill', 'sp_skill.users_id = sp_det.users_id');
+    $builder->where('sp_location.id in (select max(id) from sp_location group by users_id)');
+    $builder->where('sp_det.users_id',$sp_id);
+    $builder->groupBy('sp_skill.users_id');
+    
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Multi move Booking Details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_job_post_multi_move_details_by_category($category_id,$sp_id)
+{
+    $builder = $this->db->table('booking');
+    $builder->select('multi_move.booking_id,post_job.id as post_job_id,multi_move.id,multi_move.address_id,multi_move.sequence_no,job_description,weight_type,
+    address.locality,address.latitude,address.longitude,city,state,country,zipcode');
+    $builder->join('post_job', 'post_job.booking_id = booking.id');  
+    $builder->join('multi_move', 'multi_move.booking_id = booking.id');  
+    $builder->join('address', 'address.id = multi_move.address_id');
+    $builder->join('country', 'country.id = address.country_id');
+    $builder->join('state', 'state.id = address.state_id');
+    $builder->join('city', 'city.id = address.city_id');
+    $builder->join('zipcode', 'zipcode.id = address.zipcode_id');
+    $builder->where('booking.category_id',$category_id);
+    $builder->where('DATE_ADD(post_job.created_dts, INTERVAL bids_period DAY) > NOW()');
+    $builder->where('post_job.id not in(SELECT distinct post_job_id FROM bid_det where users_id = '.$sp_id.')');
+    $builder->orderBy('multi_move.booking_id,sequence_no', 'ASC');
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
 }

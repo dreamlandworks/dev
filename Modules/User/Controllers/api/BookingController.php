@@ -13,6 +13,7 @@ use Modules\User\Models\StateModel;
 use Modules\User\Models\CountryModel;
 use Modules\Provider\Models\CommonModel;
 use Modules\User\Models\MiscModel;
+use Modules\User\Models\JobPostModel;
 
 helper('Modules\User\custom');
 
@@ -72,8 +73,7 @@ class BookingController extends ResourceController
                         $time_slot_id = $common->insert_records_dynamically('time_slot', $arr_time_slot);
     		        }
     		        
-    		        $otp_start = $this->get_otp_token();
-        		    $arr_booking = array(
+    		        $arr_booking = array(
         		        'users_id' => $json->users_id,
                         'category_id' => 1,
                         'scheduled_date' => $json->scheduled_date,
@@ -82,7 +82,6 @@ class BookingController extends ResourceController
                         'amount' => $json->amount,
                         'sp_id' => $json->sp_id,
                         'created_on' => $json->created_on,
-                        'otp_start' => $otp_start,
                         'attachment_count' => count($attachments),
                         'status_id' => 1,
                         'estimate_time' => $json->estimate_time,
@@ -188,7 +187,6 @@ class BookingController extends ResourceController
         } 
 	}
 	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
-	
 	//---------------------------------------------------------Blue Collar booking-------------------------------------------------
 	//-------------------------------------------------------------**************** -----------------------------------------------------
 
@@ -241,8 +239,7 @@ class BookingController extends ResourceController
                         $time_slot_id = $common->insert_records_dynamically('time_slot', $arr_time_slot);
     		        }
     		        
-    		        $otp_start = $this->get_otp_token();
-        		    $arr_booking = array(
+    		        $arr_booking = array(
         		        'users_id' => $json->users_id,
                         'category_id' => 2,
                         'scheduled_date' => $json->scheduled_date,
@@ -251,7 +248,6 @@ class BookingController extends ResourceController
                         'amount' => $json->amount,
                         'sp_id' => $json->sp_id,
                         'created_on' => $json->created_on,
-                        'otp_start' => $otp_start,
                         'attachment_count' => count($attachments),
                         'status_id' => 1,
                         'estimate_time' => $json->estimate_time,
@@ -378,8 +374,7 @@ class BookingController extends ResourceController
                         $time_slot_id = $common->insert_records_dynamically('time_slot', $arr_time_slot);
     		        }
     		        
-    		        $otp_start = $this->get_otp_token();
-        		    $arr_booking = array(
+    		        $arr_booking = array(
         		        'users_id' => $json->users_id,
                         'category_id' => 3,
                         'scheduled_date' => $json->scheduled_date,
@@ -388,7 +383,6 @@ class BookingController extends ResourceController
                         'amount' => $json->amount,
                         'sp_id' => $json->sp_id,
                         'created_on' => $json->created_on,
-                        'otp_start' => $otp_start,
                         'attachment_count' => count($attachments),
                         'status_id' => 1,
                         'estimate_time' => $json->estimate_time,
@@ -642,10 +636,27 @@ class BookingController extends ResourceController
     		       $arr_booking = array();
     		       
     		       if($arr_booking_details != 'failure') {
+    		           $started_at = $arr_booking_details['started_at'];
+		               $completed_at = $arr_booking_details['completed_at'];
+		               $status = "";
+		               if($started_at == "" || $started_at == "0000-00-00 00:00:00") {
+		                   $status = "Pending";
+		               }
+		               else {
+		                 if($completed_at == "" || $completed_at == "0000-00-00 00:00:00") {
+    		                   $status = "Inprogress";
+    		             }  
+    		             else {
+    		                 $status = "Completed";
+    		             } 
+		               }
+    		               
+    		           $arr_booking['booking_id'] = $booking_id;
     		           $arr_booking['fname'] = $arr_booking_details['fname'];
 		               $arr_booking['lname'] = $arr_booking_details['lname'];
 		               $arr_booking['mobile'] = $arr_booking_details['mobile'];
 		               $arr_booking['scheduled_date'] = $arr_booking_details['scheduled_date'];
+		               $arr_booking['time_slot_id'] = $arr_booking_details['time_slot_id'];
 		               $arr_booking['started_at'] = $arr_booking_details['started_at'];
 		               $arr_booking['from'] = $arr_booking_details['from'];
 		               $arr_booking['estimate_time'] = $arr_booking_details['estimate_time'];
@@ -653,6 +664,14 @@ class BookingController extends ResourceController
 		               $arr_booking['amount'] = $arr_booking_details['amount'];
 		               $arr_booking['sp_id'] = $arr_booking_details['sp_id'];
 		               $arr_booking['fcm_token'] = $arr_booking_details['fcm_token'];
+		               $arr_booking['otp'] = $arr_booking_details['otp'];
+		               $arr_booking['booking_status'] = $status;
+		               $arr_booking['extra_demand_total_amount'] = ($arr_booking_details['extra_demand_total_amount'] > 0) ? $arr_booking_details['extra_demand_total_amount'] : 0;
+		               $arr_booking['material_advance'] = ($arr_booking_details['material_advance'] > 0) ? $arr_booking_details['material_advance'] : 0;
+		               $arr_booking['technician_charges'] = ($arr_booking_details['technician_charges'] > 0) ? $arr_booking_details['technician_charges'] : 0;
+		               $arr_booking['expenditure_incurred'] = ($arr_booking_details['expenditure_incurred'] > 0) ? $arr_booking_details['expenditure_incurred'] : 0;
+		               $arr_booking['extra_demand_status'] = $arr_booking_details['extra_demand_status'];
+		               $arr_booking['post_job_id'] = ($arr_booking_details['post_job_id'] > 0) ? $arr_booking_details['post_job_id'] : 0;
 		               
 		               $attachment_count = $arr_booking_details['attachment_count'];
 		               
@@ -810,6 +829,7 @@ class BookingController extends ResourceController
     		               $arr_booking[$key]['lname'] = $book_data['lname'];
     		               $arr_booking[$key]['mobile'] = $book_data['mobile'];
     		               $arr_booking[$key]['scheduled_date'] = $book_data['scheduled_date'];
+    		               $arr_booking[$key]['time_slot_id'] = $book_data['time_slot_id'];
     		               $arr_booking[$key]['started_at'] = $book_data['started_at'];
     		               $arr_booking[$key]['from'] = $book_data['from'];
     		               $arr_booking[$key]['estimate_time'] = $book_data['estimate_time'];
@@ -826,6 +846,11 @@ class BookingController extends ResourceController
     		               $arr_booking[$key]['country'] = $book_data['country'];
     		               $arr_booking[$key]['zipcode'] = $book_data['zipcode'];*/
     		               $arr_booking[$key]['booking_status'] = $status;
+    		               $arr_booking[$key]['otp'] = $book_data['otp'];
+    		               $arr_booking[$key]['extra_demand_total_amount'] = $book_data['extra_demand_total_amount'];
+    		               $arr_booking[$key]['material_advance'] = $book_data['material_advance'];
+    		               $arr_booking[$key]['technician_charges'] = $book_data['technician_charges'];
+    		               $arr_booking[$key]['expenditure_incurred'] = $book_data['expenditure_incurred'];
     		               
     		               $arr_booking[$key]['details'][] = array('job_description' => $book_data['job_description'],
 		                                                       'locality' => $book_data['locality'],
@@ -874,6 +899,7 @@ class BookingController extends ResourceController
     		               $arr_booking[$booking_count]['lname'] = $bc_book_data['lname'];
     		               $arr_booking[$booking_count]['mobile'] = $bc_book_data['mobile'];
     		               $arr_booking[$booking_count]['scheduled_date'] = $bc_book_data['scheduled_date'];
+    		               $arr_booking[$booking_count]['time_slot_id'] = $bc_book_data['time_slot_id'];
     		               $arr_booking[$booking_count]['started_at'] = $bc_book_data['started_at'];
     		               $arr_booking[$booking_count]['from'] = $bc_book_data['from'];
     		               $arr_booking[$booking_count]['estimate_time'] = $bc_book_data['estimate_time'];
@@ -881,15 +907,12 @@ class BookingController extends ResourceController
     		               $arr_booking[$booking_count]['amount'] = $bc_book_data['amount'];
     		               $arr_booking[$booking_count]['sp_id'] = $bc_book_data['sp_id'];
     		               $arr_booking[$booking_count]['profile_pic'] = $bc_book_data['profile_pic'];
-    		               /*$arr_booking[$booking_count]['job_description'] = $bc_book_data['job_description'];
-        		           $arr_booking[$booking_count]['locality'] = '';
-    		               $arr_booking[$booking_count]['latitude'] = '';
-    		               $arr_booking[$booking_count]['longitude'] = '';
-    		               $arr_booking[$booking_count]['city'] = '';
-        		           $arr_booking[$booking_count]['state'] = '';
-    		               $arr_booking[$booking_count]['country'] = '';
-    		               $arr_booking[$booking_count]['zipcode'] = '';*/
     		               $arr_booking[$booking_count]['booking_status'] = $status;
+    		               $arr_booking[$booking_count]['otp'] = $bc_book_data['otp'];
+    		               $arr_booking[$booking_count]['extra_demand_total_amount'] = $bc_book_data['extra_demand_total_amount'];
+    		               $arr_booking[$booking_count]['material_advance'] = $bc_book_data['material_advance'];
+    		               $arr_booking[$booking_count]['technician_charges'] = $bc_book_data['technician_charges'];
+    		               $arr_booking[$booking_count]['expenditure_incurred'] = $bc_book_data['expenditure_incurred'];
     		               
     		               $arr_booking[$booking_count]['details'][] = array('job_description' => $bc_book_data['job_description']);
     		               
@@ -942,6 +965,7 @@ class BookingController extends ResourceController
         		               $arr_booking[$booking_count]['lname'] = $mm_book_data['lname'];
         		               $arr_booking[$booking_count]['mobile'] = $mm_book_data['mobile'];
         		               $arr_booking[$booking_count]['scheduled_date'] = $mm_book_data['scheduled_date'];
+        		               $arr_booking[$booking_count]['time_slot_id'] = $mm_book_data['time_slot_id'];
         		               $arr_booking[$booking_count]['started_at'] = $mm_book_data['started_at'];
         		               $arr_booking[$booking_count]['from'] = $mm_book_data['from'];
         		               $arr_booking[$booking_count]['estimate_time'] = $mm_book_data['estimate_time'];
@@ -950,6 +974,11 @@ class BookingController extends ResourceController
         		               $arr_booking[$booking_count]['sp_id'] = $mm_book_data['sp_id'];
         		               $arr_booking[$booking_count]['profile_pic'] = $mm_book_data['profile_pic'];
         		               $arr_booking[$booking_count]['booking_status'] = $status;
+        		               $arr_booking[$booking_count]['otp'] = $mm_book_data['otp'];
+        		               $arr_booking[$booking_count]['extra_demand_total_amount'] = $mm_book_data['extra_demand_total_amount'];
+        		               $arr_booking[$booking_count]['material_advance'] = $mm_book_data['material_advance'];
+        		               $arr_booking[$booking_count]['technician_charges'] = $mm_book_data['technician_charges'];
+        		               $arr_booking[$booking_count]['expenditure_incurred'] = $mm_book_data['expenditure_incurred'];
         		               
         		               foreach($arr_details[$mm_book_data['id']] as $key => $val) {
         		                   $arr_booking[$booking_count]['details'][$key] = $arr_details[$mm_book_data['id']][$key];
@@ -1083,11 +1112,609 @@ class BookingController extends ResourceController
         } 
 	}
 	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
-	
+	//---------------------------------------------------------GET OTP HERE -------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function generate_otp()
+	{
+		$validate_key = $this->request->getVar('key');
+		$validate_booking_id = $this->request->getVar('booking_id');
+		
+		if($validate_key == "" || $validate_booking_id == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+    		    $otp = $this->get_otp_token();
+    		    
+    		    $common = new CommonModel();
+    		    
+    		    $arr_booking_update = array(
+                    'otp' => $otp,
+    		    );
+    		    /*echo "<pre>";
+    		    print_r($arr_booking_update);
+    		    echo "</pre>";
+    		    exit;*/
+    		    $common->update_records_dynamically('booking', $arr_booking_update, 'id', $validate_booking_id);
+		        
+		        return $this->respond([
+        		    "otp" => $otp,
+    				"status" => 200,
+    				"message" => "Success",
+    			]);
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}	
+		}
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------GET OTP HERE -------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function validate_otp()
+	{
+		$validate_key = $this->request->getVar('key');
+		$validate_booking_id = $this->request->getVar('booking_id');
+		$validate_sp_id = $this->request->getVar('sp_id');
+		
+		if($validate_key == "" || $validate_booking_id == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+    		    $common = new CommonModel();
+    		    
+    		    if($validate_sp_id > 0) { //Booking Started
+    		        $status_id = 13; //Inprogress
+    		        //Updatebooking
+                    $arr_booking_update = array(
+                        'status_id' => $status_id,
+        		        'started_at' => date("Y-m-d H:i:s")
+                    );
+    		    }
+    		    else if($validate_sp_id == 0) { //Booking Completed
+    		        $status_id = 23; //Completed
+    		        //Updatebooking
+                    $arr_booking_update = array(
+                        'status_id' => $status_id,
+        		        'completed_at' => date("Y-m-d H:i:s")
+                    );
+    		    }
+    		    /*echo "<pre>";
+    		    print_r($arr_booking_update);
+    		    echo "</pre>";
+    		    exit;*/
+    		    $common->update_records_dynamically('booking', $arr_booking_update, 'id', $validate_booking_id);
+		        
+		        //Insert to booking status
+                $arr_booking_status['booking_id'] = $validate_booking_id;
+                $arr_booking_status['status_id'] = $status_id;
+                $arr_booking_status['sp_id'] = $validate_sp_id;
+                $arr_booking_status['description'] = ($validate_sp_id > 0) ? "Job Started" : "Job Completed";
+                $common->insert_records_dynamically('booking_status', $arr_booking_status);
+    		    
+    		    return $this->respond([
+        		    "status" => 200,
+    				"message" => "Success",
+    			]);
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}	
+		}
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------Reschedule booking-------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+    public function reschedule_booking()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            /*echo "<pre>";
+            print_r($json);
+            echo "</pre>";
+            exit;*/
+            
+            if( !array_key_exists('booking_id',$json)  || !array_key_exists('scheduled_date',$json) || !array_key_exists('scheduled_time_slot_id',$json)  
+                || !array_key_exists('rescheduled_date',$json) || !array_key_exists('rescheduled_time_slot_from',$json) 
+                || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
+                            ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->user_key;
+    		    
+    		    if($key == $api_key) {
+    		        $common = new CommonModel();
+    		        
+    		        $arr_time_slot_details = $common->get_details_dynamically('time_slot', 'from', $json->rescheduled_time_slot_from);
+    		        if($arr_time_slot_details != 'failure') {
+    		            $rescheduled_time_slot_id = $arr_time_slot_details[0]['id'];
+    		        }
+    		        else {
+    		            $arr_time_slot = array(
+            		        'from' => $json->rescheduled_time_slot_from
+                        );
+                        $rescheduled_time_slot_id = $common->insert_records_dynamically('time_slot', $arr_time_slot);
+    		        }
+    		        
+    		        $arr_reschedule_booking = array(
+        		        'booking_id' => $json->booking_id,
+                        'scheduled_date' => $json->scheduled_date,
+                        'scheduled_time_slot_id' => $json->scheduled_time_slot_id,
+                        'rescheduled_date' => $json->rescheduled_date,
+                        'rescheduled_time_slot_id' => $rescheduled_time_slot_id,
+                        'req_raised_by_id' => $json->users_id,
+                        'status_id' => 10,
+                    );
+                    $reschedule_id = $common->insert_records_dynamically('re_schedule', $arr_reschedule_booking);
+                    
+                        if ($reschedule_id > 0) {
+                            $arr_booking = array(
+            		        'reschedule_id' => $reschedule_id,
+                            'reschedule_status_id' => 10,
+                        );
+                        $common->update_records_dynamically('booking', $arr_booking, 'id', $json->booking_id);
+                        
+                        //Get data from booking table
+                        $arr_booking_details = $common->get_details_dynamically('booking', 'id', $json->booking_id);
+                        if($arr_booking_details != 'failure') {
+                            $arr_booking_status['booking_id'] = $json->booking_id;
+                            $arr_booking_status['status_id'] = 10;
+                            $arr_booking_status['sp_id'] = $arr_booking_details[0]['sp_id'];
+                            
+                            $common->insert_records_dynamically('booking_status', $arr_booking_status);
+                        }
+                        
+            			return $this->respond([
+            			    "booking_id" => $json->booking_id,
+            			    "reschedule_id" => $reschedule_id,
+            				"status" => 200,
+            				"message" => "Success",
+            			]);
+            		}
+            		else {
+            		    return $this->respond([
+        					"status" => 404,
+        					"message" => "Failed to Reschedule Booking"
+        				]);
+            		}
+        		}
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//--------------------------------------------------UPDATE Reschedule Status STARTS------------------------------------------------------------
+    //-----------------------------------------------****************************----------------------------------------------------------
+    public function update_reschedule_status_by_sp()
+    {
+
+        $json = $this->request->getJSON();
+        if(!array_key_exists('booking_id',$json) || !array_key_exists('reschedule_id',$json) || !array_key_exists('status_id',$json) 
+           || !array_key_exists('sp_id',$json) || !array_key_exists('key',$json) ) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else{
+        $common = new CommonModel();
+        
+        $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		$apiconfig = new \Config\ApiConfig();
+		
+    	$api_key = $apiconfig->user_key;
+    		
+    	if($key == $api_key)
+    	{
+            $reschedule_id = $json->reschedule_id;
+            $status_id = $json->status_id;
+            $booking_id = $json->booking_id;
+            
+            //Mark the status
+            $upd_reschedule_status = [
+                'status_id' => $status_id, //11 - Reschedule Rejected/ 12 - Reschedule Accepted
+            ];
+            $common->update_records_dynamically('re_schedule', $upd_reschedule_status, 'reschedule_id', $reschedule_id);
+            
+            $arr_booking = array(
+		        'reschedule_status_id' => $status_id,
+            );
+            
+            if($status_id == 12) { //12 - Reschedule Accepted
+                //Get data from re_schedule table
+                $arr_reschedule_details = $common->get_details_dynamically('re_schedule', 'reschedule_id', $reschedule_id);
+                if($arr_reschedule_details != 'failure') {
+                    $arr_booking['scheduled_date'] = $arr_reschedule_details[0]['rescheduled_date'];
+                    $arr_booking['time_slot_id'] = $arr_reschedule_details[0]['rescheduled_time_slot_id'];
+                }
+            }
+            $common->update_records_dynamically('booking', $arr_booking, 'id', $json->booking_id);
+            
+            $arr_booking_status['booking_id'] = $json->booking_id;
+            $arr_booking_status['status_id'] = $status_id;
+            $arr_booking_status['sp_id'] = $json->sp_id;
+            
+            $common->insert_records_dynamically('booking_status', $arr_booking_status);
+            
+            return $this->respond([
+                "status" => 200,
+                "message" =>  "Successfully Updated"
+            ]);
+           
+    	}
+    	else {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Access Denied ! Authentication Failed'
+    			]);
+		}
+        
+     }
+   }
+    //--------------------------------------------------FUNCTION ENDS------------------------------------------------------------
+    //--------------------------------------------------Cancel Booking Status STARTS------------------------------------------------------------
+    //-----------------------------------------------****************************----------------------------------------------------------
+    public function cancel_booking()
+    {
+
+        $json = $this->request->getJSON();
+        if(!array_key_exists('booking_id',$json) || !array_key_exists('status_id',$json) || !array_key_exists('reasons',$json) 
+           || !array_key_exists('cancelled_by',$json) || !array_key_exists('key',$json) ) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else{
+        $common = new CommonModel();
+        
+        $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		$apiconfig = new \Config\ApiConfig();
+		
+    	$api_key = $apiconfig->user_key;
+    		
+    	if($key == $api_key)
+    	{
+            $status_id = $json->status_id;
+            $booking_id = $json->booking_id;
+            
+            //Insert into cancel_booking
+            $arr_cancel_booking = array(
+                'booking_id' => $booking_id,
+                'reasons' => $json->reasons,
+                'cancelled_by' => $json->cancelled_by,
+                'status_id' => $status_id,
+            );
+            $common->insert_records_dynamically('cancel_booking', $arr_cancel_booking);
+            
+            //Mark the status
+            $arr_booking = array(
+		        'status_id' => $status_id,
+            );
+            $common->update_records_dynamically('booking', $arr_booking, 'id', $booking_id);
+            
+            //Insert to booking status
+            $arr_booking_status['booking_id'] = $booking_id;
+            $arr_booking_status['status_id'] = $status_id;
+            $common->insert_records_dynamically('booking_status', $arr_booking_status);
+            
+            return $this->respond([
+                "status" => 200,
+                "message" =>  "Booking Cancelled Successfully"
+            ]);
+           
+    	}
+    	else {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Access Denied ! Authentication Failed'
+    			]);
+		}
+        
+     }
+   }
+    //--------------------------------------------------FUNCTION ENDS------------------------------------------------------------
+	//---------------------------------------------------------GET SP's booking Slots -------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function get_sp_slots()
+	{
+		$validate_key = $this->request->getVar('key');
+		$sp_id = $this->request->getVar('sp_id');
+		if($validate_key == "" || $sp_id == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+    		    $misc_model = new MiscModel();
+    		    
+        		$ar_sp_id = array();
+        		$arr_slots_data = array();
+        		$arr_temp = array();
+        		
+        		$ar_sp_id[$sp_id] = $sp_id;
+        		
+        		//Get SP's preferred day/timeslot data
+                $arr_preferred_time_slots_list = $misc_model->get_sp_preferred_time_slot($ar_sp_id);
+                if($arr_preferred_time_slots_list != 'failure') {
+                    foreach($arr_preferred_time_slots_list as $key => $slot_data) {
+                        $arr_temp[$slot_data['users_id']][$key]['day_slot'] = $slot_data['day_slot'];
+                        $arr_temp[$slot_data['users_id']][$key]['time_slot_from'] = $slot_data['from'];
+                    }
+                }
+                
+                //Get SP's blocked data
+                $arr_blocked_time_slots_list = $misc_model->get_sp_blocked_time_slot($ar_sp_id);
+                if($arr_blocked_time_slots_list != 'failure') {
+                    foreach($arr_blocked_time_slots_list as $key => $blocked_data) {
+                        $arr_temp_blocked[$slot_data['users_id']][$key]['time_slot_from'] = $blocked_data['from'];
+                        $arr_temp_blocked[$slot_data['users_id']][$key]['date'] = $blocked_data['date'];
+                    }
+                }
+                
+                if(count($ar_sp_id) > 0) {
+                    foreach($ar_sp_id as $sp_id) {
+                        if(array_key_exists($sp_id,$arr_temp)) {
+                            $arr_slots_data["preferred_time_slots"] = $arr_temp[$slot_data['users_id']];
+                            $arr_slots_data["blocked_time_slots"] = $arr_temp_blocked[$slot_data['users_id']];
+                            //array_push($arr_slots_data,array("preferred_time_slots" => $arr_temp[$slot_data['users_id']],
+                            //                                    "blocked_time_slots" => $arr_temp_blocked[$slot_data['users_id']]));
+                        }
+                    }
+                }
+        
+        		if (count($arr_slots_data) > 0) {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "Success",
+        				"slots_data" => $arr_slots_data,
+        			]);
+        		} else {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "No Slots to Show"
+        			]);
+        		}
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}	
+		}
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
 	public function get_otp_token($length = 4) {
         return rand(
             ((int) str_pad(1, $length, 0, STR_PAD_RIGHT)),
             ((int) str_pad(9, $length, 9, STR_PAD_RIGHT))
         );
     }
+    //-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+    //--------------------------------------------------Update Extra demand status STARTS------------------------------------------------------------
+    //-----------------------------------------------****************************----------------------------------------------------------
+    public function update_extra_demand_status()
+    {
+
+        $json = $this->request->getJSON();
+        if(!array_key_exists('booking_id',$json) || !array_key_exists('status_id',$json) || !array_key_exists('key',$json) ) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else{
+        $common = new CommonModel();
+        
+        $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		$apiconfig = new \Config\ApiConfig();
+		
+    	$api_key = $apiconfig->user_key;
+    		
+    	if($key == $api_key)
+    	{
+            $status_id = $json->status_id; //status_id = 1 for accepted and 2 for rejected
+            $booking_id = $json->booking_id;
+            
+            //Mark the status
+            $arr_extra_demand = array(
+		        'status' => $status_id,
+            );
+            $common->update_records_dynamically('extra_demand', $arr_extra_demand, 'booking_id', $booking_id);
+            
+            $booking_status_id = ($status_id == 1) ? 38 : 39; //extra demand accepted/extra demand rejected
+            
+            
+            //Insert into booking status
+            $arr_booking_status = array(
+		        'booking_id' => $json->booking_id,
+                'status_id' => $booking_status_id, //extra demand accepted/extra demand rejected
+                'description' => "User updated extra demand for booking_id ".$json->booking_id,
+                'created_on' => date('Y-m-d H:i:s')
+            );
+            $common->insert_records_dynamically('booking_status', $arr_booking_status);
+            
+            return $this->respond([
+                "status" => 200,
+                "message" =>  "Status updated Successfully"
+            ]);
+           
+    	}
+    	else {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Access Denied ! Authentication Failed'
+    			]);
+		}
+        
+     }
+   }
+    //--------------------------------------------------FUNCTION ENDS------------------------------------------------------------
+    //---------------------------------------------------------Goals/Installments-------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function get_goals_installments_requested_list()
+	{
+		$validate_key = $this->request->getVar('key');
+		$validate_post_job_id = $this->request->getVar('post_job_id');
+		
+		if($validate_key == "" || $validate_post_job_id == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		} else {
+            $key = md5($validate_key); //Dld0F54x99UeL8nZkByWC0BwUEi4aF4O
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+    		    $job_post_model = new JobPostModel();
+    		       
+    		       $post_job_id = $validate_post_job_id;
+    		       
+    		       //Get Goals/Installments
+    		       $arr_goals_installments = $job_post_model->get_goals_installments_requested_list($post_job_id);
+    		       
+    		       if($arr_goals_installments != 'failure') {
+    		          
+    		          return $this->respond([
+        		            "goals_installments_details" => $arr_goals_installments,
+        		            "status" => 200,
+            				"message" => "Success",
+            			]);
+    		       }
+    		       else {
+            		    return $this->respond([
+            		        "booking_id" => $booking_id,
+        					"status" => 404,
+        					"message" => "No Goals/Installments found"
+        				]);
+            		}
+    		    }
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------Booking Status list-------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function get_booking_status_list()
+	{
+		$validate_key = $this->request->getVar('key');
+		$validate_booking_id = $this->request->getVar('booking_id');
+		
+		if($validate_key == "" || $validate_booking_id == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		} else {
+            $key = md5($validate_key); //Dld0F54x99UeL8nZkByWC0BwUEi4aF4O
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+    		       $misc_model = new MiscModel();
+    		       
+    		       $booking_id = $validate_booking_id;
+    		       
+    		       //Get booking statuses
+    		       $arr_booking_status = $misc_model->get_booking_status_list($booking_id);
+    		       
+    		       if($arr_booking_status != 'failure') {
+    		          
+    		          return $this->respond([
+        		            "booking_status_details" => $arr_booking_status,
+        		            "status" => 200,
+            				"message" => "Success",
+            			]);
+    		       }
+    		       else {
+            		    return $this->respond([
+            		        "booking_id" => $booking_id,
+        					"status" => 404,
+        					"message" => "No Status found"
+        				]);
+            		}
+    		    }
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+    
+    
 }

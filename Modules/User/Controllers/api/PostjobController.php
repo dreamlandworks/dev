@@ -82,7 +82,7 @@ class PostjobController extends ResourceController
                         'amount' => 0,
                         'sp_id' => 0,
                         'created_on' => $json->created_on,
-                        'otp_start' => "",
+                        'otp' => "",
                         'attachment_count' => count($attachments),
                         'status_id' => 1,
                         'estimate_time' => $json->estimate_time,
@@ -243,7 +243,6 @@ class PostjobController extends ResourceController
         } 
 	}
 	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
-	
 	//---------------------------------------------------------Blue Collar Job Post-------------------------------------------------
 	//-------------------------------------------------------------**************** -----------------------------------------------------
 
@@ -306,7 +305,7 @@ class PostjobController extends ResourceController
                         'amount' => 0,
                         'sp_id' => 0,
                         'created_on' => $json->created_on,
-                        'otp_start' => "",
+                        'otp' => "",
                         'attachment_count' => count($attachments),
                         'status_id' => 1,
                         'estimate_time' => $json->estimate_time,
@@ -527,7 +526,7 @@ class PostjobController extends ResourceController
                         'amount' => 0,
                         'sp_id' => 0,
                         'created_on' => $json->created_on,
-                        'otp_start' => "",
+                        'otp' => "",
                         'attachment_count' => count($attachments),
                         'status_id' => 1,
                         'estimate_time' => $json->estimate_time,
@@ -792,7 +791,7 @@ class PostjobController extends ResourceController
     		               //Calculate bid end date
     		               $arr_job_post[$key]['bid_end_date'] = date('Y-m-d H:i:s', strtotime('+'.$arr_job_post[$key]['bids_period'].' day', strtotime($arr_job_post[$key]['post_created_on'])));
     		               $arr_job_post[$key]['current_date'] = $current_date;
-    		               $arr_job_post[$key]['expires_in'] = $this->calc_days_hrs_mins($arr_job_post[$key]['bid_end_date'],$current_date);
+    		               $arr_job_post[$key]['expires_in'] = ($current_date < $arr_job_post[$key]['bid_end_date']) ? $this->calc_days_hrs_mins($arr_job_post[$key]['bid_end_date'],$current_date) : 0;
     		               $arr_job_post[$key]['total_bids'] = $total_bids;
     		               $arr_job_post[$key]['average_bids_amount'] = $average_bids_amount;
     		               
@@ -851,7 +850,7 @@ class PostjobController extends ResourceController
     		               //Calculate bid end date
     		               $arr_job_post[$booking_count]['bid_end_date'] = date('Y-m-d H:i:s', strtotime('+'.$arr_job_post[$booking_count]['bids_period'].' day', strtotime($arr_job_post[$booking_count]['post_created_on'])));
     		               $arr_job_post[$booking_count]['current_date'] = $current_date;
-    		               $arr_job_post[$booking_count]['expires_in'] = $this->calc_days_hrs_mins($arr_job_post[$booking_count]['bid_end_date'],$current_date);
+    		               $arr_job_post[$booking_count]['expires_in'] = ($current_date < $arr_job_post[$booking_count]['bid_end_date']) ? $this->calc_days_hrs_mins($arr_job_post[$booking_count]['bid_end_date'],$current_date) : 0;
     		               $arr_job_post[$booking_count]['total_bids'] = $total_bids;
     		               $arr_job_post[$booking_count]['average_bids_amount'] = $average_bids_amount;
     		               
@@ -905,16 +904,16 @@ class PostjobController extends ResourceController
         		               $arr_job_post[$booking_count]['amount'] = $mm_book_data['amount'];
         		               $arr_job_post[$booking_count]['sp_id'] = $mm_book_data['sp_id'];
         		               $arr_job_post[$booking_count]['profile_pic'] = $mm_book_data['profile_pic'];
-        		               $arr_job_post[$booking_count]['title'] = $bc_book_data['title'];
-        		               $arr_job_post[$booking_count]['bid_range_name'] = $bc_book_data['bid_range_name'];
-        		               $arr_job_post[$booking_count]['range_slots'] = $bc_book_data['range_slots'];
+        		               $arr_job_post[$booking_count]['title'] = $mm_book_data['title'];
+        		               $arr_job_post[$booking_count]['bid_range_name'] = $mm_book_data['bid_range_name'];
+        		               $arr_job_post[$booking_count]['range_slots'] = $mm_book_data['range_slots'];
         		               $arr_job_post[$booking_count]['booking_status'] = $status;
-        		               $arr_job_post[$booking_count]['bids_period'] = $bc_book_data['bids_period']; //in days, 1,3,7
-        		               $arr_job_post[$booking_count]['post_created_on'] = $bc_book_data['created_dts'];
+        		               $arr_job_post[$booking_count]['bids_period'] = $mm_book_data['bids_period']; //in days, 1,3,7
+        		               $arr_job_post[$booking_count]['post_created_on'] = $mm_book_data['created_dts'];
         		               //Calculate bid end date
         		               $arr_job_post[$booking_count]['bid_end_date'] = date('Y-m-d H:i:s', strtotime('+'.$arr_job_post[$booking_count]['bids_period'].' day', strtotime($arr_job_post[$booking_count]['post_created_on'])));
         		               $arr_job_post[$booking_count]['current_date'] = $current_date;
-        		               $arr_job_post[$booking_count]['expires_in'] = $this->calc_days_hrs_mins($arr_job_post[$booking_count]['bid_end_date'],$current_date);
+        		               $arr_job_post[$booking_count]['expires_in'] = ($current_date < $arr_job_post[$booking_count]['bid_end_date']) ? $this->calc_days_hrs_mins($arr_job_post[$booking_count]['bid_end_date'],$current_date) : 0;
         		               $arr_job_post[$booking_count]['total_bids'] = $total_bids;
         		               $arr_job_post[$booking_count]['average_bids_amount'] = $average_bids_amount;
         		               
@@ -1049,6 +1048,7 @@ class PostjobController extends ResourceController
 		               $total_bids_amount = (array_key_exists($arr_booking_details['post_job_id'],$arr_job_post_bids)) ? $arr_job_post_bids[$arr_booking_details['post_job_id']]['bid_amount'] : 0;
 		               $average_bids_amount = ($total_bids > 0) ? (string)round(($total_bids_amount/$total_bids),2) : 0;
     		           
+    		           $arr_booking['booking_id'] = $booking_id;
     		           $arr_booking['post_job_id'] = $arr_booking_details['post_job_id'];
         		       $arr_booking['post_job_ref_id'] = str_pad($arr_booking_details['post_job_id'], 6, "0", STR_PAD_LEFT);
     		           $arr_booking['fname'] = $arr_booking_details['fname'];
@@ -1064,7 +1064,8 @@ class PostjobController extends ResourceController
 		               $arr_booking['bid_range_name'] = $arr_booking_details['bid_range_name'];
 		               $arr_booking['range_slots'] = $arr_booking_details['range_slots'];
 		               $arr_booking['booking_status'] = $arr_booking_details['status'];
-		               $arr_booking['bids_period'] = $arr_booking_details['bids_period']; //in days, 1,3,7
+		               $arr_booking['bids_period'] = $arr_booking_details['bids_period']; 
+		               $arr_booking['bid_per'] = $arr_booking_details['bid_per']; //in days, 1,3,7
 		               $arr_booking['post_created_on'] = $arr_booking_details['created_dts'];
 		               $arr_booking['sp_id'] = $arr_booking_details['sp_id'];
 		               $arr_booking['fcm_token'] = $arr_booking_details['fcm_token'];
@@ -1072,7 +1073,7 @@ class PostjobController extends ResourceController
 		               //Calculate bid end date
 		               $arr_booking['bid_end_date'] = date('Y-m-d H:i:s', strtotime('+'.$arr_booking['bids_period'].' day', strtotime($arr_booking['post_created_on'])));
 		               $arr_booking['current_date'] = $current_date;
-		               $arr_booking['expires_in'] = $this->calc_days_hrs_mins($arr_booking['bid_end_date'],$current_date);
+		               $arr_booking['expires_in'] = ($current_date < $arr_booking['bid_end_date']) ? $this->calc_days_hrs_mins($arr_booking['bid_end_date'],$current_date) : 0;;
 		               $arr_booking['total_bids'] = $total_bids;
 		               $arr_booking['average_bids_amount'] = $average_bids_amount;
 		               
@@ -1085,7 +1086,7 @@ class PostjobController extends ResourceController
 		                   $arr_attachment_details = $misc_model->get_attachment_details($booking_id);
 		                   if($arr_attachment_details != 'failure') {
 		                       foreach($arr_attachment_details as $attach_data) {
-		                           $arr_attachments[] = array('file_name' => $attach_data['file_name'],'file_location' => $attach_data['file_location']);
+		                           $arr_attachments[] = array('id' => $attach_data['id'],'file_name' => $attach_data['file_name'],'file_location' => $attach_data['file_location']);
 		                       }
 		                   }     
 		               }
@@ -1094,7 +1095,10 @@ class PostjobController extends ResourceController
         		            $arr_single_move_details = $misc_model->get_single_move_details($booking_id); 
         		            if($arr_single_move_details != 'failure') {
 		                       foreach($arr_single_move_details as $single_move_data) {
-		                           $arr_job_details[] = array('job_description' => $single_move_data['job_description'],
+		                           $arr_job_details[] = array(
+		                                                       'id' => $single_move_data['id'],
+		                                                       'address_id' => $single_move_data['address_id'],
+		                                                       'job_description' => $single_move_data['job_description'],
 		                                                       'locality' => $single_move_data['locality'],
 		                                                       'latitude' => $single_move_data['latitude'],
 		                                                       'longitude' => $single_move_data['longitude'],
@@ -1118,7 +1122,9 @@ class PostjobController extends ResourceController
         		            $arr_multi_move_details = $misc_model->get_multi_move_details($booking_id); 
         		            if($arr_multi_move_details != 'failure') {
 		                       foreach($arr_multi_move_details as $multi_move_data) {
-		                           $arr_job_details[] = array('sequence_no' => $multi_move_data['sequence_no'],
+		                           $arr_job_details[] = array('id' => $multi_move_data['id'],
+		                                                        'address_id' => $multi_move_data['address_id'],
+		                                                        'sequence_no' => $multi_move_data['sequence_no'],
 		                                                       'job_description' => $multi_move_data['job_description'], 
 		                                                       'weight_type' => $multi_move_data['weight_type'], 
 		                                                       'locality' => $multi_move_data['locality'],
@@ -1226,6 +1232,7 @@ class PostjobController extends ResourceController
     		       if($arr_bid_details != 'failure') {
     		           foreach($arr_bid_details as $bid_data) {
     		                $arr_bid_list[] = array('bid_id' => $bid_data['id'],
+    		                                        'bid_type' => $bid_data['bid_type'],
                                                     'sp_id' => $bid_data['users_id'],
                                                    'sp_fname' => $bid_data['fname'],
                                                    'sp_lname' => $bid_data['lname'],
@@ -1337,7 +1344,7 @@ class PostjobController extends ResourceController
     		                   $arr_attachment_details = $job_post_model->get_bid_attachment_details($bid_id);
     		                   if($arr_attachment_details != 'failure') {
     		                       foreach($arr_attachment_details as $attach_data) {
-    		                           $arr_attachments[] = array('file_name' => $attach_data['file_name'],'file_location' => $attach_data['file_location']);
+    		                           $arr_attachments[] = array('bid_attach_id' => $attach_data['id'],'file_name' => $attach_data['file_name'],'file_location' => $attach_data['file_location']);
     		                       }
     		                   }     
     		               } 
@@ -1391,5 +1398,944 @@ class PostjobController extends ResourceController
        $dtT = new \DateTime("@$seconds");
        return $dtF->diff($dtT)->format('%a days, %h hours, %i minutes'); // and %s seconds
     }
-	
+    //-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+    //---------------------------------------------------------Job Post Installments-------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function job_post_installments()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            /*echo "<pre>";
+            print_r($json);
+            echo "</pre>";
+            exit;*/
+            
+            if(!array_key_exists('post_job_id',$json) || !array_key_exists('booking_id',$json)  || !array_key_exists('data',$json) || !array_key_exists('key',$json)
+            ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->user_key;
+    		    
+    		    if($key == $api_key) {
+    		        $common = new CommonModel();
+    		        
+    		        $arr_data = $json->data;
+    		        /*echo "<pre>";
+    		        print_r($arr_data);
+    		        echo "</pre>";
+    		        exit;*/
+    		        $total_rows = 0;
+    		        
+    		        if(count($arr_data) > 0) {
+    		            foreach($arr_data as $data_val) {
+    		                $arr_job_post_inst = array(
+                		        'inst_no' => $data_val->inst_no,
+                                'amount' => $data_val->amount,
+                                'post_job_id' => $json->post_job_id,
+                                'booking_id' => $json->booking_id,
+                                'goal_id' => $data_val->goal_id,
+                            );
+                            $installment_det_id = $common->insert_records_dynamically('installment_det', $arr_job_post_inst);
+                            if ($installment_det_id > 0) {
+                                $total_rows++;
+                            }    
+    		            }
+    		        }
+    		        
+    		        if (count($arr_data) == $total_rows) {
+                        return $this->respond([
+            			    "status" => 200,
+            				"message" => "Success",
+            			]);
+            		}
+            		else {
+            		    return $this->respond([
+        					"status" => 404,
+        					"message" => "Failed to create Job Post Installment"
+        				]);
+            		}
+        		}
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------Installment Payments-------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function job_post_installments_payments()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            /*echo "<pre>";
+            print_r($json);
+            echo "</pre>";
+            exit;*/
+            
+            if(!array_key_exists('booking_id',$json) || !array_key_exists('bid_id',$json) || !array_key_exists('sp_id',$json)
+                || !array_key_exists('date',$json) || !array_key_exists('amount',$json) 
+                || !array_key_exists('reference_id',$json) || !array_key_exists('payment_status',$json) 
+                || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
+                            ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->user_key;
+    		    
+    		    if($key == $api_key) {
+    		        $common = new CommonModel();
+    		        
+    		        //Insert into Transaction table
+    		        $arr_transaction = array(
+        		          'name_id' => 12, //Installment Payment
+                          'date' => $json->date,
+                          'amount' => $json->amount,
+                          'type_id' => 1, //Receipt/Credit
+                          'users_id' => $json->users_id,
+                          'method_id' => 1, //Online Payment
+                          'reference_id' => $json->reference_id,
+                          'booking_id' => $json->booking_id,
+                          'payment_status' => $json->payment_status, //'Success', 'Failure'
+                    );
+                    $transaction_id = $common->insert_records_dynamically('transaction', $arr_transaction);
+                    
+                    if($transaction_id > 0) { 
+                        if($json->payment_status == 'Success') {
+                            $arr_booking_payments_ins = array(
+                		          'booking_id' => $json->booking_id,
+                                  'transaction_id' => $transaction_id, 
+                            );
+                            //Insert into booking_receipts
+                            $common->insert_records_dynamically('booking_receipts', $arr_booking_payments_ins);
+                            
+                            $arr_inst = array(
+                		          'transaction_id' => $transaction_id, 
+                		          'inst_paid_status' => "Paid",
+                            );
+                            //Update installment_det
+                            $common->update_records_dynamically('installment_det', $arr_inst, 'booking_id', $json->booking_id);
+                            
+                            //Awarded => making booking status as Pending
+                            $upd_booking_status = [
+                                "sp_id" =>  $json->sp_id,
+                                "status_id" =>  9,
+                            ];
+                            $common->update_records_dynamically('booking', $upd_booking_status, 'id', $json->booking_id);
+                            
+                            //Insert into booking status
+                            $arr_booking_status = array(
+                		        'booking_id' => $json->booking_id,
+                                'status_id' => 32, //Installment Added
+                                'created_on' => date('Y-m-d H:i:s')
+                            );
+                            $common->insert_records_dynamically('booking_status', $arr_booking_status);
+                            
+                            //update status are awarded in  post_job table
+                            $upd_post_job_status = [
+                                "status_id" =>  27, //Awarded
+                            ];
+                            $common->update_records_dynamically('post_job', $upd_post_job_status, 'booking_id', $json->booking_id);
+                            
+                            //Mark the bid as deal sealed
+                            $upd_bid_det_status = [
+                                "bid_type" =>  1, //Sealed
+                            ];
+                            $common->update_records_dynamically('bid_det', $upd_bid_det_status, 'id', $json->bid_id);
+                        }    
+                        
+        		        return $this->respond([
+            			    "transaction_id" => $transaction_id,
+            				"status" => 200,
+            				"message" => "Success",
+            			]);
+                    }
+            		else {
+            		    return $this->respond([
+        					"status" => 404,
+        					"message" => "Failed to create Payment"
+        				]);
+            		}
+        		}
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//--------------------------------------------------UPDATE Job Post Award/Reject Status STARTS------------------------------------------------------------
+    //-----------------------------------------------****************************----------------------------------------------------------
+    public function update_post_job_status()
+    {
+
+        $json = $this->request->getJSON();
+        if(!array_key_exists('booking_id',$json) || !array_key_exists('post_job_id',$json) || !array_key_exists('bid_id',$json) || !array_key_exists('status_id',$json) || !array_key_exists('key',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else{
+        $common = new CommonModel();
+        
+        $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		$apiconfig = new \Config\ApiConfig();
+		
+    	$api_key = $apiconfig->user_key;
+    		
+    	if($key == $api_key)
+    	{
+            $post_job_id = $json->post_job_id;
+            $status_id = $json->status_id;
+            $booking_id = $json->booking_id;
+            
+            if($status_id == 29) {
+                //Mark the bid as Rejected
+                $upd_bid_det_status = [
+                    "bid_type" =>  2, //Rejected
+                ];
+                $common->update_records_dynamically('bid_det', $upd_bid_det_status, 'id', $json->bid_id);
+            }
+            
+            return $this->respond([
+                "status" => 200,
+                "message" =>  "Successfully Updated"
+            ]);
+           
+    	}
+    	else {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Access Denied ! Authentication Failed'
+    			]);
+		}
+        
+     }
+   }
+//--------------------------------------------------FUNCTION ENDS------------------------------------------------------------
+//---------------------------------------------------------Single move job post update-------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function update_single_move_job_post()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            /*echo "<pre>";
+            print_r($json);
+            echo "</pre>";
+            exit;*/
+            
+            if(!array_key_exists('booking_id',$json) || !array_key_exists('post_job_id',$json) || !array_key_exists('scheduled_date',$json) 
+                || !array_key_exists('time_slot_from',$json)  || !array_key_exists('job_description',$json) 
+                || !array_key_exists('bids_period',$json) || !array_key_exists('bid_per',$json) || !array_key_exists('bid_range_id',$json) 
+                || !array_key_exists('address_id',$json) || !array_key_exists('title',$json) || !array_key_exists('lang_responses',$json)
+                || !array_key_exists('bid_range_id',$json) || !array_key_exists('keywords_responses',$json) || !array_key_exists('created_on',$json)
+                || !array_key_exists('attachments',$json) || !array_key_exists('estimate_time',$json) || !array_key_exists('estimate_type_id',$json)
+                || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
+                            ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->user_key;
+    		    
+    		    if($key == $api_key) {
+    		        $attachments = $json->attachments;
+    		        
+    		        $common = new CommonModel();
+    		        
+    		        $arr_time_slot_details = $common->get_details_dynamically('time_slot', 'from', $json->time_slot_from);
+    		        if($arr_time_slot_details != 'failure') {
+    		            $time_slot_id = $arr_time_slot_details[0]['id'];
+    		        }
+    		        else {
+    		            $arr_time_slot = array(
+            		        'from' => $json->time_slot_from
+                        );
+                        $time_slot_id = $common->insert_records_dynamically('time_slot', $arr_time_slot);
+    		        }
+    		        
+    		        $arr_job_post = array(
+        		        'scheduled_date' => $json->scheduled_date,
+                        'time_slot_id' => $time_slot_id,
+                        'attachment_count' => count($attachments),
+                        'estimate_time' => $json->estimate_time,
+                        'estimate_type_id' => $json->estimate_type_id,
+                    );
+                    $common->update_records_dynamically('booking', $arr_job_post, 'id', $json->booking_id);
+                    
+                    if ($json->booking_id > 0) {
+                        
+                        $address_id = $json->address_id;
+                        
+                        //Update Single move table
+                        $arr_single_move = array(
+                                'address_id' => $address_id,
+                                'job_description' => $json->job_description,
+                            );
+                        /*echo "<pre>";
+                        print_r($arr_single_move);
+                        echo "</pre>";    */
+                        
+                        $common->update_records_dynamically('single_move', $arr_single_move, 'booking_id', $json->booking_id);
+                        
+                        //Update post_job table
+                        $arr_post_job = array(
+                                'bids_period' => $json->bids_period,
+                                'title' => $json->title,
+                                'bid_per' => $json->bid_per,
+                                'bid_range_id' => $json->bid_range_id,
+                            );
+                        
+                        $common->update_records_dynamically('post_job', $arr_post_job, 'id', $json->post_job_id);
+                        
+                        if($json->post_job_id > 0) {
+                        
+                            //******************Languages
+                        
+                            $common->delete_records_dynamically('post_req_lang', 'post_job_id', $json->post_job_id);
+                            
+                            foreach($json->lang_responses as $lang_key => $lang_data) {
+                                $lang_id = $lang_data->lang_id;
+                                if($lang_id == 0) { //Insert into user_lang_list ::	language_id	users_id
+                                    //Check whether language exists in language, if not create
+                    		        $arr_ins_lang_master_det = array(
+                		                'name' => $lang_data->name
+                    		        );
+                    		        /*echo "<pre>";
+                    		        print_r($arr_ins_lang_master_det);
+                    		        echo "</pre>";*/
+                    		        
+                    		        $lang_id = $common->insert_records_dynamically('language', $arr_ins_lang_master_det);
+                                }
+                                
+                                //Insert into post_req_lang table
+                                $arr_post_req_lang = array(
+                                        'post_job_id' => $json->post_job_id,
+                                        'language_id' => $lang_id,
+                                        'status' => 'Active',
+                                    );
+                                
+                                $post_req_id = $common->insert_records_dynamically('post_req_lang', $arr_post_req_lang);
+                            }
+                            //*******************Keywords
+                            
+                            $common->delete_records_dynamically('post_req_keyword', 'post_job_id', $json->post_job_id);
+                            
+                            foreach($json->keywords_responses as $keywords_key => $keywords_data) {
+                                $keyword_id = $keywords_data->keyword_id;
+                                if($keyword_id == 0) { //Insert into keywords :: keyword,subcategories_id
+        
+                                    //Check whether keyword exists in keywords, if not create
+                    		        $arr_ins_keywords_master_det = array(
+                		                'keyword' => $keywords_data->name,
+                		                'profession_id' => 0,
+        								'status' => 'Inactive'
+                    		        );
+                    		        /*echo "<pre>";
+                    		        print_r($arr_ins_keywords_master_det);
+                    		        echo "</pre>";*/
+                    		        
+                    		        $keyword_id = $common->insert_records_dynamically('keywords', $arr_ins_keywords_master_det);
+                    		        //echo "<br> keyword id ".$keyword_id;
+                                }
+                                
+                                //Insert into post_req_lang table
+                                $arr_post_req_keyword = array(
+                                        'post_job_id' => $json->post_job_id,
+                                        'keywords_id' => $keyword_id,
+                                        'status' => 'Active',
+                                    );
+                                
+                                $post_req_id = $common->insert_records_dynamically('post_req_keyword', $arr_post_req_keyword);
+                                
+                                /*echo "<pre>";
+                		        print_r($arr_ins_keyword_det);
+                		        echo "</pre>";*/
+                		        //echo '<br> user_keyword_list_id  '.$user_keyword_list_id;
+                            }
+                        }
+                        //Create and save atatchments
+                        if(count($attachments) > 0) {
+                            foreach($attachments as $attach_key => $arr_file) {
+                                foreach($arr_file as $attach_name => $file) {
+                                    if ($file != null) {
+                                        $image = generateDynamicImage("images/attachments",$file);
+                                        
+                                        $arr_attach = array(
+                                                'booking_id' => $json->booking_id,
+                                                'file_name' => $image,
+                                                'file_location' => 'images/attachments',
+                                                'created_on' => $json->created_on,
+                                                'created_by' => $json->users_id,
+                                                'status_id' => 1
+                                            );
+                                        $common->insert_records_dynamically('attachments', $arr_attach);
+                                    }
+                                }
+                            }
+                        }
+                        
+            			return $this->respond([
+            			    "post_job_id" => $json->post_job_id,
+            			    "status" => 200,
+            				"message" => "Success",
+            			]);
+            		}
+            		else {
+            		    return $this->respond([
+            		        "status" => 404,
+        					"message" => "Failed to update Job Post"
+        				]);
+            		}
+        		}
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------Update Blue Collar Job Post-------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function update_blue_collar_job_post()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            /*echo "<pre>";
+            print_r($json);
+            echo "</pre>";
+            exit;*/
+            
+            if(!array_key_exists('booking_id',$json) || !array_key_exists('post_job_id',$json) || !array_key_exists('time_slot_from',$json)  || !array_key_exists('job_description',$json) 
+                || !array_key_exists('bids_period',$json) || !array_key_exists('bid_per',$json) || !array_key_exists('bid_range_id',$json) 
+                || !array_key_exists('title',$json) || !array_key_exists('lang_responses',$json)
+                || !array_key_exists('bid_range_id',$json) || !array_key_exists('keywords_responses',$json) || !array_key_exists('created_on',$json)
+                || !array_key_exists('attachments',$json) || !array_key_exists('estimate_time',$json) || !array_key_exists('estimate_type_id',$json)
+                || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
+            ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->user_key;
+    		    
+    		    if($key == $api_key) {
+    		        $booking_id = $json->booking_id;
+    		        $post_job_id = $json->post_job_id;
+    		        
+    		        $attachments = $json->attachments;
+    		        
+    		        $common = new CommonModel();
+    		        //Get master time slot
+                    $arr_time_slot_details = $common->get_details_dynamically('time_slot', 'from', $json->time_slot_from);
+    		        if($arr_time_slot_details != 'failure') {
+    		            $time_slot_id = $arr_time_slot_details[0]['id'];
+    		        }
+    		        else {
+    		            $arr_time_slot = array(
+            		        'from' => $json->time_slot_from
+                        );
+                        $time_slot_id = $common->insert_records_dynamically('time_slot', $arr_time_slot);
+    		        }
+    		        
+    		        $arr_job_post = array(
+        		        'scheduled_date' => $json->scheduled_date,
+                        'time_slot_id' => $time_slot_id,
+                        'attachment_count' => count($attachments),
+                        'estimate_time' => $json->estimate_time,
+                        'estimate_type_id' => $json->estimate_type_id,
+                    );
+                    $common->update_records_dynamically('booking', $arr_job_post, 'id', $booking_id);
+    		        
+    		        if ($booking_id > 0) {
+                        
+                        //Insert into blue_collar table
+                        $arr_blue_collar = array(
+                                'job_description' => $json->job_description,
+                            );
+                        /*echo "<pre>";
+                        print_r($arr_blue_collar);
+                        echo "</pre>";    */
+                        
+                        $common->update_records_dynamically('blue_collar', $arr_blue_collar, 'booking_id', $booking_id);
+                        
+                        //Update post_job table
+                        $arr_post_job = array(
+                                'bids_period' => $json->bids_period,
+                                'title' => $json->title,
+                                'bid_per' => $json->bid_per,
+                                'bid_range_id' => $json->bid_range_id,
+                            );
+                        
+                        $common->update_records_dynamically('post_job', $arr_post_job, 'id', $post_job_id);
+                        
+                        if($post_job_id > 0) {
+                        
+                            //******************Languages
+                            $common->delete_records_dynamically('post_req_lang', 'post_job_id', $post_job_id);
+                            
+                            foreach($json->lang_responses as $lang_key => $lang_data) {
+                                $lang_id = $lang_data->lang_id;
+                                if($lang_id == 0) { //Insert into user_lang_list ::	language_id	users_id
+                                    //Check whether language exists in language, if not create
+                    		        $arr_ins_lang_master_det = array(
+                		                'name' => $lang_data->name
+                    		        );
+                    		        /*echo "<pre>";
+                    		        print_r($arr_ins_lang_master_det);
+                    		        echo "</pre>";*/
+                    		        
+                    		        $lang_id = $common->insert_records_dynamically('language', $arr_ins_lang_master_det);
+                                }
+                                
+                                //Insert into post_req_lang table
+                                $arr_post_req_lang = array(
+                                        'post_job_id' => $post_job_id,
+                                        'language_id' => $lang_id,
+                                        'status' => 'Active',
+                                    );
+                                
+                                $post_req_id = $common->insert_records_dynamically('post_req_lang', $arr_post_req_lang);
+                            }
+                            //*******************Keywords
+                            
+                            $common->delete_records_dynamically('post_req_keyword', 'post_job_id', $post_job_id);
+                            
+                            foreach($json->keywords_responses as $keywords_key => $keywords_data) {
+                                $keyword_id = $keywords_data->keyword_id;
+                                if($keyword_id == 0) { //Insert into keywords :: keyword,subcategories_id
+        
+                                    //Check whether keyword exists in keywords, if not create
+                    		        $arr_ins_keywords_master_det = array(
+                		                'keyword' => $keywords_data->name,
+                		                'profession_id' => 0,
+        								'status' => 'Inactive'
+                    		        );
+                    		        /*echo "<pre>";
+                    		        print_r($arr_ins_keywords_master_det);
+                    		        echo "</pre>";*/
+                    		        
+                    		        $keyword_id = $common->insert_records_dynamically('keywords', $arr_ins_keywords_master_det);
+                    		        //echo "<br> keyword id ".$keyword_id;
+                                }
+                                
+                                //Insert into post_req_lang table
+                                $arr_post_req_keyword = array(
+                                        'post_job_id' => $post_job_id,
+                                        'keywords_id' => $keyword_id,
+                                        'status' => 'Active',
+                                    );
+                                
+                                $post_req_id = $common->insert_records_dynamically('post_req_keyword', $arr_post_req_keyword);
+                                
+                                /*echo "<pre>";
+                		        print_r($arr_ins_keyword_det);
+                		        echo "</pre>";*/
+                		        //echo '<br> user_keyword_list_id  '.$user_keyword_list_id;
+                            }
+                        }
+                    
+                        //Create and save atatchments
+                        if(count($attachments) > 0) {
+                            foreach($attachments as $attach_key => $arr_file) {
+                                foreach($arr_file as $attach_name => $file) {
+                                    if ($file != null) {
+                                        $image = generateDynamicImage("images/attachments",$file);
+                                        
+                                        $arr_attach = array(
+                                                'booking_id' => $booking_id,
+                                                'file_name' => $image,
+                                                'file_location' => 'images/attachments',
+                                                'created_on' => $json->created_on,
+                                                'created_by' => $json->users_id,
+                                                'status_id' => 1
+                                            );
+                                        $common->insert_records_dynamically('attachments', $arr_attach);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        return $this->respond([
+            			    "post_job_id" => $post_job_id,
+            			    "status" => 200,
+            				"message" => "Success",
+            			]);
+            		}
+            		else {
+            		    return $this->respond([
+        					"status" => 404,
+        					"message" => "Failed to update Job Post"
+        				]);
+            		}
+        		}
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------Update Multi Move Job Post-------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function update_multi_move_job_post()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            /*echo "<pre>";
+            print_r($json);
+            echo "</pre>";*/
+            //exit;
+            
+            if(!array_key_exists('booking_id',$json) || !array_key_exists('post_job_id',$json) || !array_key_exists('scheduled_date',$json) || !array_key_exists('time_slot_from',$json)   
+                || !array_key_exists('bids_period',$json) || !array_key_exists('bid_per',$json) || !array_key_exists('bid_range_id',$json) 
+                || !array_key_exists('addresses',$json) || !array_key_exists('title',$json) || !array_key_exists('lang_responses',$json)
+                || !array_key_exists('bid_range_id',$json) || !array_key_exists('keywords_responses',$json) || !array_key_exists('created_on',$json)
+                || !array_key_exists('attachments',$json) || !array_key_exists('estimate_time',$json) || !array_key_exists('estimate_type_id',$json)
+                || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
+                ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->user_key;
+    		    
+    		    if($key == $api_key) {
+    		        $attachments = $json->attachments;
+    		        $booking_id = $json->booking_id;
+    		        $post_job_id = $json->post_job_id;
+    		        
+    		        $common = new CommonModel();
+    		        
+    		        //Get master time slot
+                    $arr_time_slot_details = $common->get_details_dynamically('time_slot', 'from', $json->time_slot_from);
+    		        if($arr_time_slot_details != 'failure') {
+    		            $time_slot_id = $arr_time_slot_details[0]['id'];
+    		        }
+    		        else {
+    		            $arr_time_slot = array(
+            		        'from' => $json->time_slot_from
+                        );
+                        $time_slot_id = $common->insert_records_dynamically('time_slot', $arr_time_slot);
+    		        }
+    		        
+    		        $arr_booking = array(
+        		        'scheduled_date' => $json->scheduled_date,
+                        'time_slot_id' => $time_slot_id,
+                        'attachment_count' => count($attachments),
+                        'estimate_time' => $json->estimate_time,
+                        'estimate_type_id' => $json->estimate_type_id,
+                    );
+                    $common->update_records_dynamically('booking', $arr_booking, 'id', $booking_id);
+    		        
+    		        if ($booking_id > 0) {
+                        $addresses = $json->addresses;
+                        $arr_multi_move = array();
+                        
+                        if(count($addresses) > 0) {
+                            foreach($addresses as $address_key => $arr_address) {
+                                if($arr_address->id == 0) {
+                                    //Insert into multi_move table
+                                    $arr_multi_move[] = array(
+                                            'booking_id' => $booking_id,
+                                            'sequence_no' => $arr_address->sequence_no,
+                                            'address_id' => $arr_address->address_id,
+                                            'job_description' => $arr_address->job_description,
+                                            'weight_type' => $arr_address->weight_type,
+                                    );
+                                }
+                                else {
+                                    //Update post_job table
+                                    $arr_multi_move_update = array(
+                                            'sequence_no' => $arr_address->sequence_no,
+                                            'address_id' => $arr_address->address_id,
+                                            'job_description' => $arr_address->job_description,
+                                            'weight_type' => $arr_address->weight_type,
+                                        );
+                                    
+                                    $common->update_records_dynamically('multi_move', $arr_multi_move_update, 'id', $arr_address->id); 
+                                }
+                            }
+                            /*echo "<pre>";
+                            print_r($arr_multi_move);
+                            echo "</pre>";
+                            exit;*/
+                            if(count($arr_multi_move) > 0) {
+                                $common->batch_insert_records_dynamically('multi_move', $arr_multi_move);
+                            }
+                            
+                        }
+                        
+                        //Update post_job table
+                        $arr_post_job = array(
+                                'bids_period' => $json->bids_period,
+                                'title' => $json->title,
+                                'bid_per' => $json->bid_per,
+                                'bid_range_id' => $json->bid_range_id,
+                            );
+                        
+                        $common->update_records_dynamically('post_job', $arr_post_job, 'id', $post_job_id);
+                        
+                        if($post_job_id > 0) {
+                        
+                            //******************Languages
+                        
+                            $common->delete_records_dynamically('post_req_lang', 'post_job_id', $post_job_id);
+                            
+                            foreach($json->lang_responses as $lang_key => $lang_data) {
+                                $lang_id = $lang_data->lang_id;
+                                if($lang_id == 0) { //Insert into user_lang_list ::	language_id	users_id
+                                    //Check whether language exists in language, if not create
+                    		        $arr_ins_lang_master_det = array(
+                		                'name' => $lang_data->name
+                    		        );
+                    		        /*echo "<pre>";
+                    		        print_r($arr_ins_lang_master_det);
+                    		        echo "</pre>";*/
+                    		        
+                    		        $lang_id = $common->insert_records_dynamically('language', $arr_ins_lang_master_det);
+                                }
+                                
+                                //Insert into post_req_lang table
+                                $arr_post_req_lang = array(
+                                        'post_job_id' => $post_job_id,
+                                        'language_id' => $lang_id,
+                                        'status' => 'Active',
+                                    );
+                                
+                                $post_req_id = $common->insert_records_dynamically('post_req_lang', $arr_post_req_lang);
+                            }
+                            //*******************Keywords
+                            
+                            $common->delete_records_dynamically('post_req_keyword', 'post_job_id', $post_job_id);
+                            
+                            foreach($json->keywords_responses as $keywords_key => $keywords_data) {
+                                $keyword_id = $keywords_data->keyword_id;
+                                if($keyword_id == 0) { //Insert into keywords :: keyword,subcategories_id
+        
+                                    //Check whether keyword exists in keywords, if not create
+                    		        $arr_ins_keywords_master_det = array(
+                		                'keyword' => $keywords_data->name,
+                		                'profession_id' => 0,
+        								'status' => 'Inactive'
+                    		        );
+                    		        /*echo "<pre>";
+                    		        print_r($arr_ins_keywords_master_det);
+                    		        echo "</pre>";*/
+                    		        
+                    		        $keyword_id = $common->insert_records_dynamically('keywords', $arr_ins_keywords_master_det);
+                    		        //echo "<br> keyword id ".$keyword_id;
+                                }
+                                
+                                //Insert into post_req_lang table
+                                $arr_post_req_keyword = array(
+                                        'post_job_id' => $post_job_id,
+                                        'keywords_id' => $keyword_id,
+                                        'status' => 'Active',
+                                    );
+                                
+                                $post_req_id = $common->insert_records_dynamically('post_req_keyword', $arr_post_req_keyword);
+                                
+                                /*echo "<pre>";
+                		        print_r($arr_ins_keyword_det);
+                		        echo "</pre>";*/
+                		        //echo '<br> user_keyword_list_id  '.$user_keyword_list_id;
+                            }
+                        }
+                    
+                        //Create and save atatchments
+                        if(count($attachments) > 0) {
+                            foreach($attachments as $attach_key => $arr_file) {
+                                foreach($arr_file as $attach_name => $file) {
+                                    if ($file != null) {
+                                        $image = generateDynamicImage("images/attachments",$file);
+                                        
+                                        $arr_attach = array(
+                                                'booking_id' => $booking_id,
+                                                'file_name' => $image,
+                                                'file_location' => 'images/attachments',
+                                                'created_on' => $json->created_on,
+                                                'created_by' => $json->users_id,
+                                                'status_id' => 1
+                                            );
+                                        $common->insert_records_dynamically('attachments', $arr_attach);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        return $this->respond([
+            			    "post_job_id" => $post_job_id,
+            			    "status" => 200,
+            				"message" => "Success",
+            			]);
+            		}
+            		else {
+            		    return $this->respond([
+        					"status" => 404,
+        					"message" => "Failed to update Job Post"
+        				]);
+            		}
+        		}
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------Job Post Approve/Reject Installments-------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function job_post_approve_reject_installment()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            /*echo "<pre>";
+            print_r($json);
+            echo "</pre>";
+            exit;*/
+            
+            if(!array_key_exists('booking_id',$json)  || !array_key_exists('users_id',$json)  || !array_key_exists('inst_id',$json) 
+            || !array_key_exists('sp_id',$json) || !array_key_exists('status_id',$json)  || !array_key_exists('key',$json)) 
+            {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->provider_key;
+    		    
+    		    if($key == $api_key) {
+    		        $common = new CommonModel();
+    		        
+    		        $arr_user_details = $common->get_details_dynamically('users', 'users_id', $json->sp_id);
+    		        
+    		        $arr_installment_det = array(
+                            'inst_request_status_id' => $json->status_id, //34 - approved,35 - rejected
+        		    );
+                    $common->update_records_dynamically('installment_det', $arr_installment_det, 'id', $json->inst_id);
+                    
+                    //Insert into booking status
+                    $arr_booking_status = array(
+        		        'booking_id' => $json->booking_id,
+                        'status_id' => $json->status_id, //34 - approved,35 - rejected
+                        'sp_id' => $json->sp_id,
+                        'description' => ($json->status_id == 34) ? "User approved Installment for inst_id ".$json->inst_id : "User rejected Installment for inst_id ".$json->inst_id,
+                        'created_on' => date('Y-m-d H:i:s')
+                    );
+                    $common->insert_records_dynamically('booking_status', $arr_booking_status);
+    		        
+    		        return $this->respond([
+    		            "sp_fcm_token" => ($arr_user_details != 'failure') ? $arr_user_details[0]['fcm_token'] : "",
+        			    "status" => 200,
+        				"message" => "Installment request updated Successfully",
+        			]);
+        		}
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
 }

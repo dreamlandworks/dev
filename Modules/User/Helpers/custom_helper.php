@@ -34,8 +34,6 @@ function generateImage($img)
 {
 
     $folderPath = "./images/";
-    // $image_parts = explode(";base64,", $img);
-    // $image_type_aux = explode("./images/", $image_parts[0]);
     $image_base64 = base64_decode($img);
     $name = date('Ymd') . uniqid() . '.png';
     $file = $folderPath . $name;
@@ -52,16 +50,15 @@ function generateImage($img)
  * 
  *  @return [String] File Name
  */
-function generateDynamicImage($folder,$img)
+function generateDynamicImage($folder,$img,$type="png")
 {
 
     $folderPath = "./".$folder.'/';
-    // $image_parts = explode(";base64,", $img);
-    // $image_type_aux = explode("./images/", $image_parts[0]);
     $image_base64 = base64_decode($img);
-    $name = date('Ymd') . uniqid() . '.png';
+    $name = date('Ymd') . uniqid() . '.'.$type;
     $file = $folderPath . $name;
     file_put_contents($file, $image_base64);
-    return '/'.$folder."/".$name;
+    return $folder."/".$name;
 }
+
 

@@ -65,16 +65,31 @@ class MembershipController extends ResourceController
                     
                     if($transaction_id > 0) { //Insert into subs_plan
                         if($json->payment_status == 'Success') {
-                            $arr_membership_payments_ins = array(
-                                  'users_id' => $json->users_id,
-                                  'date' => $json->date,
-                		          'plans_id' => $json->plan_id,
-                		          'start_date' => $json->date,
-                		          'end_date' => date('Y-m-d H:i:s', strtotime($json->date . " +".$json->period." days")),
-                                  'transaction_id' => $transaction_id, 
-                            );
-                            //Insert into subs_plan
-                            $common->insert_records_dynamically('subs_plan', $arr_membership_payments_ins);
+                            //Check if the record exists
+    		                $arr_time_slot_details = $common->get_details_dynamically('subs_plan', 'users_id', $json->users_id);
+                            if($arr_time_slot_details == "failure") {
+                                $arr_membership_payments_ins = array(
+                                      'users_id' => $json->users_id,
+                                      'date' => $json->date,
+                    		          'plans_id' => $json->plan_id,
+                    		          'start_date' => $json->date,
+                    		          'end_date' => date('Y-m-d H:i:s', strtotime($json->date . " +".$json->period." days")),
+                                      'transaction_id' => $transaction_id, 
+                                );
+                                //Insert into subs_plan
+                                $common->insert_records_dynamically('subs_plan', $arr_membership_payments_ins);
+                            }
+                            else {
+                                $arr_membership_payments_upd = array(
+                                      'date' => $json->date,
+                    		          'plans_id' => $json->plan_id,
+                    		          'start_date' => $json->date,
+                    		          'end_date' => date('Y-m-d H:i:s', strtotime($json->date . " +".$json->period." days")),
+                                      'transaction_id' => $transaction_id, 
+                                );
+                                //Update subs_plan
+                                $common->update_records_dynamically('subs_plan', $arr_membership_payments_upd, 'users_id', $json->users_id);
+                            }
                         }
                         
         		        return $this->respond([

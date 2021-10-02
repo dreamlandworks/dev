@@ -827,6 +827,521 @@ class MiscController extends ResourceController
 		
 		
 	}
+    //-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+    //---------------------------------------------------------GET LIST of Goals HERE -------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
 
+	public function goals_list()
+	{
+		$validate_key = $this->request->getVar('key');
+		if($validate_key == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+    		    $common = new CommonModel();
+        		$res = $common->get_table_details_dynamically('goals', 'goal_id', 'ASC');
+        
+        		if ($res != 'failure') {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "Success",
+        				"data" => $res
+        			]);
+        		} else {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "No Goals to Show"
+        			]);
+        		}
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}	
+		}
+		
+		
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------GET LIST of Complaint modules HERE -------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function complaint_modules_list()
+	{
+		$validate_key = $this->request->getVar('key');
+		if($validate_key == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+    		    $common = new CommonModel();
+        		$res = $common->get_table_details_dynamically('complaint_module', 'id', 'ASC');
+        
+        		if ($res != 'failure') {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "Success",
+        				"data" => $res
+        			]);
+        		} else {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "No Modules to Show"
+        			]);
+        		}
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}	
+		}
+		
+		
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------Add Complaints HERE -------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function post_complaints()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            
+            if(!array_key_exists('module_id',$json) || !array_key_exists('booking_id',$json) || !array_key_exists('description',$json) || !array_key_exists('created_on',$json) 
+                || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
+                            ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->user_key;
+    		    
+    		    if($key == $api_key) {
+    		        $common = new CommonModel();
+    		        
+    		        //Insert into complaints table
+    		        $arr_complaints = array(
+        		          'module_id' => $json->module_id,
+        		          'booking_id' => $json->booking_id,
+                          'description' => $json->description,
+                          'created_on' => $json->created_on,
+                          'users_id' => $json->users_id,
+                    );
+                    $complaint_id = $common->insert_records_dynamically('complaints', $arr_complaints);
+                    
+                    if ($complaint_id > 0) {
+                        return $this->respond([
+            			    "complaint_id" => $complaint_id,
+            				"status" => 200,
+            				"message" => "Success",
+            			]);
+            		}
+            		else {
+            		    return $this->respond([
+        					"status" => 404,
+        					"message" => "Failed to create Complaint"
+        				]);
+            		}
+            	}
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------Add Feedback HERE -------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function post_feedback()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            
+            if(!array_key_exists('description',$json) || !array_key_exists('created_on',$json) 
+                || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
+                            ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->user_key;
+    		    
+    		    if($key == $api_key) {
+    		        $common = new CommonModel();
+    		        
+    		        //Insert into feedback table
+    		        $arr_feedback = array(
+        		          'description' => $json->description,
+                          'created_on' => $json->created_on,
+                          'users_id' => $json->users_id,
+                    );
+                    $feedback_id = $common->insert_records_dynamically('feedback', $arr_feedback);
+                    
+                    if ($feedback_id > 0) {
+                        return $this->respond([
+            			    "feedback_id" => $feedback_id,
+            				"status" => 200,
+            				"message" => "Success",
+            			]);
+            		}
+            		else {
+            		    return $this->respond([
+        					"status" => 404,
+        					"message" => "Failed to create Feedback"
+        				]);
+            		}
+            	}
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//--------------------------------------------------DELETE Attachments START------------------------------------------------------------
+
+    public function delete_attachment()
+    {
+        
+        $json = $this->request->getJSON();
+        if(!array_key_exists('id',$json) || !array_key_exists('key',$json)) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+        else
+        {
+            $id = $this->request->getJsonVar('id');
+            $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+    		    
+    		$apiconfig = new \Config\ApiConfig();
+    		
+        	$api_key = $apiconfig->user_key;
+    		$common = new CommonModel();
+		        
+		    if($key == $api_key)
+        	{
+                $id = $json->id;
+                $common->delete_records_dynamically('attachments', 'id', $id);
+                
+                return $this->respond([
+                    "status" => 200,
+                    "message" =>  "Successfully Deleted"
+                ]);
+            }
+            else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
+        }
+    }
+    
+//--------------------------------------------------DELETE USER ADDRESS END------------------------------------------------------------
+//---------------------------------------------------------GET LIST of Offers HERE -------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function offers_list()
+	{
+		$json = $this->request->getJSON();
+		
+		$validate_key = $json->key;
+		$validate_offer_type_id = $json->offer_type_id;
+		$users_id = $json->users_id;
+		
+		if($validate_key == "" && $validate_offer_type_id == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+    		    $misc_model = new MiscModel();
+    		    $zip_model = new ZipcodeModel();
+                $city_model = new CityModel();
+                $state_model = new StateModel();
+                $country_model = new CountryModel();
+    		    
+		        $country_id = $country_model->search_by_country($json->country);
+		        $state_id = $state_model->search_by_state($json->state);
+		        $city_id = $city_model->search_by_city($json->city);
+		        $zip_id = $zip_model->search_by_zipcode($json->postal_code);
+    
+                if ($country_id == 0) {
+                    $country_id = $country_model->create_country($json->country);
+                }
+		        if ($state_id == 0) {
+                    $state_id = $state_model->create_state($json->state, $country_id);
+                }
+		        if ($city_id == 0) {
+		            $city_id = $city_model->create_city($json->city, $state_id);
+                }
+                if ($zip_id == 0) {
+                    $zip_id = $zip_model->create_zip($json->postal_code, $city_id);
+                }
+    		    
+    		    $data = array();
+    		    
+        		$res = $misc_model->get_offers_list($validate_offer_type_id);
+        		if($res != 'failure') {
+        		    foreach($res as $key => $res_data) {
+        		        $data[$key]["id"] = $res_data["id"];
+        		        $data[$key]["name"] = $res_data["name"];
+        		        $data[$key]["coupon_code"] = $res_data["coupon_code"];
+        		        $data[$key]["valid_till"] = $res_data["valid_till"];
+        		        $data[$key]["value_type_id"] = $res_data["value_type_id"];
+        		        $data[$key]["value"] = $res_data["value"];
+        		        $data[$key]["offer_type_id"] = $res_data["offer_type_id"];
+        		        $data[$key]["offer_image"] = $res_data["offer_image"];
+        		        $data[$key]["offer_type_name"] = $res_data["offer_type_name"];
+        		        $data[$key]["value_type_name"] = $res_data["value_type_name"];
+        		    }
+        		}
+        		
+        		$offers_count = (count($data) > 0) ?  count($data) : 0; //Increment the key
+        		
+        		if($users_id > 0) {
+        		    $res_select_list = $misc_model->get_offers_selection_list($users_id);
+            		if($res_select_list != 'failure') {
+            		    foreach($res_select_list as $res_data) {
+            		        $data[$offers_count]["id"] = $res_data["id"];
+            		        $data[$offers_count]["name"] = $res_data["name"];
+            		        $data[$offers_count]["coupon_code"] = $res_data["coupon_code"];
+            		        $data[$offers_count]["valid_till"] = $res_data["valid_till"];
+            		        $data[$offers_count]["value_type_id"] = $res_data["value_type_id"];
+            		        $data[$offers_count]["value"] = $res_data["value"];
+            		        $data[$offers_count]["offer_type_id"] = $res_data["offer_type_id"];
+            		        $data[$offers_count]["offer_image"] = $res_data["offer_image"];
+            		        $data[$offers_count]["offer_type_name"] = $res_data["offer_type_name"];
+            		        $data[$offers_count]["value_type_name"] = $res_data["value_type_name"];
+            		        $offers_count++;
+            		    }
+            		}
+        		}
+        		
+        		$res_location_country = $misc_model->get_offers_location_list(1,$country_id);
+        		if($res_location_country != 'failure') {
+        		    foreach($res_location_country as $res_data) {
+        		        $data[$offers_count]["id"] = $res_data["id"];
+        		        $data[$offers_count]["name"] = $res_data["name"];
+        		        $data[$offers_count]["coupon_code"] = $res_data["coupon_code"];
+        		        $data[$offers_count]["valid_till"] = $res_data["valid_till"];
+        		        $data[$offers_count]["value_type_id"] = $res_data["value_type_id"];
+        		        $data[$offers_count]["value"] = $res_data["value"];
+        		        $data[$offers_count]["offer_type_id"] = $res_data["offer_type_id"];
+        		        $data[$offers_count]["offer_image"] = $res_data["offer_image"];
+        		        $data[$offers_count]["offer_type_name"] = $res_data["offer_type_name"];
+        		        $data[$offers_count]["value_type_name"] = $res_data["value_type_name"];
+        		        $offers_count++;
+        		    }
+        		}
+        		
+        		$res_location_state = $misc_model->get_offers_location_list(2,$state_id);
+        		if($res_location_state != 'failure') {
+        		    foreach($res_location_state as $res_data) {
+        		        $data[$offers_count]["id"] = $res_data["id"];
+        		        $data[$offers_count]["name"] = $res_data["name"];
+        		        $data[$offers_count]["coupon_code"] = $res_data["coupon_code"];
+        		        $data[$offers_count]["valid_till"] = $res_data["valid_till"];
+        		        $data[$offers_count]["value_type_id"] = $res_data["value_type_id"];
+        		        $data[$offers_count]["value"] = $res_data["value"];
+        		        $data[$offers_count]["offer_type_id"] = $res_data["offer_type_id"];
+        		        $data[$offers_count]["offer_image"] = $res_data["offer_image"];
+        		        $data[$offers_count]["offer_type_name"] = $res_data["offer_type_name"];
+        		        $data[$offers_count]["value_type_name"] = $res_data["value_type_name"];
+        		        $offers_count++;
+        		    }
+        		}
+        		
+        		$res_location_city = $misc_model->get_offers_location_list(3,$city_id);
+        		if($res_location_city != 'failure') {
+        		    foreach($res_location_city as $res_data) {
+        		        $data[$offers_count]["id"] = $res_data["id"];
+        		        $data[$offers_count]["name"] = $res_data["name"];
+        		        $data[$offers_count]["coupon_code"] = $res_data["coupon_code"];
+        		        $data[$offers_count]["valid_till"] = $res_data["valid_till"];
+        		        $data[$offers_count]["value_type_id"] = $res_data["value_type_id"];
+        		        $data[$offers_count]["value"] = $res_data["value"];
+        		        $data[$offers_count]["offer_type_id"] = $res_data["offer_type_id"];
+        		        $data[$offers_count]["offer_image"] = $res_data["offer_image"];
+        		        $data[$offers_count]["offer_type_name"] = $res_data["offer_type_name"];
+        		        $data[$offers_count]["value_type_name"] = $res_data["value_type_name"];
+        		        $offers_count++;
+        		    }
+        		}
+        		
+        		$res_location_zipcode = $misc_model->get_offers_location_list(4,$zip_id);
+        		if($res_location_zipcode != 'failure') {
+        		    foreach($res_location_zipcode as $res_data) {
+        		        $data[$offers_count]["id"] = $res_data["id"];
+        		        $data[$offers_count]["name"] = $res_data["name"];
+        		        $data[$offers_count]["coupon_code"] = $res_data["coupon_code"];
+        		        $data[$offers_count]["valid_till"] = $res_data["valid_till"];
+        		        $data[$offers_count]["value_type_id"] = $res_data["value_type_id"];
+        		        $data[$offers_count]["value"] = $res_data["value"];
+        		        $data[$offers_count]["offer_type_id"] = $res_data["offer_type_id"];
+        		        $data[$offers_count]["offer_image"] = $res_data["offer_image"];
+        		        $data[$offers_count]["offer_type_name"] = $res_data["offer_type_name"];
+        		        $data[$offers_count]["value_type_name"] = $res_data["value_type_name"];
+        		        $offers_count++;
+        		    }
+        		}
+        
+        		if (count($data) > 0) {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "Success",
+        				"data" => $data
+        			]);
+        		} else {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "No Offers to Show"
+        			]);
+        		}
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}	
+		}
+		
+		
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+    //---------------------------------------------------------Add SP reviews HERE -------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function post_sp_review()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            
+            if(!array_key_exists('overall_rating',$json) || !array_key_exists('professionalism',$json) || !array_key_exists('skill',$json) 
+                || !array_key_exists('behaviour',$json)  || !array_key_exists('satisfaction',$json) || !array_key_exists('feedback',$json) 
+                || !array_key_exists('booking_id',$json) || !array_key_exists('sp_id',$json) || !array_key_exists('key',$json)
+                            ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->user_key;
+    		    
+    		    if($key == $api_key) {
+    		        $common = new CommonModel();
+    		        
+    		        //Insert into user_review table
+    		        $arr_user_review = array(
+    		              'overall_rating' => $json->overall_rating,
+    		              'professionalism' => $json->professionalism,
+    		              'skill' => $json->skill,
+        		          'behaviour' => $json->behaviour,
+                          'satisfaction' => $json->satisfaction,
+                          'feedback' => $json->feedback,
+                          'booking_id' => $json->booking_id,
+                          'sp_id' => $json->sp_id,
+                    );
+                    $review_id = $common->insert_records_dynamically('user_review', $arr_user_review);
+                    
+                    if ($review_id > 0) {
+                        return $this->respond([
+            			    "review_id" => $review_id,
+            				"status" => 200,
+            				"message" => "Success",
+            			]);
+            		}
+            		else {
+            		    return $this->respond([
+        					"status" => 404,
+        					"message" => "Failed to create Review"
+        				]);
+            		}
+            	}
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
+	}
 	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
 }

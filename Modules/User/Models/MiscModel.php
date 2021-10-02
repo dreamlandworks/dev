@@ -162,7 +162,7 @@ function get_sp_preferred_time_slot($ar_sp_id)
 {
 
     $builder = $this->db->table('user_time_slot');
-    $builder->join('time_slot', 'time_slot.id = user_time_slot.time_slot_id');
+    $builder->select('user_time_slot.*');
     $builder->whereIn('users_id',$ar_sp_id);
     $builder->orderBy('day_slot,time_slot_from', 'ASC');
     $result = $builder->get()->getResultArray();
@@ -202,11 +202,14 @@ function get_booking_details($booking_id,$users_id)
 
     $builder = $this->db->table('booking');
     $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,fcm_token,
-                    time_slot.from,estimate_type.name as estimate_type');
+                    time_slot.from,estimate_type.name as estimate_type,extra_demand.amount as extra_demand_total_amount,material_advance,technician_charges,
+                    expenditure_incurred,extra_demand.status as extra_demand_status,post_job.id as post_job_id');
     $builder->join('user_details', 'user_details.id = booking.users_id');
     $builder->join('users', 'users.users_id = booking.users_id');
     $builder->join('time_slot', 'time_slot.id = booking.time_slot_id');
     $builder->join('estimate_type', 'estimate_type.id = booking.estimate_type_id');
+    $builder->join('extra_demand', 'extra_demand.booking_id = booking.id','LEFT');
+    $builder->join('post_job', 'post_job.booking_id = booking.id','LEFT');
     $builder->where('booking.id',$booking_id);
     $builder->where('booking.users_id',$users_id);
     $result = $builder->get()->getResultArray();
@@ -246,7 +249,7 @@ function get_single_move_details($booking_id)
 {
 
     $builder = $this->db->table('single_move');
-    $builder->select('single_move.job_description,address.locality,address.latitude,address.longitude,city,state,country,zipcode');
+    $builder->select('single_move.id,single_move.address_id,single_move.job_description,address.locality,address.latitude,address.longitude,city,state,country,zipcode');
     $builder->join('address', 'address.id = single_move.address_id');
     $builder->join('country', 'country.id = address.country_id');
     $builder->join('state', 'state.id = address.state_id');
@@ -290,7 +293,7 @@ function get_multi_move_details($booking_id)
 {
 
     $builder = $this->db->table('multi_move');
-    $builder->select('multi_move.sequence_no,job_description,weight_type,address.locality,address.latitude,address.longitude,city,state,country,zipcode');
+    $builder->select('multi_move.id,multi_move.address_id,multi_move.sequence_no,job_description,weight_type,address.locality,address.latitude,address.longitude,city,state,country,zipcode');
     $builder->join('address', 'address.id = multi_move.address_id');
     $builder->join('country', 'country.id = address.country_id');
     $builder->join('state', 'state.id = address.state_id');
@@ -382,14 +385,14 @@ function get_search_phrase()
 }
 //---------------------------------------------------GET User Single Move Booking Details STARTS-----------------------------------------------------
 //-----------------------------------------------------------***************------------------------------------------------------------    
-function get_user_single_move_booking_details($users_id)
+function get_user_single_move_booking_details($users_id = 0,$sp_id = 0)
 {
 
     $builder = $this->db->table('booking');
     $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,
                     time_slot.from,estimate_type.name as estimate_type,single_move.job_description,address.locality,address.latitude,
-                    address.longitude,city,state,country,zipcode,profile_pic');
-    $builder->join('user_details', 'user_details.id = booking.sp_id','LEFT');
+                    address.longitude,city,state,country,zipcode,profile_pic,estimate_type.name as estimate_type,extra_demand.amount as extra_demand_total_amount,
+                    material_advance,technician_charges,expenditure_incurred');
     $builder->join('time_slot', 'time_slot.id = booking.time_slot_id');
     $builder->join('estimate_type', 'estimate_type.id = booking.estimate_type_id');
     $builder->join('single_move', 'single_move.booking_id = booking.id');
@@ -398,7 +401,19 @@ function get_user_single_move_booking_details($users_id)
     $builder->join('state', 'state.id = address.state_id');
     $builder->join('city', 'city.id = address.city_id');
     $builder->join('zipcode', 'zipcode.id = address.zipcode_id');
-    $builder->where('booking.users_id',$users_id);
+    $builder->join('extra_demand', 'extra_demand.booking_id = booking.id','LEFT');
+    $builder->join('transaction', 'transaction.booking_id = booking.id');
+    $builder->where('payment_status','Success');
+    $builder->where('name_id',2); //Booking Amount
+    
+    if($users_id > 0) {
+        $builder->join('user_details', 'user_details.id = booking.sp_id','LEFT');
+        $builder->where('booking.users_id',$users_id);
+    }
+    if($sp_id > 0) {
+        $builder->join('user_details', 'user_details.id = booking.users_id','LEFT');
+        $builder->where('booking.sp_id',$sp_id);
+    }
     $builder->where('booking.category_id',1);
     $result = $builder->get()->getResultArray();
     //echo "<br> str ".$this->db->getLastQuery();exit;    
@@ -414,18 +429,29 @@ function get_user_single_move_booking_details($users_id)
 //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
 //---------------------------------------------------GET User Blue Collar Booking Details STARTS-----------------------------------------------------
 //-----------------------------------------------------------***************------------------------------------------------------------    
-function get_user_blue_collar_booking_details($users_id)
+function get_user_blue_collar_booking_details($users_id = 0,$sp_id = 0)
 {
 
     $builder = $this->db->table('booking');
     $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,
-                    time_slot.from,estimate_type.name as estimate_type,blue_collar.job_description,profile_pic');
-    $builder->join('user_details', 'user_details.id = booking.sp_id','LEFT');
+                    time_slot.from,estimate_type.name as estimate_type,blue_collar.job_description,profile_pic,estimate_type.name as estimate_type,
+                    extra_demand.amount as extra_demand_total_amount,material_advance,technician_charges,expenditure_incurred');
     $builder->join('time_slot', 'time_slot.id = booking.time_slot_id');
     $builder->join('estimate_type', 'estimate_type.id = booking.estimate_type_id');
     $builder->join('blue_collar', 'blue_collar.booking_id = booking.id');
-    $builder->where('booking.users_id',$users_id);
+    $builder->join('extra_demand', 'extra_demand.booking_id = booking.id','LEFT');
+    $builder->join('transaction', 'transaction.booking_id = booking.id');
+    if($users_id > 0) {
+        $builder->join('user_details', 'user_details.id = booking.sp_id','LEFT');
+        $builder->where('booking.users_id',$users_id);
+    }
+    if($sp_id > 0) {
+        $builder->join('user_details', 'user_details.id = booking.users_id','LEFT');
+        $builder->where('booking.sp_id',$sp_id);
+    }
     $builder->where('booking.category_id',2);
+    $builder->where('payment_status','Success');
+    $builder->where('name_id',2); //Booking Amount
     $result = $builder->get()->getResultArray();
     //echo "<br> str ".$this->db->getLastQuery();exit;    
     $count = count($result);
@@ -440,14 +466,14 @@ function get_user_blue_collar_booking_details($users_id)
 //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
 //---------------------------------------------------GET User Multi Move Booking Details STARTS-----------------------------------------------------
 //-----------------------------------------------------------***************------------------------------------------------------------    
-function get_user_multi_move_booking_details($users_id)
+function get_user_multi_move_booking_details($users_id = 0,$sp_id = 0)
 {
 
     $builder = $this->db->table('booking');
     $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,
                     time_slot.from,estimate_type.name as estimate_type,multi_move.sequence_no,job_description,weight_type,address.locality,address.latitude,
-                    address.longitude,city,state,country,zipcode,profile_pic');
-    $builder->join('user_details', 'user_details.id = booking.sp_id','LEFT');
+                    address.longitude,city,state,country,zipcode,profile_pic,estimate_type.name as estimate_type,
+                    extra_demand.amount as extra_demand_total_amount,material_advance,technician_charges,expenditure_incurred');
     $builder->join('time_slot', 'time_slot.id = booking.time_slot_id');
     $builder->join('estimate_type', 'estimate_type.id = booking.estimate_type_id');
     $builder->join('multi_move', 'multi_move.booking_id = booking.id');
@@ -456,8 +482,19 @@ function get_user_multi_move_booking_details($users_id)
     $builder->join('state', 'state.id = address.state_id');
     $builder->join('city', 'city.id = address.city_id');
     $builder->join('zipcode', 'zipcode.id = address.zipcode_id');
-    $builder->where('booking.users_id',$users_id);
+    $builder->join('extra_demand', 'extra_demand.booking_id = booking.id','LEFT');
+    $builder->join('transaction', 'transaction.booking_id = booking.id');
+    if($users_id > 0) {
+        $builder->join('user_details', 'user_details.id = booking.sp_id','LEFT');
+        $builder->where('booking.users_id',$users_id);
+    }
+    if($sp_id > 0) {
+        $builder->join('user_details', 'user_details.id = booking.users_id','LEFT');
+        $builder->where('booking.sp_id',$sp_id);
+    }
     $builder->where('booking.category_id',3);
+    $builder->where('name_id',2); //Booking Amount
+    $builder->where('payment_status','Success');
     $result = $builder->get()->getResultArray();
     //echo "<br> str ".$this->db->getLastQuery();exit;    
     $count = count($result);
@@ -536,6 +573,206 @@ function get_sp_lang($sp_id)
     }
 }
 //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Offers list STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_offers_list($offer_type_id = 0)
+{
 
+    $builder = $this->db->table('offer');
+    $builder->select('offer.*,offer_type.name as offer_type_name,value_type.name as value_type_name');
+    $builder->join('offer_type', 'offer_type.id = offer.offer_type_id');
+    $builder->join('value_type', 'value_type.id = offer.value_type_id');
+    $builder->where('offer.offer_type_id',$offer_type_id);
+    
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Offers Selection list STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_offers_selection_list($users_id)
+{
+
+    $builder = $this->db->table('offer');
+    $builder->select('offer.*,offer_type.name as offer_type_name,value_type.name as value_type_name');
+    $builder->join('offer_type', 'offer_type.id = offer.offer_type_id');
+    $builder->join('value_type', 'value_type.id = offer.value_type_id');
+    $builder->join('offer_select_list', 'offer_select_list.offer_id = offer.id');
+    $builder->where('offer.offer_type_id',4); //Selected list
+    $builder->where('offer_select_list.users_id',$users_id);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Offers Location list STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_offers_location_list($location_type,$location_id)
+{
+
+    $builder = $this->db->table('offer');
+    $builder->select('offer.*,offer_type.name as offer_type_name,value_type.name as value_type_name');
+    $builder->join('offer_type', 'offer_type.id = offer.offer_type_id');
+    $builder->join('value_type', 'value_type.id = offer.value_type_id');
+    $builder->join('offer_location_list', 'offer_location_list.offer_id = offer.id');
+    $builder->where('offer.offer_type_id',1); 
+    $builder->where('offer_location_list.location_type_id',$location_type);
+    $builder->where('offer_location_list.location_id',$location_id);
+    
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET booking count STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_total_bookings($users_id)
+{
+    $builder = $this->db->table('booking');
+    $builder->select('count(id) as total_bookings');
+    $builder->where('users_id',$users_id);
+    $builder->where('sp_id > 0');
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+    if($count > 0) {
+        return $result[0]['total_bookings']; 
+    }
+    else {
+        return 0; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET post job count STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_total_job_posts($users_id)
+{
+    $builder = $this->db->table('post_job');
+    $builder->select('count(post_job.id) as total_job_posts');
+    $builder->join('booking', 'booking.id = post_job.booking_id');
+    $builder->where('users_id',$users_id);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+    if($count > 0) {
+        return $result[0]['total_job_posts']; 
+    }
+    else {
+        return 0; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Referrals count STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_total_referrals($users_id)
+{
+    $builder = $this->db->table('referral');
+    $builder->select('count(referral.id) as total_referrals');
+    $builder->join('user_details', 'user_details.mobile = referral.referred_by');
+    $builder->where('user_details.id',$users_id);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+    if($count > 0) {
+        return $result[0]['total_referrals']; 
+    }
+    else {
+        return 0; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Booking Details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_booking_work_summary($booking_id)
+{
+
+    $builder = $this->db->table('booking');
+    $builder->select('booking.*, time_slot.from,estimate_type.name as estimate_type,extra_demand.amount as extra_demand_total_amount,material_advance,technician_charges,expenditure_incurred');
+    $builder->join('time_slot', 'time_slot.id = booking.time_slot_id');
+    $builder->join('estimate_type', 'estimate_type.id = booking.estimate_type_id');
+    $builder->join('extra_demand', 'extra_demand.booking_id = booking.id','LEFT');
+    $builder->join('transaction', 'transaction.booking_id = booking.id','LEFT');
+    $builder->where('booking.id',$booking_id);
+    $builder->where('payment_status','Success');
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result[0]; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Booking Transaction History STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_booking_transaction_history($booking_id)
+{
+
+    $builder = $this->db->table('transaction');
+    $builder->select('date,amount,reference_id,booking_id,payment_status,transaction_name.name as transaction_name,
+                        transaction_methods.name as transaction_method,transaction_type.name as transaction_type');
+    $builder->join('transaction_name', 'transaction_name.id = transaction.name_id');  
+    $builder->join('transaction_methods', 'transaction_methods.id = transaction.method_id');
+    $builder->join('transaction_type', 'transaction_type.id = transaction.type_id');
+    $builder->where('transaction.booking_id',$booking_id);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Booking Status History STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_booking_status_list($booking_id)
+{
+
+    $builder = $this->db->table('booking_status');
+    $builder->select('*');
+    $builder->join('booking_status_code', 'booking_status_code.id = booking_status.status_id');  
+    $builder->where('booking_id',$booking_id);
+    $builder->orderBy('booking_status_id','ASC');
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
 
 }

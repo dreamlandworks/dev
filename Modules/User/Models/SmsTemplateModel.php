@@ -80,6 +80,9 @@ class SmsTemplateModel extends Model
 		$count = count($array);
 
 		$res = $this->show_by_name($name);
+		//print_r($res);exit;
+		//print_r($array);
+		//exit;
 
 		if ($res['var'] == $count) {
 
@@ -88,7 +91,7 @@ class SmsTemplateModel extends Model
 				$replace = [$array['var']];
 			}
 			elseif($count == 2){
-				$search = ['{#var#}','{#var1#}'];
+			    $search = ['{#var#}','{#var1#}'];
 				$replace = [$array['var1'],$array['var2']];
 			}
 			elseif($count == 3){
@@ -105,7 +108,7 @@ class SmsTemplateModel extends Model
 			}
 
 				$message = str_replace($search,$replace,$res['content']);
-				
+				//echo "<br> content ".$res['content'];exit;
 				
 				$data = [
 					"username" => "Satrango",
@@ -121,6 +124,8 @@ class SmsTemplateModel extends Model
 				
 				$data = http_build_query($data);
 				$data = str_replace("+","%20",$data);
+				
+				//echo "<br> data ".$data;exit;
 
 			$url = "http://sms.prowtext.com/sendsms/sendsms.php?".$data;
 			$resp = file_get_contents($url);

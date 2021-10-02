@@ -73,7 +73,8 @@ class AddressModel extends Model
 	{
 
 		$res = $this->select('address.id,address.name,address.flat_no,address.apartment_name,
-							address.landmark,address.locality,zipcode.zipcode,city.city,
+							address.landmark,address.locality,address.city_id,address.state_id,address.country_id,address.zipcode_id,
+							zipcode.zipcode,city.city,
 							state.state,country.country')
 			->join('zipcode', 'address.zipcode_id=zipcode.id')
 			->join('city', 'zipcode.city_id=city.id')

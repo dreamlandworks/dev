@@ -65,6 +65,7 @@ class UserProfileController extends ResourceController
                 $fname = $res['fname'];
                 $lname = $res['lname'];
                 $mobile = $res['mobile'];
+                $gender = $res['gender'];
                 $dob = $res['dob'];
                 $profile_pic = $res['profile_pic'];
                 $ref_id = $res['referral_id'];
@@ -95,6 +96,7 @@ class UserProfileController extends ResourceController
                 "fname" => $fname,
                 "lname" => $lname,
                 "mobile" => $mobile,
+                "gender" => $gender,
                 "email_id" => $email,
                 "dob" => $dob,
                 "profile_pic" => $profile_pic,
@@ -142,7 +144,8 @@ class UserProfileController extends ResourceController
     {
 
         $json = $this->request->getJSON();
-        if(!array_key_exists('user_id',$json) || !array_key_exists('fname',$json) || !array_key_exists('lname',$json) || !array_key_exists('email',$json) || !array_key_exists('dob',$json) || !array_key_exists('image',$json) || !array_key_exists('key',$json)) {
+        if(!array_key_exists('user_id',$json) || !array_key_exists('fname',$json) || !array_key_exists('lname',$json) || !array_key_exists('email',$json) 
+        || !array_key_exists('dob',$json) || !array_key_exists('image',$json) || !array_key_exists('gender',$json) || !array_key_exists('key',$json)) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -167,7 +170,7 @@ class UserProfileController extends ResourceController
         $lname = $json->lname;
         $email = $json->email;
         $dob = $json->dob;
-
+        $gender = $json->gender;
         $file = $json->image;
         $image = '';
         if ($file != null) {
@@ -178,6 +181,7 @@ class UserProfileController extends ResourceController
                 "fname" =>  $fname,
                 "lname" =>  $lname,
                 "dob" =>  $dob,
+                "gender" =>  $gender,
                 "profile_pic" =>  $image
             ];
 
@@ -186,7 +190,8 @@ class UserProfileController extends ResourceController
             $array = [
                 "fname" =>  $fname,
                 "lname" =>  $lname,
-                "dob" =>  $dob              
+                "dob" =>  $dob,
+                "gender" =>  $gender,
             ];
         }
 
