@@ -211,7 +211,7 @@ class Activation extends ResourceController
         		                'day_slot' => $day_id,
         		                'time_slot_id' => $arr_time_slots[$timeslot_data['from']],
         		                'time_slot_from' => $timeslot_data['from'],
-        		                'time_slot_to' => $timeslot_data['to'],
+        		                'time_slot_to' => $timeslot_data['to']
         		            );
                         }
                     }

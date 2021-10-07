@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\User\Controllers\api;
+namespace Modules\Provider\Controllers\api;
 
 use CodeIgniter\RESTful\ResourceController;
 use Modules\Provider\Models\CommonModel;
@@ -33,7 +33,7 @@ class MembershipController extends ResourceController
             if(!array_key_exists('plan_id',$json) || !array_key_exists('period',$json) 
                 || !array_key_exists('date',$json) || !array_key_exists('amount',$json) 
                 || !array_key_exists('reference_id',$json) || !array_key_exists('payment_status',$json) 
-                || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
+                || !array_key_exists('sp_id',$json) || !array_key_exists('key',$json)
                             ) {
     		    return $this->respond([
         				'status' => 403,
@@ -44,7 +44,7 @@ class MembershipController extends ResourceController
                 $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
                 $apiconfig = new \Config\ApiConfig();
 		
-    		    $api_key = $apiconfig->user_key;
+    		    $api_key = $apiconfig->provider_key;
     		    
     		    if($key == $api_key) {
     		        $common = new CommonModel();
@@ -55,7 +55,7 @@ class MembershipController extends ResourceController
                           'date' => $json->date,
                           'amount' => $json->amount,
                           'type_id' => 1, //Receipt/Credit
-                          'users_id' => $json->users_id,
+                          'users_id' => $json->sp_id,
                           'method_id' => 1, //Online Payment
                           'reference_id' => $json->reference_id,
                           'booking_id' => 1,
@@ -63,21 +63,21 @@ class MembershipController extends ResourceController
                     );
                     $transaction_id = $common->insert_records_dynamically('transaction', $arr_transaction);
                     
-                    if($transaction_id > 0) { //Insert into subs_plan
+                    if($transaction_id > 0) { //Insert into sp_subs_plan
                         if($json->payment_status == 'Success') {
                             //Check if the record exists
-    		                $arr_subs_plan_details = $common->get_details_dynamically('subs_plan', 'users_id', $json->users_id);
+    		                $arr_subs_plan_details = $common->get_details_dynamically('sp_subs_plan', 'users_id', $json->sp_id);
                             if($arr_subs_plan_details == "failure") {
                                 $arr_membership_payments_ins = array(
-                                      'users_id' => $json->users_id,
+                                      'users_id' => $json->sp_id,
                                       'date' => $json->date,
                     		          'plans_id' => $json->plan_id,
                     		          'start_date' => $json->date,
                     		          'end_date' => date('Y-m-d H:i:s', strtotime($json->date . " +".$json->period." days")),
                                       'transaction_id' => $transaction_id, 
                                 );
-                                //Insert into subs_plan
-                                $common->insert_records_dynamically('subs_plan', $arr_membership_payments_ins);
+                                //Insert into sp_subs_plan
+                                $common->insert_records_dynamically('sp_subs_plan', $arr_membership_payments_ins);
                             }
                             else {
                                 $arr_membership_payments_upd = array(
@@ -87,8 +87,8 @@ class MembershipController extends ResourceController
                     		          'end_date' => date('Y-m-d H:i:s', strtotime($json->date . " +".$json->period." days")),
                                       'transaction_id' => $transaction_id, 
                                 );
-                                //Update subs_plan
-                                $common->update_records_dynamically('subs_plan', $arr_membership_payments_upd, 'users_id', $json->users_id);
+                                //Update sp_subs_plan
+                                $common->update_records_dynamically('sp_subs_plan', $arr_membership_payments_upd, 'users_id', $json->sp_id);
                             }
                         }
                         

@@ -172,5 +172,37 @@ class UsersModel extends Model
 	        return 'failure'; 
 	    }
     }
+    
+    public function validate_email($email){
+	    $db      = \Config\Database::connect();
+	    
+        $builder = $db->table('users');
+        $builder->select('id');
+        $builder->where('email', $email);    
+        $query = $builder->get();
+                
+        if($query->getRow() != '') {
+            return $query->getRow(); 
+        }
+	    else {
+	        return 'failure'; 
+	    }
+    }
+    
+    public function validate_mobile($mobile){
+	    $db      = \Config\Database::connect();
+	    
+        $builder = $db->table('users');
+        $builder->select('id');
+        $builder->where('userid', $mobile);  
+        $query = $builder->get();
+                
+        if($query->getRow() != '') {
+            return $query->getRow(); 
+        }
+	    else {
+	        return 'failure'; 
+	    }
+    }
 		
 }

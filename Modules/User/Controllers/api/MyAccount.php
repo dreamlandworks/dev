@@ -49,12 +49,14 @@ class MyAccount extends ResourceController
 		       $total_job_posts = $misc_model->get_total_job_posts($users_id);
 		       $total_referrals = $misc_model->get_total_referrals($users_id);
 		       $commission_earned = array('this_month' => 0, 'prev_month' => 0, 'change' => 0);
+		       $res_plan = $misc_model->get_user_plan_details($users_id);
 		       
 	           return $this->respond([
 		            "total_bookings" => $total_bookings,
 		            "total_job_posts" => $total_job_posts,
 		            "total_referrals" => $total_referrals,
 		            "commission_earned" => $commission_earned,
+		            "activated_plan" => ($res_plan != 'failure') ? $res_plan['name'] : "Regular",
 		            "status" => 200,
     				"message" => "Success",
     			]);

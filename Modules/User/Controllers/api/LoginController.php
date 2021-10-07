@@ -99,23 +99,86 @@ class LoginController extends ResourceController
     		if($key == $api_key) {
     
         		$users_model = new UsersModel();
-        		$validate_user_result = $users_model->validate_user($email,$mobile);
-                //echo "<br> str ".$users_model->getLastQuery();exit;
-                
-                if($validate_user_result != 'failure') {
-                    return $this->respond([
-        				"status" => 200,
-        				"message" => "User Exists",
-        				"user id" => $validate_user_result->id
-        			]);
-                }
-                else {
-        			return $this->respond([
-        				"status" => 404,
-        				"message" => "User Not Found"
-        			]);
+        		
+        		if($email != "" && $mobile == "") {
+        		    $validate_user_email_exist = $users_model->validate_email($email);
+        		    if($validate_user_email_exist != 'failure') {
+        		        return $this->respond([
+            				"status" => 200,
+            				"message" => "Email Exists",
+            				"user id" => $validate_user_email_exist->id
+            			]);
+        		    }  
+        		    else {
+            			return $this->respond([
+            				"status" => 404,
+            				"message" => "Email Not Found"
+            			]);
+            		}
         		}
-    		}
+        		else if($mobile != "" && $email == "") {
+        		    $validate_user_mobile_exist = $users_model->validate_mobile($mobile);
+        		    if($validate_user_mobile_exist != 'failure') {
+        		        return $this->respond([
+            				"status" => 200,
+            				"message" => "Mobile Exists",
+            				"user id" => $validate_user_mobile_exist->id
+            			]);
+        		    }
+        		    else {
+            			return $this->respond([
+            				"status" => 404,
+            				"message" => "Mobile Not Found"
+            			]);
+            		}
+        		}
+        		else if($mobile != "" && $email != "") {
+        		    $email_exists = 0;
+        		    $mobile_exists = 0;
+        		    $user_id = 0;
+        		    
+        		    $validate_user_email_exist = $users_model->validate_email($email);
+        		    if($validate_user_email_exist != 'failure') {
+        		        $email_exists = 1;
+        		        $user_id = $validate_user_email_exist->id; 
+        		    }
+        		    $validate_user_mobile_exist = $users_model->validate_mobile($mobile);
+        		    if($validate_user_mobile_exist != 'failure') {
+        		        $mobile_exists = 1;
+        		        $user_id = $validate_user_mobile_exist->id;
+        		    }
+        		    
+        		    if($email_exists == 1 && $mobile_exists == 1) {
+        		        return $this->respond([
+            				"status" => 200,
+            				"message" => "Email & Mobile Exists",
+            				"user id" => $user_id
+            			]);
+        		    }
+        		    else if($email_exists == 1 || $mobile_exists == 1) {
+        		        if($email_exists == 1) {
+                            return $this->respond([
+                				"status" => 200,
+                				"message" => "Email Exists",
+                				"user id" => $user_id
+                			]);
+                        }
+                        if($mobile_exists == 1) {
+                            return $this->respond([
+                				"status" => 200,
+                				"message" => "Mobile Exists",
+                				"user id" => $user_id
+                			]);
+                        }
+        		    }
+        		    else {
+            			return $this->respond([
+            				"status" => 404,
+            				"message" => "User Not Found"
+            			]);
+            		}
+        		}
+        	}
     		else {
     		    return $this->respond([
         				'status' => 403,

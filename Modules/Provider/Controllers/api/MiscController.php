@@ -5,6 +5,7 @@ namespace Modules\Provider\Controllers\Api;
 use CodeIgniter\RESTful\ResourceController;
 use Modules\Provider\Models\CommonModel;
 use Modules\Provider\Models\AlertModel;
+use Modules\User\Models\MiscModel;
 
 class MiscController extends ResourceController
 {
@@ -567,4 +568,57 @@ class MiscController extends ResourceController
 		}
     }
     //-------------------------------------------------------------FUNCTION ENDS ---------------------------------------------------------
+    //---------------------------------------------------------GET LIST of SP plans HERE -------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function sp_plans()
+	{
+		$validate_key = $this->request->getVar('key');
+		$validate_user_id = $this->request->getVar('sp_id');
+		if($validate_key == "" && $validate_user_id == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->provider_key;
+    		
+    		if($key == $api_key) {
+    		    $common = new CommonModel();
+    		    $misc_model = new MiscModel();
+        		$res = $common->get_table_details_dynamically('sp_plans', 'id', 'ASC');
+        		
+        		$res_plan = $misc_model->get_sp_plan_details($validate_user_id);
+        
+        		if ($res != 'failure') {
+        			return $this->respond([
+        			    "activated_plan" => ($res_plan != 'failure') ? $res_plan['plans_id'] : 0,
+        				"status" => 200,
+        				"message" => "Success",
+        				"data" => $res
+        			]);
+        		} else {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "No Plans to Show"
+        			]);
+        		}
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}	
+		}
+		
+		
+	}
+
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
 }

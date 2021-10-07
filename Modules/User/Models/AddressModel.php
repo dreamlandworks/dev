@@ -102,7 +102,7 @@ class AddressModel extends Model
 			'locality' => $array['locality'],
 			'latitude' => $array['latitude'],
 			'longitude' => $array['longitude'],
-			'zipcode_id' => $array['pin_code']
+			'zipcode_id' => $array['zipcode_id']
 		];
 
 		$res = $this->insert($data);

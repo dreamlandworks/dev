@@ -718,4 +718,27 @@ function get_job_post_multi_move_details_by_category($category_id,$sp_id)
     }
 }
 //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Job Post Bid Details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_job_post_bids_report_by_sp_id($sp_id)
+{
+
+    $builder = $this->db->table('bid_det');
+    $builder->select('bid_det.*');
+    $builder->join('post_job', 'post_job.id = bid_det.post_job_id');  
+    $builder->join('booking', 'booking.id = post_job.booking_id'); 
+    $builder->where('bid_det.users_id',$sp_id);
+    
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
 }

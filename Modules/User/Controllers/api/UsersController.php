@@ -121,37 +121,23 @@ class UsersController extends ResourceController
                     if ($existing_mobile != $mobile) {
         
                         if ($existing_email != $email) {
-                            //clause to check whether zip code exists
-        
-                            $zip_id = $zip_model->search_by_zipcode($zip);
-        
-                            if ($zip_id == 0) {
-        
-                                $city_id = $city_model->search_by_city($city);
-        
-                                if ($city_id == 0) {
-        
-                                    $state_id = $state_model->search_by_state($state);
-        
-                                    if ($state_id == 0) {
-        
-                                        $country_id = $country_model->search_by_country($country);
-        
-                                        if ($country_id == 0) {
-        
-                                            $country_id = $country_model->create_country($country);
-                                        } else {
-        
-                                            $state_id = $state_model->create_state($state, $country_id);
-                                        }
-                                    } else {
-                                        $city_id = $city_model->create_city($city, $state_id);
-                                    }
-                                } else {
-                                    $zip_id = $zip_model->create_zip($zip, $city_id);
-                                }
+                            $country_id = $country_model->search_by_country($country);
+                            if ($country_id == 0) {
+                                $country_id = $country_model->create_country($country);
                             }
-        
+                            $state_id = $state_model->search_by_state($state);
+                            if ($state_id == 0) {
+                                $state_id = $state_model->create_state($state, $country_id);
+                            }  
+                            $city_id = $city_model->search_by_city($city);
+                            if ($city_id == 0) {
+                                $city_id = $city_model->create_city($city, $state_id);
+                            } 
+                            $zip_id = $zip_model->search_by_zipcode($zip);
+                            if ($zip_id == 0) {
+                                $zip_id = $zip_model->create_zip($zip, $city_id);
+                            }    
+                            
                             //name,flatno,apartment_name,landmark will be added later 
                             //after observing the realtime data from google api
         

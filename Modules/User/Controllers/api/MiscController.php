@@ -739,7 +739,8 @@ class MiscController extends ResourceController
 	public function user_plans()
 	{
 		$validate_key = $this->request->getVar('key');
-		if($validate_key == "") {
+		$validate_user_id = $this->request->getVar('users_id');
+		if($validate_key == "" && $validate_user_id == "") {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -754,10 +755,14 @@ class MiscController extends ResourceController
     		
     		if($key == $api_key) {
     		    $common = new CommonModel();
+    		    $misc_model = new MiscModel();
         		$res = $common->get_table_details_dynamically('user_plans', 'id', 'ASC');
+        		
+        		$res_plan = $misc_model->get_user_plan_details($validate_user_id);
         
         		if ($res != 'failure') {
         			return $this->respond([
+        			    "activated_plan" => ($res_plan != 'failure') ? $res_plan['plans_id'] : 0,
         				"status" => 200,
         				"message" => "Success",
         				"data" => $res
@@ -1342,6 +1347,93 @@ class MiscController extends ResourceController
         		}
             }
         } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------GET LIST of Complaints HERE -------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function complaints_requests_list()
+	{
+		$json = $this->request->getJSON();
+		
+		$validate_key = $json->key;
+		$users_id = $json->users_id;
+		
+		if($validate_key == "" && $users_id == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+    		    $misc_model = new MiscModel();
+    		    $data = array();
+    		    $temp_data = array();
+    		    $temp_replies_data = array();
+    		    $arr_main_data = array();
+    		    
+        		$res = $misc_model->get_complaints_details($users_id);
+        		if($res != 'failure') {
+        		    foreach($res as $key => $res_data) {
+        		        if(!array_key_exists($res_data["id"],$arr_main_data)) {
+        		            $cnt = 0;
+        		            
+        		            $arr_main_data[$res_data["id"]] = $res_data["id"];
+        		            $temp_data[$res_data["id"]]["id"] = $res_data["id"];
+        		            $temp_data[$res_data["id"]]["description"] = $res_data["description"];
+        		            $temp_data[$res_data["id"]]["status"] = ($res_data["status"] != "") ? $res_data["status"] : "";
+        		            $temp_data[$res_data["id"]]['replies'] = array();
+        		            
+        		            if($res_data["complaint_status_id"] > 0) {
+        		                $temp_data[$res_data["id"]]['replies'][$cnt]['action_taken'] = ($res_data["action_taken"] != "") ? $res_data["action_taken"] : "";
+            		            $temp_data[$res_data["id"]]['replies'][$cnt]['status'] = ($res_data["status"] != "") ? $res_data["status"] : "";
+            		            $temp_data[$res_data["id"]]['replies'][$cnt]["created_on"] = ($res_data["complaint_status_date"] != "") ? $res_data["complaint_status_date"] : "";
+            		        }
+        		        }
+        		        else {
+        		            $temp_data[$res_data["id"]]["status"] = $res_data["status"];
+        		            if($res_data["complaint_status_id"] > 0) {
+        		                $temp_replies_data[$res_data["id"]]['replies']['action_taken'] = ($res_data["action_taken"] != "") ? $res_data["action_taken"] : "";
+            		            $temp_replies_data[$res_data["id"]]['replies']['status'] = ($res_data["status"] != "") ? $res_data["status"] : "";
+            		            $temp_replies_data[$res_data["id"]]['replies']["created_on"] = ($res_data["complaint_status_date"] != "") ? $res_data["complaint_status_date"] : "";
+            		            array_push($temp_data[$res_data["id"]]['replies'],$temp_replies_data[$res_data["id"]]['replies']);
+        		            }
+        		        }
+        		    }
+        		    array_push($data,$temp_data);
+        	    }
+        	    
+        	    $arr_requests = $misc_model->get_request_details($users_id);
+        	    
+        		//echo "<pre>";
+        		//print_r($temp_data);
+        		//print_r($data[0]);
+        		//print_r(array_values($data[0]));
+        		//echo "</pre>";
+        		//exit;
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "Success",
+        				"complaints" => (count($data) > 0) ? array_values($data[0]) : array(),
+        				"requests" => ($arr_requests != 'failure') ? $arr_requests : array(),
+        			]);
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}	
+		}
+		
+		
 	}
 	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
 }

@@ -128,6 +128,7 @@ class SmsTemplateModel extends Model
 				//echo "<br> data ".$data;exit;
 
 			$url = "http://sms.prowtext.com/sendsms/sendsms.php?".$data;
+			//echo $url;exit;
 			$resp = file_get_contents($url);
 			$result = explode("|",$resp);
 			

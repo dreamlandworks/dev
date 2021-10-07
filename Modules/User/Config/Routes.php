@@ -50,7 +50,7 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     $routes->post("post_complaints", "MiscController::post_complaints"); //Post complaints
     $routes->post("post_feedback", "MiscController::post_feedback"); //Post feedback 
     $routes->post("post_sp_review", "MiscController::post_sp_review"); //Post SP Review 
-    $routes->post("post_complaints", "MiscController::post_complaints"); //Post complaints 
+    $routes->post("complaints_requests_list", "MiscController::complaints_requests_list"); //List complaints 
     
     //Routes pertaining to User changing address
     $routes->post("change_address", "MiscController::change_address"); //Change temporary address for search location

@@ -774,5 +774,149 @@ function get_booking_status_list($booking_id)
     }
 }
 //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET sp booking count STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_total_sp_bookings($sp_id)
+{
+    $builder = $this->db->table('booking');
+    $builder->select('id,status_id');
+    $builder->where('sp_id',$sp_id);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Total SP Reviews STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_sp_reviews_list($sp_id)
+{
+
+    $builder = $this->db->table('user_review');
+    $builder->select('count(id) as total_review');
+    $builder->where('sp_id',$sp_id);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+    if($count > 0) {
+        return $result[0]['total_review']; 
+    }
+    else {
+        return 0; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET SP Reviews details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_sp_reviews_details($sp_id)
+{
+    $builder = $this->db->table('user_review');
+    $builder->select('user_review.*,user_details.fname,user_details.lname,user_details.mobile,user_details.profile_pic');
+    $builder->join('booking', 'booking.id = user_review.booking_id');
+    $builder->join('user_details', 'user_details.id = booking.users_id');
+    $builder->where('user_review.sp_id',$sp_id);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET user plan details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_user_plan_details($users_id)
+{
+    $builder = $this->db->table('subs_plan');
+    $builder->select('*');
+    $builder->join('user_plans', 'user_plans.id = subs_plan.plans_id');
+    $builder->where('users_id',$users_id);
+    $builder->orderBy('subs_id', 'DESC');
+    $builder->limit(1);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result[0]; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET sp plan details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_sp_plan_details($users_id)
+{
+    $builder = $this->db->table('sp_subs_plan');
+    $builder->select('*');
+    $builder->join('sp_plans', 'sp_plans.id = sp_subs_plan.plans_id');
+    $builder->where('users_id',$users_id);
+    $builder->orderBy('subs_id', 'DESC');
+    $builder->limit(1);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result[0]; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET complaints details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_complaints_details($users_id)
+{
+    $builder = $this->db->table('complaints');
+    $builder->select('complaints.*,complaint_status.action_taken,complaint_status.status,complaint_status.created_on as complaint_status_date,complaint_status.id as complaint_status_id');
+    $builder->join('complaint_status', 'complaint_status.complaints_id = complaints.id',"LEFT");
+    $builder->where('users_id',$users_id);
+    $builder->where('complaints.id >',0);
+    $builder->orderBy('complaints.id', 'DESC');
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Request details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_request_details($users_id)
+{
+    $builder = $this->db->table('withdraw_request');
+    $builder->select('withdraw_request.*');
+    $builder->join('transaction', 'transaction.id = withdraw_request.transaction_id');
+    $builder->where('withdraw_request.users_id',$users_id);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
 
 }

@@ -19,7 +19,10 @@ $routes->group("provider", ["namespace" => "\Modules\Provider\Controllers\api"],
     $routes->post("update_location", "Location::update_location"); //For SP Location Update API
     
     //Routes pertaining to FAQ
-    $routes->get("sp_faq", "MiscController::sp_faq"); //Get all the User related Faq
+    $routes->get("sp_faq", "MiscController::sp_faq"); //Get all the SP related Faq
+    
+    //Routes pertaining to sp plans
+    $routes->get("sp_plans", "MiscController::sp_plans"); //Get all the SP plans
     
     //Routes pertaining to Booking
     $routes->post("post_sp_extra_demand", "SPBookingController::post_sp_extra_demand"); //For SP Post Extra demand
@@ -40,5 +43,11 @@ $routes->group("provider", ["namespace" => "\Modules\Provider\Controllers\api"],
     //Routes pertaining to Alerts
     $routes->post("get_sp_alerts","MiscController::get_sp_alerts");// Get Unread Alerts by ID
     $routes->post("update_sp_alert","MiscController::update_sp_alert");// Update Alerts Status to read by ID
+    
+    //Routes pertaining to SP Account
+    $routes->get("get_sp_account_details", "MyAccount::get_sp_account_details"); //Get SP account details
+    $routes->get("get_sp_review_details", "MyAccount::get_sp_review_details"); //Get SP account details 
+    
+    $routes->post("membership_payments", "MembershipController::membership_payments"); //Membership payments
 
 });
