@@ -54,7 +54,7 @@ class UsersModel extends Model
 				$user = $this->where('email', $id)->first();
 				break;
 			case 'login':
-				$user = $this->where('userid', $id)->where('password', $pass)->first();
+				$user = $this->where('userid', $id)->first();
 				break;
 		}
 			return $user;

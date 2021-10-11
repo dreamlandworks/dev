@@ -5,6 +5,7 @@ namespace Modules\User\Controllers\api;
 use CodeIgniter\RESTful\ResourceController;
 use Modules\User\Models\UsersModel;
 use Modules\User\Models\MiscModel;
+use Modules\Provider\Models\CommonModel;
 
 class LoginController extends ResourceController
 {
@@ -42,20 +43,48 @@ class LoginController extends ResourceController
     
         		$log = new UsersModel();
         		$var = $log->login_user($id, $type, $pass);
+        		//print_r($var);exit;
         
         		if ($var != null) {
         
         			$upd = new MiscModel();
         			$upd->create_login_activity($var['id']);
-        			return $this->respond([
-        				"status" => 200,
-        				"message" => "User Exists",
-        				"user id" => $var['id']
-        			]);
+        			
+        			$common = new CommonModel();
+    		        
+    		        //Insert into alert_details table
+    		        $arr_alerts = array(
+        		          'alert_id' => 4, 
+                          'description' => "You have been successfully logged in at ".date("d-m-Y H:i:s"),
+                          'action' => 1,
+                          'created_on' => date("Y-m-d H:i:s"), 
+                          'status' => 1,
+                          'users_id' => $var['id'],
+                    );
+                    $common->insert_records_dynamically('alert_details', $arr_alerts);
+                    
+                    if($type == "login") {
+                        //Check Password
+                        $user_password = $var['password'];
+                        if($pass == $user_password) {
+                            return $this->respond([
+                				"status" => 200,
+                				"message" => "User Exists",
+                				"user id" => $var['id']
+                			]);
+                        }
+                        else {
+                            return $this->respond([
+                				"status" => 200,
+                				"message" => "Mobile Number and Password don't match. Please try again",
+                				"user id" => $var['id']
+                			]);
+                        }
+                    }
         		} else {
         			return $this->respond([
         				"status" => 404,
-        				"message" => "User Not Found"
+        				"message" => "No User found with this Mobile Number. Please try again"
         			]);
         		}
     		}
@@ -105,7 +134,7 @@ class LoginController extends ResourceController
         		    if($validate_user_email_exist != 'failure') {
         		        return $this->respond([
             				"status" => 200,
-            				"message" => "Email Exists",
+            				"message" => "This Email already Exists. Please enter another e-mail",
             				"user id" => $validate_user_email_exist->id
             			]);
         		    }  
@@ -121,7 +150,7 @@ class LoginController extends ResourceController
         		    if($validate_user_mobile_exist != 'failure') {
         		        return $this->respond([
             				"status" => 200,
-            				"message" => "Mobile Exists",
+            				"message" => "We already have an account with this mobile number, please enter another mobile number or try forgot password",
             				"user id" => $validate_user_mobile_exist->id
             			]);
         		    }
@@ -159,14 +188,14 @@ class LoginController extends ResourceController
         		        if($email_exists == 1) {
                             return $this->respond([
                 				"status" => 200,
-                				"message" => "Email Exists",
+                				"message" => "This Email already Exists. Please enter another e-mail",
                 				"user id" => $user_id
                 			]);
                         }
                         if($mobile_exists == 1) {
                             return $this->respond([
                 				"status" => 200,
-                				"message" => "Mobile Exists",
+                				"message" => "We already have an account with this mobile number, please enter another mobile number or try forgot password",
                 				"user id" => $user_id
                 			]);
                         }

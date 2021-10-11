@@ -60,7 +60,9 @@ function get_search_results($keyword_id,$city,$current_lat,$current_lng)
     $builder->join('sp_exp', 'sp_exp.id = sp_det.exp_id');
     $builder->join('city', 'city.id = sp_location.city');
     $builder->where('sp_location.id in (select max(id) from sp_location group by users_id)');
-    $builder->where('keywords_id',$keyword_id);
+    if($keyword_id > 0) {
+        $builder->where('keywords_id',$keyword_id);
+    }
     $builder->where('city.city',$city);
     $builder->where('sp_activated',3);
     $builder->where('online_status_id',1);

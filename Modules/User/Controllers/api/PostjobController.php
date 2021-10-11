@@ -1213,6 +1213,7 @@ class PostjobController extends ResourceController
     		       
     		       $arr_bid_list = array();
     		       $arr_sp_jobs_completed = array();
+    		       $job_title = "";
     		       
     		       //Get completed jobs count
     		       $arr_jobs_completed = $job_post_model->get_sp_jobs_completed_count_by_jobpost_id($post_job_id);
@@ -1223,6 +1224,7 @@ class PostjobController extends ResourceController
     		       if($arr_jobs_completed != 'failure') {
     		           foreach($arr_jobs_completed as $jobs_data) {
     		               $arr_sp_jobs_completed[$jobs_data['users_id']] = $jobs_data['jobs_completed']; 
+    		               $job_title = $jobs_data['title']; 
     		           }     
     		       }
     		       
@@ -1244,6 +1246,7 @@ class PostjobController extends ResourceController
                                                    'estimate_type' => $bid_data['name'],
                                                    'proposal'  => $bid_data['proposal'],
                                                    'about_me'  => $bid_data['about_me'],
+                                                   'job_title'  => $job_title,
                                                    'jobs_completed' => (array_key_exists($bid_data['users_id'],$arr_sp_jobs_completed)) ? $arr_sp_jobs_completed[$bid_data['users_id']] : 0,
                                                    );
                       }
@@ -1338,6 +1341,7 @@ class PostjobController extends ResourceController
                                                    'proposal'  => $bid_data['proposal'],
                                                    'attachment_count' => $bid_data['attachment_count'],
                                                    'jobs_completed' => ($arr_jobs_completed != 'failure') ? $arr_jobs_completed : 0,
+                                                   'job_title'  => $bid_data['title'],
                                                    );
                             
     		               if($bid_data['attachment_count'] > 0) {
@@ -1605,7 +1609,8 @@ class PostjobController extends ResourceController
     {
 
         $json = $this->request->getJSON();
-        if(!array_key_exists('booking_id',$json) || !array_key_exists('post_job_id',$json) || !array_key_exists('bid_id',$json) || !array_key_exists('status_id',$json) || !array_key_exists('key',$json)) {
+        if(!array_key_exists('booking_id',$json) || !array_key_exists('post_job_id',$json) || !array_key_exists('bid_id',$json) 
+        || !array_key_exists('status_id',$json) || !array_key_exists('key',$json)) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -1625,8 +1630,21 @@ class PostjobController extends ResourceController
             $post_job_id = $json->post_job_id;
             $status_id = $json->status_id;
             $booking_id = $json->booking_id;
+            $sp_name = $json->sp_name;
+            $job_title = $json->job_title;
             
             if($status_id == 29) {
+                //Insert into alert_details table
+		        $arr_alerts = array(
+    		          'alert_id' => 2, 
+                      'description' => "You have rejected bid of $sp_name for post $job_title.",
+                      'action' => 1,
+                      'created_on' => date("Y-m-d H:i:s"), 
+                      'status' => 1,
+                      'users_id' => $users_id,
+                );
+                $common->insert_records_dynamically('alert_details', $arr_alerts);
+                
                 //Mark the bid as Rejected
                 $upd_bid_det_status = [
                     "bid_type" =>  2, //Rejected

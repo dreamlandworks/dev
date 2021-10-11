@@ -126,15 +126,19 @@ class SearchProvider extends ResourceController
                         if($arr_preferred_time_slots_list != 'failure') {
                             foreach($arr_preferred_time_slots_list as $key => $slot_data) {
                                 $arr_temp[$slot_data['users_id']][$key]['day_slot'] = $slot_data['day_slot'];
-                                $arr_temp[$slot_data['users_id']][$key]['time_slot_from'] = $slot_data['from'];
+                                $arr_temp[$slot_data['users_id']][$key]['time_slot_from'] = $slot_data['time_slot_from'];
                             }
                         }
                         
                         //Get SP's blocked data
                         $arr_blocked_time_slots_list = $misc_model->get_sp_blocked_time_slot($ar_sp_id);
+                        /*echo "<pre>";
+                        print_r($arr_blocked_time_slots_list);
+                        echo "</pre>";
+                        exit;*/
                         if($arr_blocked_time_slots_list != 'failure') {
                             foreach($arr_blocked_time_slots_list as $key => $blocked_data) {
-                                $arr_temp_blocked[$slot_data['users_id']][$key]['time_slot_from'] = $blocked_data['from'];
+                                $arr_temp_blocked[$slot_data['users_id']][$key]['time_slot_from'] = $blocked_data['time_slot_from'];
                                 $arr_temp_blocked[$slot_data['users_id']][$key]['date'] = $blocked_data['date'];
                             }
                         }
@@ -143,7 +147,7 @@ class SearchProvider extends ResourceController
                             foreach($ar_sp_id as $sp_id) {
                                 if(array_key_exists($sp_id,$arr_temp)) {
                                     array_push($arr_slots_data,array("user_id" => $sp_id,"preferred_time_slots" => $arr_temp[$slot_data['users_id']],
-                                                                        "blocked_time_slots" => $arr_temp_blocked[$slot_data['users_id']]));
+                                                                        "blocked_time_slots" => (array_key_exists($slot_data['users_id'],$arr_temp_blocked)) ? $arr_temp_blocked[$slot_data['users_id']] : array()));
                                 }
                             }
                         }

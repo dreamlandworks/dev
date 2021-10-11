@@ -238,7 +238,8 @@ function get_bid_details($bid_id,$sp_id)
 
     $builder = $this->db->table('bid_det');
     $builder->select('bid_det.*,estimate_type.name,user_details.fname,user_details.lname,user_details.mobile,fcm_token,profile_pic,gender,
-    ,sp_det.about_me,qualification,list_profession.name as profession,exp');
+    ,sp_det.about_me,qualification,list_profession.name as profession,exp,post_job.title');
+    $builder->join('post_job', 'post_job.id = bid_det.post_job_id');  
     $builder->join('estimate_type', 'estimate_type.id = bid_det.estimate_type_id');
     $builder->join('user_details', 'user_details.id = bid_det.users_id');
     $builder->join('users', 'users.users_id = bid_det.users_id');
@@ -309,7 +310,7 @@ function get_sp_jobs_completed_count($sp_id)
 function get_sp_jobs_completed_count_by_jobpost_id($post_job_id)
 {
     $builder = $this->db->table('bid_det');
-    $builder->select('bid_det.users_id,count(booking.id) as jobs_completed');
+    $builder->select('bid_det.users_id,count(booking.id) as jobs_completed,title');
     $builder->join('post_job', 'post_job.id = bid_det.post_job_id');
     $builder->join('booking', 'booking.id = post_job.booking_id');
     $builder->where('post_job_id',$post_job_id);

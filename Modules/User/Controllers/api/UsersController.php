@@ -15,6 +15,7 @@ use Modules\User\Models\ReferralModel;
 use Modules\User\Models\TempUserModel;
 use Modules\User\Models\UserDetailsModel;
 use Modules\User\Models\UsersModel;
+use Modules\Provider\Models\CommonModel;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -347,6 +348,19 @@ class UsersController extends ResourceController
                 $res = $new->update_pass($id, $pass);
         
                 if ($res != 0) {
+                    $common = new CommonModel();
+    		        
+    		        //Insert into alert_details table
+    		        $arr_alerts = array(
+        		          'alert_id' => 4, 
+                          'description' => "You have successfully reset your password",
+                          'action' => 1,
+                          'created_on' => date("Y-m-d H:i:s"), 
+                          'status' => 1,
+                          'users_id' => $id,
+                    );
+                    $common->insert_records_dynamically('alert_details', $arr_alerts);
+                    
                     return $this->respond([
                         "status" => 200,
                         "message" => "Success"
