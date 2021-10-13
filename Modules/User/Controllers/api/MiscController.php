@@ -361,10 +361,6 @@ class MiscController extends ResourceController
                     }
                     //JSON Objects declared into variables
                     $data = [
-                        'name' => $json->name,
-                        'flat_no' => $json->flat,
-                        'apartment_name' => $json->apartment,
-                        'landmark' => $json->landmark,
                         'locality' => $json->address,
                         'latitude' => $json->user_lat,
                         'longitude' => $json->user_long,
@@ -385,7 +381,7 @@ class MiscController extends ResourceController
                         $misc_model = new MiscModel();
             
                         //Check whether any SP is available, if yes process the details
-                        $arr_search_result = $misc_model->get_search_results($keyword_id,$city);
+                        $arr_search_result = $misc_model->get_search_results($keyword_id,$city,$json->user_lat,$json->user_long);
                         
                         //Save to search_results
                         //JSON Objects declared into variables

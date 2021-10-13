@@ -63,11 +63,11 @@ class keywordModel extends Model
 // 	}
 	
 	public function showAll($profession_id = NULL){
-	    if($profession_id != NULL) {
+	    if($profession_id > 0) {
 	        return $this->where('profession_id', $profession_id)->where('status', 'Active')->findAll();
 	    }
 	    else {
-	        return $this->findAll();
+	        return $this->where('status', 'Active')->findAll();
 	    }
 		
 	}

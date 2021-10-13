@@ -113,6 +113,12 @@ class UserProfileController extends ResourceController
                 "data" => $array
             ]);
         }
+        else {
+    		    return $this->respond([
+                    "status" => 400,
+                    "message" => "User doesnt exist"
+                ]);
+    		}
         }
         else {
     		    return $this->respond([

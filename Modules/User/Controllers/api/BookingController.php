@@ -1612,6 +1612,7 @@ class BookingController extends ResourceController
 		}
 		else{
         $common = new CommonModel();
+        $misc_model = new MiscModel();
         
         $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
 		    
@@ -1623,6 +1624,17 @@ class BookingController extends ResourceController
     	{
             $status_id = $json->status_id; //status_id = 1 for accepted and 2 for rejected
             $booking_id = $json->booking_id;
+            $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
+            
+            $user_name = "";
+	        $sp_id = 0;
+	        $user_id = 0;
+	        
+	        $arr_user_details = $misc_model->get_user_name_by_booking($booking_id);
+	        if($arr_user_details != "failure") {
+	            $user_name = $arr_user_details['fname']." ".$arr_user_details['lname'];
+	            $user_id = $arr_sp_details['users_id'];
+	        }
             
             //Mark the status
             $arr_extra_demand = array(
@@ -1641,6 +1653,29 @@ class BookingController extends ResourceController
                 'created_on' => date('Y-m-d H:i:s')
             );
             $common->insert_records_dynamically('booking_status', $arr_booking_status);
+            
+            if($status_id == 1) {
+                $arr_alerts = array(
+    		          'alert_id' => 2, 
+                      'description' => "You have accepted the extra demand for booking ($booking_ref_id) and work is resumed.",
+                      'action' => 1,
+                      'created_on' => date("Y-m-d H:i:s"), 
+                      'status' => 1,
+                      'users_id' => $user_id,
+                );
+                $common->insert_records_dynamically('alert_details', $arr_alerts);
+            }
+            else {
+                $arr_alerts = array(
+    		          'alert_id' => 2, 
+                      'description' => "You have rejected the extra demand for booking ($booking_ref_id) and work is resumed.",
+                      'action' => 1,
+                      'created_on' => date("Y-m-d H:i:s"), 
+                      'status' => 1,
+                      'users_id' => $user_id,
+                );
+                $common->insert_records_dynamically('alert_details', $arr_alerts);
+            }
             
             return $this->respond([
                 "status" => 200,

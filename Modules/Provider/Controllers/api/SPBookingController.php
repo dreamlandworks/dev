@@ -27,7 +27,8 @@ class SPBookingController extends ResourceController
             //getting JSON data from API
             $json = $this->request->getJSON();
             
-            if( !array_key_exists('booking_id',$json) || !array_key_exists('created_on',$json) || !array_key_exists('material_advance',$json) || !array_key_exists('technician_charges',$json) || !array_key_exists('key',$json)
+            if( !array_key_exists('booking_id',$json) || !array_key_exists('created_on',$json) || !array_key_exists('material_advance',$json) 
+            || !array_key_exists('technician_charges',$json) || !array_key_exists('key',$json)
                             ) {
     		    return $this->respond([
         				'status' => 403,
@@ -42,6 +43,19 @@ class SPBookingController extends ResourceController
     		    
     		    if($key == $api_key) {
     		        $common = new CommonModel();
+    		        $misc_model = new MiscModel();
+    		        
+    		        $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
+    		        $sp_name = "";
+    		        $sp_id = 0;
+    		        $user_id = 0;
+    		        
+    		        $arr_sp_details = $misc_model->get_sp_name_by_booking($json->booking_id);
+    		        if($arr_sp_details != "failure") {
+    		            $sp_name = $arr_sp_details['fname']." ".$arr_sp_details['lname'];
+    		            $sp_id = $arr_sp_details['sp_id'];
+    		            $user_id = $arr_sp_details['users_id'];
+    		        }
     		        
     		        $arr_extra_demand_details =  $common->get_details_dynamically('extra_demand', 'booking_id', $json->booking_id);
     		        if($arr_extra_demand_details == 'failure') {
@@ -64,6 +78,27 @@ class SPBookingController extends ResourceController
                             'created_on' => date('Y-m-d H:i:s')
                         );
                         $common->insert_records_dynamically('booking_status', $arr_booking_status);
+                        
+                        //Insert into alert_details table
+                        $arr_alerts = array(
+            		          'alert_id' => 2, 
+                              'description' => "You raised an Extra Demand of Rs. $json->amount for Booking ($booking_ref_id).",
+                              'action' => 1,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'sp_id' => $sp_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
+                        
+            	        $arr_alerts = array(
+            		          'alert_id' => 2, 
+                              'description' => $sp_name." raised an Extra Demand of Rs. $json->amount for Booking ($booking_ref_id). Would you accept?",
+                              'action' => 2,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'users_id' => $user_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
     		        }
     		        else {
     		            $arr_extra_demand = array(
@@ -566,8 +601,21 @@ class SPBookingController extends ResourceController
     		    
     		    if($key == $api_key) {
     		        $common = new CommonModel();
+    		        $misc_model = new MiscModel();
     		        
     		        $arr_user_details = $common->get_details_dynamically('users', 'users_id', $json->users_id);
+    		        $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
+            
+                    $sp_name = "";
+        	        $sp_id = 0;
+        	        $user_id = 0;
+        	        
+        	        $arr_sp_details = $misc_model->get_sp_name_by_booking($booking_id);
+        	        if($arr_sp_details != "failure") {
+        	            $sp_name = $arr_sp_details['fname']." ".$arr_sp_details['lname'];
+        	            $sp_id = $arr_sp_details['sp_id'];
+        	            $user_id = $arr_sp_details['users_id'];
+        	        }
     		        
     		        $arr_installment_det = array(
                             'inst_request_status_id' => 33,
@@ -583,6 +631,17 @@ class SPBookingController extends ResourceController
                         'created_on' => date('Y-m-d H:i:s')
                     );
                     $common->insert_records_dynamically('booking_status', $arr_booking_status);
+                    
+                    //Insert into alerts
+                    $arr_alerts = array(
+        		          'alert_id' => 2, 
+                          'description' => $sp_name." has requested for (Installment No) Installment as he completed the (Condition) in Booking (ID). (Release/ Reject)",
+                          'action' => 1,
+                          'created_on' => date("Y-m-d H:i:s"), 
+                          'status' => 1,
+                          'users_id' => $user_id,
+                    );
+                    $common->insert_records_dynamically('alert_details', $arr_alerts);
     		        
     		        return $this->respond([
     		            "user_fcm_token" => ($arr_user_details != 'failure') ? $arr_user_details[0]['fcm_token'] : "",

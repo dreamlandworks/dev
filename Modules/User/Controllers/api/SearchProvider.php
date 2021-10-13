@@ -190,6 +190,7 @@ class SearchProvider extends ResourceController
             		} else {
             			return $this->respond([
             				"status" => 200,
+            				"data" => array(),
             				"message" => "No Data to Show",
             				"search_results_id" => $search_results_id,
             				"temp_address_id" => $temp_address_id

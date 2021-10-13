@@ -920,5 +920,58 @@ function get_request_details($users_id)
     }
 }
 //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_user_name_by_booking($booking_id = 0, $users_id = 0)
+{
 
+    $builder = $this->db->table('booking');
+    $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,fcm_token');
+    $builder->join('user_details', 'user_details.id = booking.users_id');
+    $builder->join('users', 'users.users_id = booking.users_id');
+    if($booking_id > 0) {
+        $builder->where('booking.id',$booking_id);
+    }
+    if($users_id > 0) {
+        $builder->where('booking.users_id',$users_id);
+    }
+    
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result[0]; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_sp_name_by_booking($booking_id = 0, $sp_id = 0)
+{
+
+    $builder = $this->db->table('booking');
+    $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,fcm_token');
+    $builder->join('user_details', 'user_details.id = booking.sp_id');
+    $builder->join('users', 'users.users_id = booking.sp_id');
+    if($booking_id > 0) {
+        $builder->where('booking.id',$booking_id);
+    }
+    if($sp_id > 0) {
+        $builder->where('booking.sp_id',$sp_id);
+    }
+    
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result[0]; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
 }

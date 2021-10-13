@@ -53,7 +53,7 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     $routes->post("complaints_requests_list", "MiscController::complaints_requests_list"); //List complaints 
     
     //Routes pertaining to User changing address
-    $routes->post("change_address", "MiscController::change_address"); //Change temporary address for search location
+    //$routes->post("change_address", "MiscController::change_address"); //Change temporary address for search location
     $routes->post("user_temp_address", "MiscController::user_temp_address"); //Get List of users temp address
     $routes->post("add_address", "MiscController::add_address"); //Add multiple address
     $routes->post("delete_attachment", "MiscController::delete_attachment"); //Add attachment
