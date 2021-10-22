@@ -124,9 +124,15 @@ class SearchProvider extends ResourceController
                         //Get SP's preferred day/timeslot data
                         $arr_preferred_time_slots_list = $misc_model->get_sp_preferred_time_slot($ar_sp_id);
                         if($arr_preferred_time_slots_list != 'failure') {
+                            $i = 0;
                             foreach($arr_preferred_time_slots_list as $key => $slot_data) {
-                                $arr_temp[$slot_data['users_id']][$key]['day_slot'] = $slot_data['day_slot'];
-                                $arr_temp[$slot_data['users_id']][$key]['time_slot_from'] = $slot_data['time_slot_from'];
+                                if(!array_key_exists($slot_data['users_id'],$arr_temp)) {
+                                    $i = 0;
+                                }
+                                
+                                $arr_temp[$slot_data['users_id']][$i]['day_slot'] = $slot_data['day_slot'];
+                                $arr_temp[$slot_data['users_id']][$i]['time_slot_from'] = $slot_data['time_slot_from'];
+                                $i++;
                             }
                         }
                         
@@ -137,17 +143,23 @@ class SearchProvider extends ResourceController
                         echo "</pre>";
                         exit;*/
                         if($arr_blocked_time_slots_list != 'failure') {
+                            $j = 0;
                             foreach($arr_blocked_time_slots_list as $key => $blocked_data) {
-                                $arr_temp_blocked[$slot_data['users_id']][$key]['time_slot_from'] = $blocked_data['time_slot_from'];
-                                $arr_temp_blocked[$slot_data['users_id']][$key]['date'] = $blocked_data['date'];
+                                if(!array_key_exists($blocked_data['users_id'],$arr_temp_blocked)) {
+                                    $j = 0;
+                                }
+                                
+                                $arr_temp_blocked[$blocked_data['users_id']][$j]['time_slot_from'] = $blocked_data['from'];
+                                $arr_temp_blocked[$blocked_data['users_id']][$j]['date'] = $blocked_data['date'];
+                                $j++;
                             }
                         }
                         
                         if(count($ar_sp_id) > 0) {
                             foreach($ar_sp_id as $sp_id) {
                                 if(array_key_exists($sp_id,$arr_temp)) {
-                                    array_push($arr_slots_data,array("user_id" => $sp_id,"preferred_time_slots" => $arr_temp[$slot_data['users_id']],
-                                                                        "blocked_time_slots" => (array_key_exists($slot_data['users_id'],$arr_temp_blocked)) ? $arr_temp_blocked[$slot_data['users_id']] : array()));
+                                    array_push($arr_slots_data,array("user_id" => $sp_id,"preferred_time_slots" => $arr_temp[$sp_id],
+                                                                        "blocked_time_slots" => (array_key_exists($sp_id,$arr_temp_blocked)) ? $arr_temp_blocked[$sp_id] : array()));
                                 }
                             }
                         }
@@ -155,6 +167,7 @@ class SearchProvider extends ResourceController
                         //echo "<pre>";
                         //print_r($arr_temp);
                         //print_r($arr_slots_data);
+                        //print_r($arr_temp_blocked);
                         //echo "</pre>";
                         //exit;
                     }
@@ -177,6 +190,9 @@ class SearchProvider extends ResourceController
                     ];
                     $search_results_id = $common->insert_records_dynamically('search_results', $data);
                     
+                    //Get Charges
+                    $arr_charges = $common->get_table_details_dynamically('tax_cancel_charges');
+                    
                     if ($arr_search_result != 'failure') {
                         return $this->respond([
             				"status" => 200,
@@ -185,15 +201,18 @@ class SearchProvider extends ResourceController
             				//"sp_ids" => $ar_sp_id,
             				"slots_data" => $arr_slots_data,
             				"search_results_id" => $search_results_id,
-            				"temp_address_id" => $temp_address_id
+            				"temp_address_id" => $temp_address_id,
+            				"charges" => ($arr_charges != 'failure') ? $arr_charges : array()
             			]);
             		} else {
             			return $this->respond([
             				"status" => 200,
             				"data" => array(),
             				"message" => "No Data to Show",
+            				"slots_data" => array(),
             				"search_results_id" => $search_results_id,
-            				"temp_address_id" => $temp_address_id
+            				"temp_address_id" => $temp_address_id,
+            				"charges" => array()
             			]);
             		}
         		}

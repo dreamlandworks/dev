@@ -75,7 +75,7 @@ class LoginController extends ResourceController
                         }
                         else {
                             return $this->respond([
-                				"status" => 200,
+                				"status" => 404,
                 				"message" => "Mobile Number and Password don't match. Please try again",
                 				"user id" => $var['id']
                 			]);

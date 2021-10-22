@@ -77,12 +77,12 @@ class AlertModel extends Model
 	{
 
 		$builder = $this->db->table('alert_details');
-		$builder->select('alert_details.id,alert.alert_type,alert_sub.description,alert_details.created_on');
+		$builder->select('alert_details.id,alert.alert_type,description,alert_details.created_on');
 		$builder->join('alert', 'alert_details.alert_id = alert.id');
-		$builder->join('alert_sub', 'alert_details.sub_id = alert_sub.id');
+		//$builder->join('alert_sub', 'alert_details.sub_id = alert_sub.id');
 		$builder->where('users_id', $id);
 		$builder->where('status', 1);
-		$builder->where('alert_sub.action', $type);
+		$builder->where('action', $type);
 		$query = $builder->get();
 
 		$res = $query->getResultArray();
@@ -101,10 +101,11 @@ class AlertModel extends Model
 	//--------------------------------------------------------UPDATE ALERT STATUS STARTS---------------------------------------------------
 	//-----------------------------------------------------------***************------------------------------------------------------------    
 
-	public function update_alert($id,$date){
+	public function update_alert($id,$date,$type){
 
 		$builder = $this->db->table('alert_details');
 		$builder->where('users_id',$id);
+		$builder->where('action', $type);
 		$builder->where('created_on <',$date);
 		$builder->update(['status'=>2]);
 		$query = $builder->get();
@@ -124,15 +125,15 @@ class AlertModel extends Model
 	{
 
 		$builder = $this->db->table('alert_details');
-		$builder->select('alert_details.id,alert.alert_type,status,alert_sub.description,alert_details.created_on');
+		$builder->select('alert_details.id,alert.alert_type,status,description,alert_details.created_on');
 		$builder->join('alert', 'alert_details.alert_id = alert.id');
-		$builder->join('alert_sub', 'alert_details.sub_id = alert_sub.id');
+		//$builder->join('alert_sub', 'alert_details.sub_id = alert_sub.id');
 		$builder->where('users_id', $id);
 		if($status > 0) {
 		    $builder->where('status', $status); // 1 >> Unread, 2 >> Read
 		}
 		
-		$builder->where('alert_sub.action', $type);
+		$builder->where('action', $type);
 		$query = $builder->get();
 
 		$res = $query->getResultArray();

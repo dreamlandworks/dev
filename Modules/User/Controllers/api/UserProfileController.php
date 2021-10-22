@@ -60,6 +60,7 @@ class UserProfileController extends ResourceController
             $email = $user['email'];
             $sp_activated = $user['sp_activated'];
             $fcm_token = $user['fcm_token'];
+            $activation_code = $user['activation_code'];
 
             //Get User Details
             if (($res = $con1->user_details_by_id($id)) != 0) {
@@ -104,7 +105,8 @@ class UserProfileController extends ResourceController
                 "referral_id" => $referral_id,
                 "address" => $address,
                 "sp_activated" => $sp_activated,
-                "fcm_token" => $fcm_token
+                "fcm_token" => $fcm_token,
+                "activation_code" => $activation_code
             ];
 
             return $this->respond([

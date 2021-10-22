@@ -33,7 +33,7 @@ class PostDiscussion extends ResourceController
             exit;*/
             
             if(!array_key_exists('post_job_id',$json) || !array_key_exists('comment',$json) || !array_key_exists('attachment_type',$json)
-            || !array_key_exists('attachments',$json) || !array_key_exists('created_on',$json)
+            || !array_key_exists('attachments',$json) || !array_key_exists('created_on',$json) || !array_key_exists('user_type',$json)
             || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
                             ) {
     		    return $this->respond([
@@ -51,6 +51,7 @@ class PostDiscussion extends ResourceController
     		        $attachments = $json->attachments;
     		        
     		        $common = new CommonModel();
+    		        $misc_model = new MiscModel();
     		        
     		        $arr_discussion = array(
         		        'post_job_id' => $json->post_job_id,
@@ -79,6 +80,50 @@ class PostDiscussion extends ResourceController
                                     }
                                 }
                             }
+                        }
+                        
+                        $sp_name = "";
+        		        $user_name = "";
+        		        $job_title = "";
+        		        $user_id = 0;
+                        
+                        if($json->user_type == 'User') {
+                            $arr_user_details = $misc_model->get_user_name_by_post($json->post_job_id, $json->users_id);
+            		        if($arr_user_details != "failure") {
+            		            $user_name = $arr_user_details['fname']." ".$arr_user_details['lname'];
+	                            $user_id = $arr_user_details['users_id'];
+            		            $job_title = $arr_user_details['title'];
+            		        }
+                            
+                            //Insert into alert_details table
+                            $arr_alerts = array(
+                		          'alert_id' => 2, 
+                                  'description' => $user_name." posted a message in discussion board of post $job_title.",
+                                  'action' => 1,
+                                  'created_on' => date("Y-m-d H:i:s"), 
+                                  'status' => 1,
+                                  'users_id' => $user_id,
+                            );
+                            $common->insert_records_dynamically('alert_details', $arr_alerts);
+                        }
+                        else if($json->user_type == 'SP') {
+                            $arr_sp_details = $misc_model->get_sp_name_by_post($json->post_job_id, $json->users_id);
+            		        if($arr_sp_details != "failure") {
+            		            $sp_name = $arr_sp_details['fname']." ".$arr_sp_details['lname'];
+            		            $sp_id = $arr_sp_details['sp_id'];
+            		            $job_title = $arr_sp_details['title'];
+            		        }
+                            
+                            //Insert into alert_details table
+                            $arr_alerts = array(
+                		          'alert_id' => 2, 
+                                  'description' => $sp_name." posted a message in discussion board of post $job_title.",
+                                  'action' => 1,
+                                  'created_on' => date("Y-m-d H:i:s"), 
+                                  'status' => 1,
+                                  'sp_id' => $sp_id,
+                            );
+                            $common->insert_records_dynamically('alert_details', $arr_alerts);
                         }
                         
                         return $this->respond([

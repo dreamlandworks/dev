@@ -966,14 +966,30 @@ class MiscController extends ResourceController
                     $complaint_id = $common->insert_records_dynamically('complaints', $arr_complaints);
                     
                     if ($complaint_id > 0) {
+                        $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
+    		            $ticket_ref_id = str_pad($complaint_id, 6, "0", STR_PAD_LEFT);
+    		            
+    		            $arr_alerts = array(
+            		          'alert_id' => 4, 
+                              'description' => "You have successfully raised a ticket under booking $booking_ref_id with Ticket No. $ticket_ref_id.",
+                              'action' => 1,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'users_id' => $json->users_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
+                        
                         return $this->respond([
             			    "complaint_id" => $complaint_id,
+            			    "ticket_ref_id" => $ticket_ref_id,
             				"status" => 200,
             				"message" => "Success",
             			]);
             		}
             		else {
             		    return $this->respond([
+            		        "complaint_id" => 0,
+            			    "ticket_ref_id" => 0,
         					"status" => 404,
         					"message" => "Failed to create Complaint"
         				]);
@@ -1030,6 +1046,16 @@ class MiscController extends ResourceController
                     $feedback_id = $common->insert_records_dynamically('feedback', $arr_feedback);
                     
                     if ($feedback_id > 0) {
+                        $arr_alerts = array(
+            		          'alert_id' => 4, 
+                              'description' => "You have successfully submitted a review/ Suggestion. It really matter to serve you better. Thanks",
+                              'action' => 1,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'users_id' => $json->users_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
+                        
                         return $this->respond([
             			    "feedback_id" => $feedback_id,
             				"status" => 200,
@@ -1105,6 +1131,7 @@ class MiscController extends ResourceController
 		$validate_key = $json->key;
 		$validate_offer_type_id = $json->offer_type_id;
 		$users_id = $json->users_id;
+		$sort_type = $json->sort_type;
 		
 		if($validate_key == "" && $validate_offer_type_id == "") {
 		    return $this->respond([
@@ -1146,7 +1173,7 @@ class MiscController extends ResourceController
     		    
     		    $data = array();
     		    
-        		$res = $misc_model->get_offers_list($validate_offer_type_id);
+        		$res = $misc_model->get_offers_list($validate_offer_type_id,$sort_type);
         		if($res != 'failure') {
         		    foreach($res as $key => $res_data) {
         		        $data[$key]["id"] = $res_data["id"];
@@ -1159,13 +1186,14 @@ class MiscController extends ResourceController
         		        $data[$key]["offer_image"] = $res_data["offer_image"];
         		        $data[$key]["offer_type_name"] = $res_data["offer_type_name"];
         		        $data[$key]["value_type_name"] = $res_data["value_type_name"];
+        		        $data[$key]["created_dts"] = $res_data["created_dts"];
         		    }
         		}
         		
         		$offers_count = (count($data) > 0) ?  count($data) : 0; //Increment the key
         		
         		if($users_id > 0) {
-        		    $res_select_list = $misc_model->get_offers_selection_list($users_id);
+        		    $res_select_list = $misc_model->get_offers_selection_list($users_id,$sort_type);
             		if($res_select_list != 'failure') {
             		    foreach($res_select_list as $res_data) {
             		        $data[$offers_count]["id"] = $res_data["id"];
@@ -1178,12 +1206,13 @@ class MiscController extends ResourceController
             		        $data[$offers_count]["offer_image"] = $res_data["offer_image"];
             		        $data[$offers_count]["offer_type_name"] = $res_data["offer_type_name"];
             		        $data[$offers_count]["value_type_name"] = $res_data["value_type_name"];
+            		        $data[$key]["created_dts"] = $res_data["created_dts"];
             		        $offers_count++;
             		    }
             		}
         		}
         		
-        		$res_location_country = $misc_model->get_offers_location_list(1,$country_id);
+        		$res_location_country = $misc_model->get_offers_location_list(1,$country_id,$sort_type);
         		if($res_location_country != 'failure') {
         		    foreach($res_location_country as $res_data) {
         		        $data[$offers_count]["id"] = $res_data["id"];
@@ -1196,11 +1225,12 @@ class MiscController extends ResourceController
         		        $data[$offers_count]["offer_image"] = $res_data["offer_image"];
         		        $data[$offers_count]["offer_type_name"] = $res_data["offer_type_name"];
         		        $data[$offers_count]["value_type_name"] = $res_data["value_type_name"];
+        		        $data[$key]["created_dts"] = $res_data["created_dts"];
         		        $offers_count++;
         		    }
         		}
         		
-        		$res_location_state = $misc_model->get_offers_location_list(2,$state_id);
+        		$res_location_state = $misc_model->get_offers_location_list(2,$state_id,$sort_type);
         		if($res_location_state != 'failure') {
         		    foreach($res_location_state as $res_data) {
         		        $data[$offers_count]["id"] = $res_data["id"];
@@ -1213,11 +1243,12 @@ class MiscController extends ResourceController
         		        $data[$offers_count]["offer_image"] = $res_data["offer_image"];
         		        $data[$offers_count]["offer_type_name"] = $res_data["offer_type_name"];
         		        $data[$offers_count]["value_type_name"] = $res_data["value_type_name"];
+        		        $data[$key]["created_dts"] = $res_data["created_dts"];
         		        $offers_count++;
         		    }
         		}
         		
-        		$res_location_city = $misc_model->get_offers_location_list(3,$city_id);
+        		$res_location_city = $misc_model->get_offers_location_list(3,$city_id,$sort_type);
         		if($res_location_city != 'failure') {
         		    foreach($res_location_city as $res_data) {
         		        $data[$offers_count]["id"] = $res_data["id"];
@@ -1230,11 +1261,12 @@ class MiscController extends ResourceController
         		        $data[$offers_count]["offer_image"] = $res_data["offer_image"];
         		        $data[$offers_count]["offer_type_name"] = $res_data["offer_type_name"];
         		        $data[$offers_count]["value_type_name"] = $res_data["value_type_name"];
+        		        $data[$key]["created_dts"] = $res_data["created_dts"];
         		        $offers_count++;
         		    }
         		}
         		
-        		$res_location_zipcode = $misc_model->get_offers_location_list(4,$zip_id);
+        		$res_location_zipcode = $misc_model->get_offers_location_list(4,$zip_id,$sort_type);
         		if($res_location_zipcode != 'failure') {
         		    foreach($res_location_zipcode as $res_data) {
         		        $data[$offers_count]["id"] = $res_data["id"];
@@ -1247,6 +1279,7 @@ class MiscController extends ResourceController
         		        $data[$offers_count]["offer_image"] = $res_data["offer_image"];
         		        $data[$offers_count]["offer_type_name"] = $res_data["offer_type_name"];
         		        $data[$offers_count]["value_type_name"] = $res_data["value_type_name"];
+        		        $data[$key]["created_dts"] = $res_data["created_dts"];
         		        $offers_count++;
         		    }
         		}
@@ -1307,6 +1340,9 @@ class MiscController extends ResourceController
     		    
     		    if($key == $api_key) {
     		        $common = new CommonModel();
+    		        $misc_model = new MiscModel();
+    		        
+    		        $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
     		        
     		        //Insert into user_review table
     		        $arr_user_review = array(
@@ -1322,6 +1358,24 @@ class MiscController extends ResourceController
                     $review_id = $common->insert_records_dynamically('user_review', $arr_user_review);
                     
                     if ($review_id > 0) {
+                        $arr_user_details = $misc_model->get_user_name_by_booking($json->booking_id);
+        		        if($arr_user_details != "failure") {
+        		            $user_name = $arr_user_details['fname']." ".$arr_user_details['lname'];
+                            $user_id = $arr_user_details['users_id'];
+        		        }
+            		        
+                        //Insert into alert_details table
+        		        $arr_alerts = array(
+            		          'alert_id' => 1, 
+                              'description' => $user_name." has posted a review for booking $booking_ref_id",
+                              'action' => 1,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'sp_id' => $json->sp_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
+                        
+                        
                         return $this->respond([
             			    "review_id" => $review_id,
             				"status" => 200,

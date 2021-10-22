@@ -7,6 +7,7 @@ use CodeIgniter\RESTful\ResourceController;
 use Modules\Provider\Models\CommonModel;
 use Modules\User\Models\MiscModel;
 use Modules\User\Models\JobPostModel;
+use Modules\User\Models\SmsTemplateModel;
 
 helper('Modules\User\custom');
 
@@ -586,7 +587,8 @@ class SPBookingController extends ResourceController
             echo "</pre>";
             exit;*/
             
-            if(!array_key_exists('booking_id',$json)  || !array_key_exists('users_id',$json)  || !array_key_exists('inst_id',$json) || !array_key_exists('sp_id',$json)  || !array_key_exists('key',$json)) 
+            if(!array_key_exists('booking_id',$json)  || !array_key_exists('users_id',$json)  || !array_key_exists('inst_id',$json) 
+            || !array_key_exists('sp_id',$json)  || !array_key_exists('key',$json)) 
             {
     		    return $this->respond([
         				'status' => 403,
@@ -602,6 +604,13 @@ class SPBookingController extends ResourceController
     		    if($key == $api_key) {
     		        $common = new CommonModel();
     		        $misc_model = new MiscModel();
+    		        
+    		        $inst_no = 0;
+    		        
+    		        $arr_inst_details = $common->get_details_dynamically('installment_det', 'id', $json->inst_id);
+    		        if($arr_inst_details != 'failure') {
+    		            $inst_no = $arr_inst_details[0]['inst_no'];
+    		        }
     		        
     		        $arr_user_details = $common->get_details_dynamically('users', 'users_id', $json->users_id);
     		        $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
@@ -635,11 +644,21 @@ class SPBookingController extends ResourceController
                     //Insert into alerts
                     $arr_alerts = array(
         		          'alert_id' => 2, 
-                          'description' => $sp_name." has requested for (Installment No) Installment as he completed the (Condition) in Booking (ID). (Release/ Reject)",
-                          'action' => 1,
+                          'description' => $sp_name." has requested for $inst_no Installment as he completed the (Condition) in Booking $booking_ref_id.",
+                          'action' => 2,
                           'created_on' => date("Y-m-d H:i:s"), 
                           'status' => 1,
                           'users_id' => $user_id,
+                    );
+                    $common->insert_records_dynamically('alert_details', $arr_alerts);
+                    
+                    $arr_alerts = array(
+        		          'alert_id' => 2, 
+                          'description' => "you have requested for $inst_no Installment as (Condition) is completed in Booking $booking_ref_id.",
+                          'action' => 2,
+                          'created_on' => date("Y-m-d H:i:s"), 
+                          'status' => 1,
+                          'sp_id' => $sp_id,
                     );
                     $common->insert_records_dynamically('alert_details', $arr_alerts);
     		        
@@ -1268,6 +1287,24 @@ class SPBookingController extends ResourceController
     		        $attachments = $json->attachments;
     		        
     		        $common = new CommonModel();
+    		        $misc_model = new MiscModel();
+    		        
+    		        $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
+    		        $sp_name = "";
+    		        $sp_id = $json->sp_id;
+    		        $sp_mobile = "";
+    		        $user_id = 0;
+    		        $job_title = "";
+    		        
+    		        
+    		        $arr_sp_details = $misc_model->get_sp_name_by_booking($json->booking_id);
+    		        if($arr_sp_details != "failure") {
+    		            $sp_name = $arr_sp_details['fname']." ".$arr_sp_details['lname'];
+    		            $sp_id = $arr_sp_details['sp_id'];
+    		            $sp_mobile = $arr_sp_details['mobile'];
+    		            $user_id = $arr_sp_details['users_id'];
+    		            $job_title = $arr_sp_details['title'];
+    		        }
     		        
     		        $arr_bid_det = array(
         		        'post_job_id' => $json->post_job_id,
@@ -1310,6 +1347,43 @@ class SPBookingController extends ResourceController
                                 }
                             }
                         }
+                        
+                        //Insert into alert_details table
+        		        $arr_alerts = array(
+            		          'alert_id' => 2, 
+                              'description' => "You have successfully submitted a bid for job $job_title with $booking_ref_id on ".date('d-m-Y H:i:s',strtotime($json->created_on)),
+                              'action' => 1,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'sp_id' => $sp_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
+                        
+                        //Insert into alert_details table
+        		        $arr_alerts = array(
+            		          'alert_id' => 2, 
+                              'description' => $sp_name." has submitted a bid on post $job_title.",
+                              'action' => 2,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'users_id' => $users_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
+                        
+                        //Send SMS
+                        $sms_model = new SmsTemplateModel();
+                        
+                	 	$data = [
+            				"name" => "propo_submit",
+            				"mobile" => $sp_mobile,
+            				"dat" => [
+            					"var" => $sp_name,
+            					"var1" => $job_title,
+            					"var2" => "",
+            				]
+            			];
+            			
+            			$sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
                         
             			return $this->respond([
             			    "post_job_id" => $json->post_job_id,

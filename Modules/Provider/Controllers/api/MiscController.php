@@ -425,6 +425,9 @@ class MiscController extends ResourceController
     		    
     		    if($key == $api_key) { //Dld0F54x99UeL8nZkByWC0BwUEi4aF4O
     		        $common = new CommonModel();
+    		        $misc_model = new MiscModel();
+    		        
+    		        $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
     		        
     		        //Insert into user_review table
     		        $arr_sp_review = array(
@@ -440,6 +443,24 @@ class MiscController extends ResourceController
                     $review_id = $common->insert_records_dynamically('sp_review', $arr_sp_review);
                     
                     if ($review_id > 0) {
+                        $arr_sp_details = $misc_model->get_sp_name_by_booking($json->booking_id);
+        		        if($arr_sp_details != "failure") {
+        		            $sp_name = $arr_sp_details['fname']." ".$arr_sp_details['lname'];
+        		            $sp_id = $arr_sp_details['sp_id'];
+        		            $job_title = $arr_sp_details['title'];
+        		        }
+            		        
+                        //Insert into alert_details table
+        		        $arr_alerts = array(
+            		          'alert_id' => 1, 
+                              'description' => $sp_name." has posted a review for booking $booking_ref_id",
+                              'action' => 1,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'users_id' => $json->user_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
+                        
                         return $this->respond([
             			    "review_id" => $review_id,
             				"status" => 200,
@@ -486,6 +507,7 @@ class MiscController extends ResourceController
 		    $id = $json->sp_id;
     		$type = $json->type;
     		$status = $json->status;
+    		$user_type = "SP";
     		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
 		    
 		    $apiconfig = new \Config\ApiConfig();
@@ -496,7 +518,7 @@ class MiscController extends ResourceController
     
         		$alert = new AlertModel();
                 
-                $res = $alert->all_alerts($id, $type,$status);
+                $res = $alert->all_alerts($id, $type,$status,$user_type);
         
                 if ($res != null) {
                     return $this->respond([
@@ -526,7 +548,7 @@ class MiscController extends ResourceController
     {
         $json = $this->request->getJSON();
         
-        if(!array_key_exists('id',$json) || !array_key_exists('key',$json)) {
+        if(!array_key_exists('id',$json) || !array_key_exists('type',$json) || !array_key_exists('key',$json)) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -534,6 +556,7 @@ class MiscController extends ResourceController
 		}
 		else {
 		    $id = $json->id;
+		    $type = $json->type;
     		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
 		    
 		    $apiconfig = new \Config\ApiConfig();
@@ -545,7 +568,7 @@ class MiscController extends ResourceController
         		$alerts = new AlertModel();
 
                 $date = date('Y-m-d H:m:s', time());
-                $res = $alerts->update_alert($id, $date);
+                $res = $alerts->update_alert($id, $date,$type);
         
                 if ($res == "Success") {
                     return $this->respond([

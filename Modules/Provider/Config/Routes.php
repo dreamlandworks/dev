@@ -49,5 +49,8 @@ $routes->group("provider", ["namespace" => "\Modules\Provider\Controllers\api"],
     $routes->get("get_sp_review_details", "MyAccount::get_sp_review_details"); //Get SP account details 
     
     $routes->post("membership_payments", "MembershipController::membership_payments"); //Membership payments
+	
+	
+	
 
 });

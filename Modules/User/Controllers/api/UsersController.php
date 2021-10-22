@@ -16,6 +16,7 @@ use Modules\User\Models\TempUserModel;
 use Modules\User\Models\UserDetailsModel;
 use Modules\User\Models\UsersModel;
 use Modules\Provider\Models\CommonModel;
+use Modules\User\Models\SmsTemplateModel;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -211,7 +212,19 @@ class UsersController extends ResourceController
                                 ]);
         
                                 if ($aa != 0 && $bb != null && $cc != 0 && $dd != null && $ale != null) {
-        
+                                    //Send SMS
+                                    $sms_model = new SmsTemplateModel();
+                                    
+                            	 	$data = [
+                        				"name" => "reg_thanks",
+                        				"mobile" => $mobile,
+                        				"dat" => [
+                        					"var" => $fname,
+                        				]
+                        			];
+                        			
+                        			$sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
+                                    
                                     return $this->respond([
                                         "status" => 200,
                                         "message" => "User Successfully Created",
@@ -449,7 +462,7 @@ class UsersController extends ResourceController
     {
         $json = $this->request->getJSON();
         
-        if(!array_key_exists('id',$json) || !array_key_exists('key',$json)) {
+        if(!array_key_exists('id',$json) || !array_key_exists('type',$json) || !array_key_exists('key',$json)) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -457,7 +470,8 @@ class UsersController extends ResourceController
 		}
 		else {
 		    $id = $json->id;
-    		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    $type = $json->type;
+		    $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
 		    
 		    $apiconfig = new \Config\ApiConfig();
 		
@@ -468,7 +482,7 @@ class UsersController extends ResourceController
         		$alerts = new AlertModel();
 
                 $date = date('Y-m-d H:m:s', time());
-                $res = $alerts->update_alert($id, $date);
+                $res = $alerts->update_alert($id, $date,$type);
         
                 if ($res == "Success") {
                     return $this->respond([

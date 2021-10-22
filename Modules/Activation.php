@@ -7,13 +7,11 @@ use Modules\Provider\Models\CommonModel;
 use Modules\Provider\Models\ServiceProviderModel;
 use Modules\Provider\Models\ActivationModel;
 use Modules\User\Models\MiscModel;
-use Modules\User\Models\SmsTemplateModel;
 
 helper('Modules\User\custom');
 
 class Activation extends ResourceController
 {
-	
 	
 	/**
 	 * Register Service Provider
@@ -26,8 +24,8 @@ class Activation extends ResourceController
         if ($this->request->getMethod() != 'post') {
 
             $this->respond([
-              "status" => 405,
-              "message" => "Method Not Allowed"
+                                                      "status" => 405,
+                                                      "message" => "Method Not Allowed"
             ]);
         } else {
             //getting JSON data from API
@@ -71,7 +69,7 @@ class Activation extends ResourceController
     		        //Check whether Profession exists in list_profession, if not create
     		        $act_model = new ActivationModel;
 					
-					if($json['profession_responses'][0]['prof_id'] == 0){
+					if($json['profession_responses'][0]['prof_id'] ==0){
 						
 						$prof_res = $common->get_details_dynamically('list_profession','name',$json['profession_responses'][0]['name']);
 						
@@ -85,7 +83,7 @@ class Activation extends ResourceController
 						
 						}else{
 							
-							$json['profession_responses'][0]['prof_id'] = $prof_res[0]['id'];
+							$json['profession_responses'][0]['prof_id'] = $prof_res['id']
 						}
 					}
 					
@@ -106,7 +104,7 @@ class Activation extends ResourceController
 						
 						}else{
 							
-							$json['qualification_responses'][0]['qual_id'] = $qual_res[0]['id'];
+							$json['qualification_responses'][0]['qual_id'] = $qual_res['id']
 						}
 					}
 					
@@ -137,18 +135,18 @@ class Activation extends ResourceController
                         if($lang_data['lang_id'] == 0){ 
 							$lang_res = $common->get_details_dynamically('language','name',$lang_data['name']);	
 							if($lang_res == 'failure') { //Insert into user_lang_list ::	language_id	users_id
-                                //Check whether language exists in language, if not create
-                		        $arr_ins_lang_master_det = array(
-            		                'name' => $lang_data['name']
-                		        );
-                		        /*echo "<pre>";
-                		        print_r($arr_ins_lang_master_det);
-                		        echo "</pre>";*/
-                		        
-                		        $lang_id = $common->insert_records_dynamically('language', $arr_ins_lang_master_det);
-                            }else{
-    							$lang_id = $lang_res[0]['id'];
-    						}
+                            //Check whether language exists in language, if not create
+            		        $arr_ins_lang_master_det = array(
+        		                'name' => $lang_data['name']
+            		        );
+            		        /*echo                    "<pre>";
+            		        print_r($arr_ins_lang_master_det);
+            		        echo                      "</pre>";*/
+            		        
+            		        $lang_id = $common->insert_records_dynamically('language', $arr_ins_lang_master_det);
+                        }else{
+							$lang_id = $lang_res['id'];
+						}
 						}
 						                         
                         //Build data Array
@@ -170,23 +168,23 @@ class Activation extends ResourceController
                         if($keywords_data['keyword_id'] == 0){
 							$key_res = $common->get_details_dynamically('keywords','keyword',$keywords_data['name']);
 							if($key_res == 'failure') { //Insert into keywords :: keyword,subcategories_id
-    
-                                //Check whether keyword exists in keywords, if not create
-                		        $arr_ins_keywords_master_det = array(
-            		                'keyword' => $keywords_data['name'],
-            		                'profession_id' => $json['profession_responses'][0]['prof_id'],
-    								//'subcategories_id' => 6, //Temporary subvategory, needs admin approval
-            		                'status' => 'Inactive'
-                		        );
-                		        /*echo "<pre>";
-                		        print_r($arr_ins_keywords_master_det);
-                		        echo  "</pre>";*/
-                		        
-                		        $keyword_id = $common->insert_records_dynamically('keywords', $arr_ins_keywords_master_det);
-                		        //echo "<br> keyword id ".$keyword_id;
-                            }else{
-    							$keyword_id = $key_res[0]['id'];
-    						}
+
+                            //Check whether keyword exists in keywords, if not create
+            		        $arr_ins_keywords_master_det = array(
+        		                'keyword' => $keywords_data['name'],
+        		                'profession_id' => $json['profession_responses'][0]['prof_id'],
+								//'subcategories_id' => 6, //Temporary subvategory, needs admin approval
+        		                'status' => 'Inactive'
+            		        );
+            		        /*echo                    "<pre>";
+            		        print_r($arr_ins_keywords_master_det);
+            		        echo                      "</pre>";*/
+            		        
+            		        $keyword_id = $common->insert_records_dynamically('keywords', $arr_ins_keywords_master_det);
+            		        //echo                    "<br> keyword id ".$keyword_id;
+                        }else{
+							$keyword_id = $key_res['id'];
+						}
 						}
                         
                         //Build data Array
@@ -228,14 +226,12 @@ class Activation extends ResourceController
         		    }
                         
                     
-                    //echo "<br>".$common->getLastQuery();
+                    //echo                            "<br>".$common->getLastQuery();
                     //echo '<br> sp_tariff_id  '.$sp_tariff_id;
                     
                     //*****************user_time_slot
                     //Get master time slot
                     $arr_time_slots = array();
-                    $arr_time_slots_24 = array();
-                    
                     $arr_time_slot_details = $common->get_table_details_dynamically('time_slot', 'id', 'ASC');
     		        if($arr_time_slot_details != 'failure') {
     		            foreach($arr_time_slot_details as $time_data) {
@@ -244,69 +240,25 @@ class Activation extends ResourceController
     		        }
                     $common->delete_records_dynamically('user_time_slot', 'users_id', $json['user_id']);
                     
-                    $arr_main_time_slots = array();
-                    $arr_ins_timeslot_det = array();
-                    
                     foreach($json['timeslot_responses'] as $timeslot_key => $timeslot_data) {
-                        $from_slot_id = $arr_time_slots[$timeslot_data['from']];
-                        $to_slot_id = $arr_time_slots[$timeslot_data['to']];
-                        
-                        $arr_days = explode(",",$timeslot_data['days']);
-                        
-                        if($from_slot_id < $to_slot_id) {
-                            foreach($arr_days as $day_id) {
-                                for($i = $from_slot_id; $i <= $to_slot_id; $i++) { //Loop time per hour basis
-                                    $arr_main_time_slots[$day_id][$i] = $i;
-                                }
-                            }
-                        }
-                        else { //Midnight is overlapped - split from id till midnit 12 and start from 1 to toid
-                            foreach($arr_days as $day_id) {
-                                for($i = $from_slot_id; $i <= 24; $i++) { //Loop time per hour basis , 24 is for 00:00:00
-                                    $arr_main_time_slots[$day_id][$i] = $i;
-                                }
-                                for($i = 1; $i <= $to_slot_id; $i++) { //Loop time per hour basis 
-                                    $arr_main_time_slots[$day_id][$i] = $i;
-                                }
-                            }
+                        $arr_days = explode(          ",",$timeslot_data['days']);
+                        foreach($arr_days as $day_id) {
+                            $arr_ins_timeslot_det[] = array(
+        		                'users_id' => $json['user_id'],
+        		                'day_slot' => $day_id,
+        		                'time_slot_id' => $arr_time_slots[$timeslot_data['from']],
+        		                'time_slot_from' => $timeslot_data['from'],
+        		                'time_slot_to' => $timeslot_data['to']
+        		            );
                         }
                     }
+                    /*echo                            "<pre>";
+    		        print_r($arr_ins_timeslot_det);
+    		        echo                              "</pre>";
+    		        exit;*/
+    		           $user_timeslot_list_id = $common->batch_insert_records_dynamically('user_time_slot', $arr_ins_timeslot_det);
+                    //echo '<br> user_timeslot_list_id  '.$user_timeslot_list_id;
                     
-                    if(count($arr_main_time_slots) > 0) {
-                        foreach($arr_main_time_slots as $day_id => $arr_data) {
-                            foreach($arr_data as $i) {
-                                if($i <= 22) {
-                                    $time_slot_to = ($i+1).":00:00";
-                                }
-                                else if($i == 23) {
-                                    $time_slot_to = "00:00:00";
-                                }
-                                else if($i == 24) {
-                                    $time_slot_to = "01:00:00";
-                                }
-                                
-                                //echo "<br> day_id ".$day_id." ".$i;
-                                $arr_ins_timeslot_det[] = array(
-            		                'users_id' => $json['user_id'],
-            		                'day_slot' => $day_id,
-            		                'time_slot_id' => $i,
-            		                'time_slot_from' => ($i <= 23) ? $i.":00:00" : "00:00:00",
-            		                'time_slot_to' => $time_slot_to,
-            		            );
-                            }
-                        }
-                    }
-                    
-                    //echo "<pre>";
-                    //print_r($arr_main_time_slots);
-    		        //print_r($arr_ins_timeslot_det);
-    		        //echo "</pre>";
-    		        //exit;
-    		        if(count($arr_ins_timeslot_det) > 0) {
-    		            $user_timeslot_list_id = $common->batch_insert_records_dynamically('user_time_slot', $arr_ins_timeslot_det);
-                        //echo '<br> user_timeslot_list_id  '.$user_timeslot_list_id;
-    		        }
-    		        
                     //*********************ID Proof
                     $id_proof_file = $json['id_proof'];
                     if ($id_proof_file != null) {
@@ -334,8 +286,8 @@ class Activation extends ResourceController
                     $common->update_records_dynamically('users', $arr_users_update, 'users_id', $json['user_id']);
                     
                     return $this->respond([
-                          "status" => 200,
-                          "message" => "Success"
+    					                              "status" => 200,
+    					                              "message" => "Success"
     				]);
     		        
     		    }
@@ -375,7 +327,7 @@ class Activation extends ResourceController
             $name = $post['users_id'].'_video_record_'.$video_no.'_'.$file->getRandomName();
         
             // Move the file to it's new home
-            $file->move("./videos/", $name);
+            $file->move(                              "./videos/", $name);
             
             $arr_update = array('video_record_'.$video_no => $name);
             
@@ -387,28 +339,6 @@ class Activation extends ResourceController
                 $arr_users_update = array('sp_activated' => 3,'activation_code' => ($video_no + 1));
                 
                 $common->update_records_dynamically('users', $arr_users_update, 'users_id', $post['users_id']);
-                
-                $sp_name = "";
-		        $sp_mobile = "";
-		        
-		        $arr_sp_details = $common->get_details_dynamically('user_details', 'id', $post['users_id'], 'id', 'ASC');
-		        if($arr_sp_details != "failure") {
-		            $sp_name = $arr_sp_details[0]['fname'];
-		            $sp_mobile = $arr_sp_details[0]['mobile'];
-		        }
-                
-                //Send SMS
-                $sms_model = new SmsTemplateModel();
-                
-        	 	$data = [
-    				"name" => "sp_create",
-    				"mobile" => $sp_mobile,
-    				"dat" => [
-    					"var" => $sp_name,
-    			    ]
-    			];
-    			
-    			$sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
             } 
             else {
                 //update users activation code
@@ -417,8 +347,8 @@ class Activation extends ResourceController
             }
             
             return $this->respond([
-              "status" => 200,
-              "message" => "Success"
+				                                      "status" => 200,
+				                                      "message" => "Success"
 			]);
         }
         else {
@@ -435,8 +365,8 @@ class Activation extends ResourceController
         if ($this->request->getMethod() != 'post') {
 
             $this->respond([
-              "status" => 405,
-              "message" => "Method Not Allowed"
+                                                      "status" => 405,
+                                                      "message" => "Method Not Allowed"
             ]);
         } else {
             //getting JSON data from API
@@ -606,7 +536,7 @@ class Activation extends ResourceController
             		        $arr_ins_lang_master_det = array(
         		                'name' => $lang_data['name']
             		        );
-            		        /*echo "<pre>";
+            		        /*echo                    "<pre>";
             		        print_r($arr_ins_lang_master_det);
             		        echo                      "</pre>";*/
             		        
@@ -635,10 +565,10 @@ class Activation extends ResourceController
             		        $arr_ins_keywords_master_det = array(
         		                'keyword' => $keywords_data['name'],
         		                'profession_id' => $json['profession_responses'][0]['prof_id'],
-								//'subcategories_id' => 6, //Temporary subcategory, needs admin approval
+								//'subcategories_id' => 6, //Temporary subvategory, needs admin approval
         		                'status' => 'Inactive'
             		        );
-            		        /*echo "<pre>";
+            		        /*echo                    "<pre>";
             		        print_r($arr_ins_keywords_master_det);
             		        echo                      "</pre>";*/
             		        

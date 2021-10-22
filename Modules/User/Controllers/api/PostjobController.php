@@ -14,6 +14,7 @@ use Modules\User\Models\CountryModel;
 use Modules\Provider\Models\CommonModel;
 use Modules\User\Models\MiscModel;
 use Modules\User\Models\JobPostModel;
+use Modules\User\Models\SmsTemplateModel;
 
 helper('Modules\User\custom');
 
@@ -217,6 +218,18 @@ class PostjobController extends ResourceController
                                 }
                             }
                         }
+                        
+                        //Insert into alert_details table
+        		        $arr_alerts = array(
+            		          'alert_id' => 2, 
+                              'description' => "You have successfully posted a new job $json->title with str_pad($post_job_id, 6, '0', STR_PAD_LEFT) 
+                                                    on ".date('d-m-Y H:i:s',strtotime($json->created_on)),
+                              'action' => 1,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'users_id' => $json->users_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
                         
             			return $this->respond([
             			    "post_job_id" => $post_job_id,
@@ -437,6 +450,18 @@ class PostjobController extends ResourceController
                                 }
                             }
                         }
+                        
+                        //Insert into alert_details table
+        		        $arr_alerts = array(
+            		          'alert_id' => 2, 
+                              'description' => "You have successfully posted a new job $json->title with str_pad($post_job_id, 6, '0', STR_PAD_LEFT) 
+                                                    on ".date('d-m-Y H:i:s',strtotime($json->created_on)),
+                              'action' => 1,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'users_id' => $users_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
                         
                         return $this->respond([
             			    "post_job_id" => $post_job_id,
@@ -667,6 +692,18 @@ class PostjobController extends ResourceController
                                 }
                             }
                         }
+                        
+                        //Insert into alert_details table
+        		        $arr_alerts = array(
+            		          'alert_id' => 2, 
+                              'description' => "You have successfully posted a new job $json->title with str_pad($post_job_id, 6, '0', STR_PAD_LEFT) 
+                                                    on ".date('d-m-Y H:i:s',strtotime($json->created_on)),
+                              'action' => 1,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'users_id' => $users_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
                         
                         return $this->respond([
             			    "post_job_id" => $post_job_id,
@@ -1521,6 +1558,22 @@ class PostjobController extends ResourceController
     		    
     		    if($key == $api_key) {
     		        $common = new CommonModel();
+    		        $misc_model = new MiscModel();
+    		        $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
+    		        $sp_name = "";
+    		        $sp_id = 0;
+    		        $sp_mobile = "";
+    		        $user_id = 0;
+    		        $job_title = "";
+    		        
+    		        $arr_sp_details = $misc_model->get_sp_name_by_booking($json->booking_id);
+    		        if($arr_sp_details != "failure") {
+    		            $sp_name = $arr_sp_details['fname']." ".$arr_sp_details['lname'];
+    		            $sp_id = $arr_sp_details['sp_id'];
+    		            $sp_mobile = $arr_sp_details['mobile'];
+    		            $user_id = $arr_sp_details['users_id'];
+    		            $job_title = $arr_sp_details['title'];
+    		        }
     		        
     		        //Insert into Transaction table
     		        $arr_transaction = array(
@@ -1567,7 +1620,7 @@ class PostjobController extends ResourceController
                             );
                             $common->insert_records_dynamically('booking_status', $arr_booking_status);
                             
-                            //update status are awarded in  post_job table
+                            //update status as awarded in  post_job table
                             $upd_post_job_status = [
                                 "status_id" =>  27, //Awarded
                             ];
@@ -1578,6 +1631,41 @@ class PostjobController extends ResourceController
                                 "bid_type" =>  1, //Sealed
                             ];
                             $common->update_records_dynamically('bid_det', $upd_bid_det_status, 'id', $json->bid_id);
+                            
+                            $arr_alerts = array(
+                		          'alert_id' => 2, 
+                                  'description' => "You have successfully awarded post $job_title to $sp_name under Booking ID $booking_ref_id.",
+                                  'action' => 1,
+                                  'created_on' => date("Y-m-d H:i:s"), 
+                                  'status' => 1,
+                                  'users_id' => $json->users_id,
+                            );
+                            $common->insert_records_dynamically('alert_details', $arr_alerts);
+                            
+                            $arr_alerts = array(
+                		          'alert_id' => 2, 
+                                  'description' => "Your bid has been successfully awarded for post $job_title with Booking ID $booking_ref_id",
+                                  'action' => 1,
+                                  'created_on' => date("Y-m-d H:i:s"), 
+                                  'status' => 1,
+                                  'sp_id' => $sp_id,
+                            );
+                            $common->insert_records_dynamically('alert_details', $arr_alerts);
+                            
+                            //Send SMS
+                            $sms_model = new SmsTemplateModel();
+                            
+                    	 	$data = [
+                				"name" => "bid_chose",
+                				"mobile" => $sp_mobile,
+                				"dat" => [
+                					"var" => $sp_name,
+                					"var1" => $job_title,
+                					"var2" => "",
+                				]
+                			];
+                			
+                			$sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
                         }    
                         
         		        return $this->respond([
@@ -1618,6 +1706,19 @@ class PostjobController extends ResourceController
 		}
 		else{
         $common = new CommonModel();
+        $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
+        $sp_name = "";
+        $sp_id = 0;
+        $users_id = 0;
+        $job_title = "";
+        
+        $arr_sp_details = $misc_model->get_sp_name_by_booking($json->booking_id);
+        if($arr_sp_details != "failure") {
+            $sp_name = $arr_sp_details['fname']." ".$arr_sp_details['lname'];
+            $sp_id = $arr_sp_details['sp_id'];
+            $users_id = $arr_sp_details['users_id'];
+            $job_title = $arr_sp_details['title'];
+        }
         
         $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
 		    
@@ -1630,8 +1731,8 @@ class PostjobController extends ResourceController
             $post_job_id = $json->post_job_id;
             $status_id = $json->status_id;
             $booking_id = $json->booking_id;
-            $sp_name = $json->sp_name;
-            $job_title = $json->job_title;
+            //$sp_name = $json->sp_name;
+            //$job_title = $json->job_title;
             
             if($status_id == 29) {
                 //Insert into alert_details table
@@ -1642,6 +1743,16 @@ class PostjobController extends ResourceController
                       'created_on' => date("Y-m-d H:i:s"), 
                       'status' => 1,
                       'users_id' => $users_id,
+                );
+                $common->insert_records_dynamically('alert_details', $arr_alerts);
+                
+                $arr_alerts = array(
+    		          'alert_id' => 2, 
+                      'description' => "Your bid has been rejected for post $job_title.",
+                      'action' => 1,
+                      'created_on' => date("Y-m-d H:i:s"), 
+                      'status' => 1,
+                      'sp_id' => $sp_id,
                 );
                 $common->insert_records_dynamically('alert_details', $arr_alerts);
                 
@@ -2339,6 +2450,70 @@ class PostjobController extends ResourceController
                         'created_on' => date('Y-m-d H:i:s')
                     );
                     $common->insert_records_dynamically('booking_status', $arr_booking_status);
+                    
+                    $arr_user_details = $misc_model->get_user_name_by_booking($json->booking_id, $json->users_id);
+        	        if($arr_user_details != "failure") {
+        	            $user_name = $arr_user_details['fname']." ".$arr_user_details['lname'];
+                        $user_id = $arr_user_details['users_id'];
+        	            $sp_id = $arr_user_details['sp_id'];
+        	        }
+        	        
+        	        $inst_no = 0;
+    		        
+    		        $arr_inst_details = $common->get_details_dynamically('installment_det', 'id', $json->inst_id);
+    		        if($arr_inst_details != 'failure') {
+    		            $inst_no = $arr_inst_details[0]['inst_no'];
+    		        }
+    		        
+    		        $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
+                    
+                    if($json->status_id == 34) { //approved
+                        //Insert into alerts
+                        $arr_alerts = array(
+            		          'alert_id' => 2, 
+                              'description' => "You have approved $inst_no Installment for Booking $booking_ref_id.",
+                              'action' => 2,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'users_id' => $user_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
+                        
+                        $arr_alerts = array(
+            		          'alert_id' => 2, 
+                              'description' => $user_name." has approved $inst_no Installment for Booking $booking_ref_id.",
+                              'action' => 2,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'sp_id' => $sp_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
+                        
+                    }
+                    
+                    if($json->status_id == 35) { //rejected
+                        //Insert into alerts
+                        $arr_alerts = array(
+            		          'alert_id' => 2, 
+                              'description' => "You have rejected $inst_no Installment for Booking $booking_ref_id.",
+                              'action' => 2,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'users_id' => $user_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
+                        
+                        $arr_alerts = array(
+            		          'alert_id' => 2, 
+                              'description' => $user_name." has rejected $inst_no Installment for Booking $booking_ref_id.",
+                              'action' => 2,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'sp_id' => $sp_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
+                        
+                    }
     		        
     		        return $this->respond([
     		            "sp_fcm_token" => ($arr_user_details != 'failure') ? $arr_user_details[0]['fcm_token'] : "",
