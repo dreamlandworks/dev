@@ -14,6 +14,7 @@ use Modules\User\Models\CountryModel;
 
 use Modules\Provider\Models\CommonModel;
 use Modules\User\Models\MiscModel;
+use Modules\User\Models\SmsTemplateModel;
 
 class MiscController extends ResourceController
 {
@@ -1036,6 +1037,7 @@ class MiscController extends ResourceController
     		    
     		    if($key == $api_key) {
     		        $common = new CommonModel();
+    		        $sms_model = new SmsTemplateModel();
     		        
     		        //Insert into feedback table
     		        $arr_feedback = array(
@@ -1048,13 +1050,30 @@ class MiscController extends ResourceController
                     if ($feedback_id > 0) {
                         $arr_alerts = array(
             		          'alert_id' => 4, 
-                              'description' => "You have successfully submitted a review/ Suggestion. It really matter to serve you better. Thanks",
+                              'description' => "You have successfully submitted a review/Suggestion. It really matter to serve you better. Thanks",
                               'action' => 1,
                               'created_on' => date("Y-m-d H:i:s"), 
                               'status' => 1,
                               'users_id' => $json->users_id,
                         );
                         $common->insert_records_dynamically('alert_details', $arr_alerts);
+                        
+                        $arr_user_details = $common->get_details_dynamically('user_details', 'id', $json->users_id);
+            	        if($arr_user_details != 'failure') {
+            	            $user_name = $arr_user_details[0]['fname']." ".$arr_user_details[0]['lname'];
+            	            $user_mobile = $arr_user_details[0]['mobile'];
+            	        }
+                        
+                        $data = [
+            				"name" => "sugg_feed",
+            				"mobile" => $user_mobile,
+            				"dat" => [
+            					"var" => $user_name,
+            					"var1" => "",
+            				]
+            			];
+        			
+        			    $sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
                         
                         return $this->respond([
             			    "feedback_id" => $feedback_id,
@@ -1484,6 +1503,320 @@ class MiscController extends ResourceController
 		}
 		
 		
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------Transfer Funds-------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function transfer_funds()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            /*echo "<pre>";
+            print_r($json);
+            echo "</pre>";
+            exit;*/
+            
+            if(!array_key_exists('date',$json) || !array_key_exists('amount',$json) 
+                || !array_key_exists('reference_id',$json) || !array_key_exists('payment_status',$json) 
+                || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
+                            ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->user_key;
+    		    
+    		    if($key == $api_key) {
+    		        $common = new CommonModel();
+    		        
+    		        //Insert into Transaction table
+    		        $arr_transaction = array(
+        		          'name_id' => 10, //Add to Wallet
+                          'date' => $json->date,
+                          'amount' => $json->amount,
+                          'type_id' => 1, //Receipt/Credit
+                          'users_id' => $json->users_id,
+                          'method_id' => 1, //Online Payment
+                          'reference_id' => $json->reference_id,
+                          'payment_status' => $json->payment_status, //'Success', 'Failure'
+                    );
+                    $transaction_id = $common->insert_records_dynamically('transaction', $arr_transaction);
+                    
+                    if($transaction_id > 0) { //Insert into wallet_balance
+                        if($json->payment_status == 'Success') {
+                            //Make entry in to wallet for users payment
+                            //Check if the wallet is created
+                            $arr_wallet_details = $common->get_details_dynamically('wallet_balance', 'users_id', $json->users_id);
+            		        if($arr_wallet_details != 'failure') {
+            		            //Get total amount 
+            		            $wallet_amount = $arr_wallet_details[0]['amount'] + $json->amount;
+            		            
+            		            $arr_update_wallet_data = array(
+            		                'amount' => $wallet_amount,
+                    		    );
+                                $common->update_records_dynamically('wallet_balance', $arr_update_wallet_data, 'users_id', $json->users_id);
+            		        }
+            		        else {
+            		            $arr_wallet_data = array(
+            		                'users_id' => $json->users_id,
+                    		        'amount' => $json->amount,
+                    		    );
+                                $common->insert_records_dynamically('wallet_balance', $arr_wallet_data);
+            		        }
+            		    }
+                        
+        		        return $this->respond([
+            			    "transaction_id" => $transaction_id,
+            				"status" => 200,
+            				"message" => "Success",
+            			]);
+                    }
+            		else {
+            		    return $this->respond([
+        					"status" => 404,
+        					"message" => "Failed to create Payment"
+        				]);
+            		}
+        		}
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------Withdraw Funds-------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function withdraw_funds()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            /*echo "<pre>";
+            print_r($json);
+            echo "</pre>";
+            exit;*/
+            
+            if(!array_key_exists('date',$json) || !array_key_exists('amount',$json) || !array_key_exists('ubd_id',$json)
+                || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
+                            ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->user_key;
+    		    
+    		    if($key == $api_key) {
+    		        $common = new CommonModel();
+    		        
+        		        //Make entry in to wallet for users payment
+                        //Check if the wallet is created
+                        $arr_wallet_details = $common->get_details_dynamically('wallet_balance', 'users_id', $json->users_id);
+        		        if($arr_wallet_details != 'failure') {
+        		            //Get total amount 
+        		            $available_amount = $arr_wallet_details[0]['amount'] - $arr_wallet_details[0]['amount_blocked'];
+        		            if($available_amount >= $json->amount) {
+        		                $amount_blocked = $arr_wallet_details[0]['amount_blocked'] + $json->amount;
+        		            
+            		            $arr_update_wallet_data = array(
+            		                'amount_blocked' => $amount_blocked,
+                    		    );
+                                $common->update_records_dynamically('wallet_balance', $arr_update_wallet_data, 'users_id', $json->users_id);
+                                
+                                //Insert into withdraw_request
+                                $arr_withdraw_request = array(
+                                        'created_on' => $json->date,
+                		                'users_id' => $json->users_id,
+                        		        'amount' => $json->amount,
+                        		        'ubd_id' => $json->ubd_id,
+                        		    );
+                                $withdraw_request_id = $common->insert_records_dynamically('withdraw_request', $arr_withdraw_request);
+                    		       
+                    		    if($withdraw_request_id > 0) {
+                    		        return $this->respond([
+                        			    "withdraw_request_id" => $withdraw_request_id,
+                        				"status" => 200,
+                        				"message" => "Success",
+                        			]);
+                    		    }
+                    		    else {
+                    		        return $this->respond([
+                    					"status" => 404,
+                    					"message" => "Error while processing your request"
+                    				]);
+                    		    }
+                    		}
+        		            else {
+        		                return $this->respond([
+                					"status" => 404,
+                					"message" => "No enough funds to transfer"
+                				]);
+        		            }
+        		            
+        		        }
+        		        return $this->respond([
+        					"status" => 404,
+        					"message" => "Your request cannot be processed"
+        				]);
+        		        
+        		}
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------Add Bank Account-------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function add_bank_account()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            /*echo "<pre>";
+            print_r($json);
+            echo "</pre>";
+            exit;*/
+            
+            if(!array_key_exists('account_name',$json) || !array_key_exists('account_no',$json) || !array_key_exists('ifsc_code',$json) 
+                || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
+                            ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->user_key;
+    		    
+    		    if($key == $api_key) {
+    		        $common = new CommonModel();
+    		        
+    		        //Insert into user_bank_details table
+    		        $arr_user_bank_details = array(
+        		          'users_id' => $json->users_id,
+                          'account_name' => $json->account_name,
+                          'account_no' => $json->account_no,
+                          'ifsc_code' => $json->ifsc_code,
+                    );
+                    $ubd_id = $common->insert_records_dynamically('user_bank_details', $arr_user_bank_details);
+                    
+                    if($ubd_id > 0) { 
+                        return $this->respond([
+            			    "ubd_id" => $ubd_id,
+            				"status" => 200,
+            				"message" => "Success",
+            			]);
+                    }
+            		else {
+            		    return $this->respond([
+        					"status" => 404,
+        					"message" => "Failed to create bank acount"
+        				]);
+            		}
+        		}
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//---------------------------------------------------------Get Bank Account-------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function get_user_bank_account_details()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            /*echo "<pre>";
+            print_r($json);
+            echo "</pre>";
+            exit;*/
+            
+            if(!array_key_exists('users_id',$json) || !array_key_exists('key',$json)
+                            ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->user_key;
+    		    
+    		    if($key == $api_key) {
+    		        $common = new CommonModel();
+    		        
+    		        $arr_user_bank_details = $common->get_details_dynamically('user_bank_details', 'users_id', $json->users_id);
+        	        return $this->respond([
+        			    "user_bank_accounts" => ($arr_user_bank_details != 'failure') ? $arr_user_bank_details : array(),
+        				"status" => 200,
+        				"message" => "Success",
+        			]);
+        		}
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
 	}
 	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
 }

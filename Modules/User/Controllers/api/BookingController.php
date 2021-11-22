@@ -14,6 +14,7 @@ use Modules\User\Models\CountryModel;
 use Modules\Provider\Models\CommonModel;
 use Modules\User\Models\MiscModel;
 use Modules\User\Models\JobPostModel;
+use Modules\User\Models\SmsTemplateModel;
 
 helper('Modules\User\custom');
 
@@ -44,7 +45,7 @@ class BookingController extends ResourceController
                 || !array_key_exists('address_id',$json) || !array_key_exists('temp_address_id',$json)
                 || !array_key_exists('amount',$json) || !array_key_exists('sp_id',$json) || !array_key_exists('created_on',$json) 
                 || !array_key_exists('attachments',$json) || !array_key_exists('estimate_time',$json) || !array_key_exists('estimate_type_id',$json)
-                || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
+                || !array_key_exists('users_id',$json) || !array_key_exists('key',$json) || $json->users_id == $json->sp_id
                             ) {
     		    return $this->respond([
         				'status' => 403,
@@ -525,7 +526,53 @@ class BookingController extends ResourceController
                             //Insert into booking_receipts
                             $common->insert_records_dynamically('booking_receipts', $arr_booking_payments_ins);
                             
-                            //Insert into sp_busy_slot
+                            //Make entry in to wallet for users payment
+                            //Check if the wallet is created
+                            /*$arr_wallet_details = $common->get_details_dynamically('wallet_balance', 'users_id', $json->users_id);
+            		        if($arr_wallet_details != 'failure') {
+            		            //Get total amount and blocked amount
+            		            $wallet_amount = $arr_wallet_details[0]['amount'] + $json->amount;
+            		            $wallet_amount_blocked = $arr_wallet_details[0]['amount_blocked'] + $json->amount;
+            		            
+            		            $arr_update_wallet_data = array(
+            		                'amount' => $wallet_amount,
+                    		        'amount_blocked' => $wallet_amount_blocked
+                                );
+                                $common->update_records_dynamically('wallet_balance', $arr_update_wallet_data, 'users_id', $json->users_id);
+            		        }
+            		        else {
+            		            $arr_wallet_data = array(
+            		                'users_id' => $json->users_id,
+                    		        'amount' => $json->amount,
+                    		        'amount_blocked' => $json->amount
+                                );
+                                $common->insert_records_dynamically('wallet_balance', $arr_wallet_data);
+            		        }*/
+            		        
+            		        //Make entry in to wallet for sp payment
+                            //Check if the wallet is created
+                            $arr_wallet_details = $common->get_details_dynamically('wallet_balance', 'users_id', $json->sp_id);
+            		        if($arr_wallet_details != 'failure') {
+            		            //Get total amount and blocked amount
+            		            $wallet_amount = $arr_wallet_details[0]['amount'] + $json->amount;
+            		            $wallet_amount_blocked = $arr_wallet_details[0]['amount_blocked'] + $json->amount;
+            		            
+            		            $arr_update_wallet_data = array(
+            		                'amount' => $wallet_amount,
+                    		        'amount_blocked' => $wallet_amount_blocked
+                                );
+                                $common->update_records_dynamically('wallet_balance', $arr_update_wallet_data, 'users_id', $json->sp_id);
+            		        }
+            		        else {
+            		            $arr_wallet_data = array(
+            		                'users_id' => $json->sp_id,
+                    		        'amount' => $json->amount,
+                    		        'amount_blocked' => $json->amount
+                                );
+                                $common->insert_records_dynamically('wallet_balance', $arr_wallet_data);
+            		        }
+            		        
+            		        //Insert into sp_busy_slot
                             //Get master time slot
                             $arr_time_slots = array();
                             $arr_time_slot_details = $common->get_table_details_dynamically('time_slot', 'id', 'ASC');
@@ -650,6 +697,14 @@ class BookingController extends ResourceController
     		                 $status = "Completed";
     		             } 
 		               }
+		               
+		               $reschedule_status = "";
+		               if($arr_booking_details['reschedule_status_id'] == 11) {
+		                   $reschedule_status = "Reschedule Rejected";
+		               }
+		               else if($arr_booking_details['reschedule_status_id'] == 12) {
+		                   $reschedule_status = "Reschedule Accepted";
+		               }
     		               
     		           $arr_booking['booking_id'] = $booking_id;
     		           $arr_booking['fname'] = $arr_booking_details['fname'];
@@ -672,6 +727,7 @@ class BookingController extends ResourceController
 		               $arr_booking['expenditure_incurred'] = ($arr_booking_details['expenditure_incurred'] > 0) ? $arr_booking_details['expenditure_incurred'] : 0;
 		               $arr_booking['extra_demand_status'] = $arr_booking_details['extra_demand_status'];
 		               $arr_booking['post_job_id'] = ($arr_booking_details['post_job_id'] > 0) ? $arr_booking_details['post_job_id'] : 0;
+		               $arr_booking['reschedule_status'] = $reschedule_status;
 		               
 		               $attachment_count = $arr_booking_details['attachment_count'];
 		               
@@ -764,6 +820,8 @@ class BookingController extends ResourceController
         } 
 	}
 	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+
+
 	//---------------------------------------------------------User Booking details-------------------------------------------------
 	//-------------------------------------------------------------**************** -----------------------------------------------------
 
@@ -1064,15 +1122,17 @@ class BookingController extends ResourceController
     		        $booking_ref_id = str_pad($booking_id, 6, "0", STR_PAD_LEFT);
     		        $users_id = $json->users_id;
     		        $sp_name = "";
+    		        $user_mobile = "";
     		        
-    		        $arr_user_details = $common->get_details_dynamically('user_details', 'id', $sp_id);
-    		        if($arr_user_details != 'failure') {
-    		            $sp_name = $arr_user_details[0]['fname']." ".$arr_user_details[0]['lname'];
+    		        $arr_sp_details = $common->get_details_dynamically('user_details', 'id', $sp_id);
+    		        if($arr_sp_details != 'failure') {
+    		            $sp_name = $arr_sp_details[0]['fname']." ".$arr_sp_details[0]['lname'];
     		        }
     		        
-    		        $arr_sp_details = $common->get_details_dynamically('user_details', 'id', $users_id);
-    		        if($arr_sp_details != 'failure') {
-    		            $user_name = $arr_sp_details[0]['fname']." ".$arr_sp_details[0]['lname'];
+    		        $arr_user_details = $common->get_details_dynamically('user_details', 'id', $users_id);
+    		        if($arr_user_details != 'failure') {
+    		            $user_name = $arr_user_details[0]['fname']." ".$arr_user_details[0]['lname'];
+    		            $user_mobile = $arr_user_details[0]['mobile'];
     		        }
     		        
     		        if ($booking_id > 0) {
@@ -1099,6 +1159,21 @@ class BookingController extends ResourceController
                                   'sp_id' => $sp_id,
                             );
                             $common->insert_records_dynamically('alert_details', $arr_alerts);
+                            
+                            //Send SMS
+                            $sms_model = new SmsTemplateModel();
+                            
+                    	 	$data = [
+                				"name" => "us_schedule",
+                				"mobile" => $user_mobile,
+                				"dat" => [
+                					"var" => date('H:i:s'),
+                					"var1" => date('d-m-Y'),
+                					"var2" => "",
+                				]
+                			];
+            			
+            			    $sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
                         
         		            $arr_booking_update = array(
                 		        'amount' => $json->amount,
@@ -1263,14 +1338,22 @@ class BookingController extends ResourceController
     		    $booking_ref_id = str_pad($validate_booking_id, 6, "0", STR_PAD_LEFT);
     		    $users_id = 0;
     		    $sp_id = 0;
+    		    $user_mobile = 0;
+    		    
+    		    //Get data from booking table
+                $arr_booking_details = $common->get_details_dynamically('booking', 'id', $json->booking_id);
+                if($arr_booking_details != 'failure') {
+                    $users_id = $arr_booking_details[0]['users_id'];
+                    $sp_id = $arr_booking_details[0]['sp_id'];
+                    
+                    $arr_user_details = $common->get_details_dynamically('user_details', 'id', $users_id);
+    		        if($arr_user_details != 'failure') {
+    		            $user_name = $arr_user_details[0]['fname']." ".$arr_user_details[0]['lname'];
+    		            $user_mobile = $arr_user_details[0]['mobile'];
+    		        }
+                }
     		    
     		    if($validate_sp_id > 0) { //Booking Started
-    		        //Get data from booking table
-                    $arr_booking_details = $common->get_details_dynamically('booking', 'id', $json->booking_id);
-                    if($arr_booking_details != 'failure') {
-                        $users_id = $arr_booking_details[0]['users_id'];
-                        $sp_id = $arr_booking_details[0]['sp_id'];
-                    }
     		        //Insert into alert_details table
     		        $arr_alerts = array(
         		          'alert_id' => 1, 
@@ -1291,6 +1374,21 @@ class BookingController extends ResourceController
                           'sp_id' => $sp_id,
                     );
                     $common->insert_records_dynamically('alert_details', $arr_alerts);
+                    
+                    //Send SMS
+                    $sms_model = new SmsTemplateModel();
+                    
+            	 	$data = [
+        				"name" => "us_started",
+        				"mobile" => $user_mobile,
+        				"dat" => [
+        					"var" => $booking_ref_id,
+        					"var1" => "",
+        					"var2" => "",
+        				]
+        			];
+    			
+    			    $sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
     		    
     		        $status_id = 13; //Inprogress
     		        //Updatebooking
@@ -1321,6 +1419,21 @@ class BookingController extends ResourceController
                           'sp_id' => $sp_id,
                     );
                     $common->insert_records_dynamically('alert_details', $arr_alerts);
+                    
+                    //Send SMS
+                    $sms_model = new SmsTemplateModel();
+                    
+            	 	$data = [
+        				"name" => "us_complete",
+        				"mobile" => $user_mobile,
+        				"dat" => [
+        					"var" => $booking_ref_id,
+        					"var1" => "",
+        					"var2" => "",
+        				]
+        			];
+    			
+    			    $sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
     		        
     		        $status_id = 23; //Completed
     		        //Updatebooking
@@ -1429,6 +1542,7 @@ class BookingController extends ResourceController
                             $arr_booking_status['booking_id'] = $json->booking_id;
                             $arr_booking_status['status_id'] = 10;
                             $arr_booking_status['sp_id'] = $arr_booking_details[0]['sp_id'];
+                            $category_id = $arr_booking_details[0]['category_id'];
                             
                             $common->insert_records_dynamically('booking_status', $arr_booking_status);
                         }
@@ -1447,7 +1561,7 @@ class BookingController extends ResourceController
                             
                             //Insert into alert_details table
                             $arr_alerts = array(
-                		          'alert_id' => 1, 
+                		          'alert_id' => 9, 
                                   'description' => $user_name." placed a re-schedule request for booking $booking_ref_id 
                                    from ".date('d-m-Y',strtotime($json->scheduled_date))." ".$scheduled_time_slot." 
                                    to ".date('d-m-Y',strtotime($json->rescheduled_date))." ".$json->rescheduled_time_slot_from,
@@ -1455,12 +1569,18 @@ class BookingController extends ResourceController
                                   'created_on' => date("Y-m-d H:i:s"), 
                                   'status' => 1,
                                   'sp_id' => $sp_id,
+                                  'booking_id' => $json->booking_id,
+                                  'category_id' => $category_id,
+                                  'booking_id' => $json->booking_id,
+                                  'category_id' => $category_id,
+                                  'reschedule_user_id' => $json->users_id,
+                                  'reschedule_id' => $reschedule_id,
                             );
                             $common->insert_records_dynamically('alert_details', $arr_alerts);
                             
                             //Insert into alert_details table - Excel row 26
                             $arr_alerts = array(
-                		          'alert_id' => 1, 
+                		          'alert_id' => 9, 
                                   'description' => "You have placed a re-schedule request for booking $booking_ref_id 
                                    from ".date('d-m-Y',strtotime($json->scheduled_date))." ".$scheduled_time_slot." 
                                    to ".date('d-m-Y',strtotime($json->rescheduled_date))." ".$json->rescheduled_time_slot_from,
@@ -1468,6 +1588,10 @@ class BookingController extends ResourceController
                                   'created_on' => date("Y-m-d H:i:s"), 
                                   'status' => 1,
                                   'users_id' => $sp_id,
+                                  'booking_id' => $json->booking_id,
+                                  'category_id' => $category_id,
+                                  'reschedule_user_id' => $json->users_id,
+                                  'reschedule_id' => $reschedule_id,
                             );
                             $common->insert_records_dynamically('alert_details', $arr_alerts);
                         }
@@ -1480,7 +1604,7 @@ class BookingController extends ResourceController
             		        }
                             
                             $arr_alerts = array(
-                		          'alert_id' => 1, 
+                		          'alert_id' => 10, 
                                   'description' => $sp_name." placed a re-schedule request for booking $booking_ref_id 
                                    from ".date('d-m-Y',strtotime($json->scheduled_date))." ".$scheduled_time_slot." 
                                    to ".date('d-m-Y',strtotime($json->rescheduled_date))." ".$json->rescheduled_time_slot_from,
@@ -1488,12 +1612,16 @@ class BookingController extends ResourceController
                                   'created_on' => date("Y-m-d H:i:s"), 
                                   'status' => 1,
                                   'users_id' => $user_id,
+                                  'booking_id' => $json->booking_id,
+                                  'category_id' => $category_id,
+                                  'reschedule_user_id' => $sp_id,
+                                  'reschedule_id' => $reschedule_id,
                             );
                             $common->insert_records_dynamically('alert_details', $arr_alerts);
                             
                             //Insert into alert_details table - Excel row 59
                             $arr_alerts = array(
-                		          'alert_id' => 1, 
+                		          'alert_id' => 10, 
                                   'description' => "You have placed a re-schedule request for booking $booking_ref_id 
                                    from ".date('d-m-Y',strtotime($json->scheduled_date))." ".$scheduled_time_slot." 
                                    to ".date('d-m-Y',strtotime($json->rescheduled_date))." ".$json->rescheduled_time_slot_from,
@@ -1501,6 +1629,10 @@ class BookingController extends ResourceController
                                   'created_on' => date("Y-m-d H:i:s"), 
                                   'status' => 1,
                                   'sp_id' => $sp_id,
+                                  'booking_id' => $json->booking_id,
+                                  'category_id' => $category_id,
+                                  'reschedule_user_id' => $sp_id,
+                                  'reschedule_id' => $reschedule_id,
                             );
                             $common->insert_records_dynamically('alert_details', $arr_alerts);
                         }
@@ -1545,6 +1677,7 @@ class BookingController extends ResourceController
 		else{
         $common = new CommonModel();
         $misc_model = new MiscModel();
+        $sms_model = new SmsTemplateModel();
     	
         $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
 		    
@@ -1561,7 +1694,7 @@ class BookingController extends ResourceController
             
             //Mark the status
             $upd_reschedule_status = [
-                'status_id' => $status_id, //11 - Reschedule Rejected/ 12 - Reschedule Accepted
+                'status_id' => $status_id, //11 - Reschedule Rejected/12 - Reschedule Accepted/24 - Reschedule Cancelled By User/ 25 - Reschedule Cancelled by Service Provider
             ];
             $common->update_records_dynamically('re_schedule', $upd_reschedule_status, 'reschedule_id', $reschedule_id);
             
@@ -1592,15 +1725,22 @@ class BookingController extends ResourceController
             
             $common->insert_records_dynamically('booking_status', $arr_booking_status);
             
+            $arr_user_details = $misc_model->get_user_name_by_booking($json->booking_id, $json->users_id);
+	        if($arr_user_details != "failure") {
+	            $user_name = $arr_user_details['fname']." ".$arr_user_details['lname'];
+                $user_id = $arr_user_details['users_id'];
+	            $job_title = $arr_user_details['title'];
+	            $sp_id = $arr_user_details['sp_id'];
+	            $user_mobile = $arr_user_details['mobile'];
+	        }
+	        
+	        $arr_sp_details = $common->get_details_dynamically('user_details', 'id', $json->sp_id);
+	        if($arr_sp_details != 'failure') {
+	            $sp_name = $arr_sp_details[0]['fname']." ".$arr_sp_details[0]['lname'];
+	            $sp_mobile = $arr_sp_details[0]['mobile'];
+	        }
+            
             if($json->user_type == 'User') {
-                $arr_user_details = $misc_model->get_user_name_by_booking($json->booking_id, $json->users_id);
-    	        if($arr_user_details != "failure") {
-    	            $user_name = $arr_user_details['fname']." ".$arr_user_details['lname'];
-                    $user_id = $arr_user_details['users_id'];
-    	            $job_title = $arr_user_details['title'];
-    	            $sp_id = $arr_user_details['sp_id'];
-    	        }
-                
                 //Insert into alert_details table
                 $arr_alerts = array(
     		          'alert_id' => 1, 
@@ -1611,9 +1751,38 @@ class BookingController extends ResourceController
                       'action' => 1,
                       'created_on' => date("Y-m-d H:i:s"), 
                       'status' => 1,
-                      'sp_id' => $sp_id,
+                      'sp_id' => $json->sp_id,
                 );
                 $common->insert_records_dynamically('alert_details', $arr_alerts);
+                
+                if($status_id == 12) {
+                    //Send SMS
+                    $data = [
+        				"name" => "sp_reschedule",
+        				"mobile" => $sp_mobile,
+        				"dat" => [
+        					"var" => $sp_name,
+        					"var1" => $booking_ref_id,
+        					"var2" => $scheduled_time_slot,
+        					"var3" => $scheduled_date,
+        				]
+        			];
+    			
+    			    $sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
+                }
+                else {
+                    $data = [
+        				"name" => "sp_cancel",
+        				"mobile" => $sp_mobile,
+        				"dat" => [
+        					"var" => $sp_name,
+        					"var1" => $booking_ref_id,
+        					"var2" => "his non availability",
+        				]
+        			];
+    			
+    			    $sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
+                }
             }
             else if($json->user_type == 'SP') {
                 $arr_sp_details = $misc_model->get_sp_name_by_booking($json->booking_id, $json->users_id);
@@ -1635,6 +1804,46 @@ class BookingController extends ResourceController
                       'users_id' => $user_id,
                 );
                 $common->insert_records_dynamically('alert_details', $arr_alerts);
+                
+                if($status_id == 12) {
+                    //Send SMS
+                    $data = [
+        				"name" => "sp_reschedule",
+        				"mobile" => $user_mobile,
+        				"dat" => [
+        					"var" => $user_name,
+        					"var1" => $booking_ref_id,
+        					"var2" => $scheduled_time_slot,
+        					"var3" => $scheduled_date,
+        				]
+        			];
+    			
+    			    $sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
+    			    
+    			    $data = [
+        				"name" => "sp_booking",
+        				"mobile" => $sp_mobile,
+        				"dat" => [
+        					"var" => $sp_name,
+        					"var1" => "",
+        				]
+        			];
+    			
+    			    $sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
+                }
+                else {
+                    $data = [
+        				"name" => "sp_cancel",
+        				"mobile" => $user_mobile,
+        				"dat" => [
+        					"var" => $user_name,
+        					"var1" => $booking_ref_id,
+        					"var2" => "technical reasons",
+        				]
+        			];
+    			
+    			    $sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
+                }
             }
             
             return $this->respond([

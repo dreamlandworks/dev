@@ -75,29 +75,31 @@ class SPBookingController extends ResourceController
                         $arr_booking_status = array(
             		        'booking_id' => $json->booking_id,
                             'status_id' => 37, //Extra demand added
-                            'description' => "Sp added extra demand for booking_id ".$json->booking_id,
+                            'description' => "Sp added extra demand for Booking ".$booking_ref_id,
                             'created_on' => date('Y-m-d H:i:s')
                         );
                         $common->insert_records_dynamically('booking_status', $arr_booking_status);
                         
                         //Insert into alert_details table
                         $arr_alerts = array(
-            		          'alert_id' => 2, 
+            		          'alert_id' => 7, 
                               'description' => "You raised an Extra Demand of Rs. $json->amount for Booking ($booking_ref_id).",
                               'action' => 1,
                               'created_on' => date("Y-m-d H:i:s"), 
                               'status' => 1,
                               'sp_id' => $sp_id,
+                              'booking_id' => $json->booking_id
                         );
                         $common->insert_records_dynamically('alert_details', $arr_alerts);
                         
             	        $arr_alerts = array(
-            		          'alert_id' => 2, 
+            		          'alert_id' => 7, 
                               'description' => $sp_name." raised an Extra Demand of Rs. $json->amount for Booking ($booking_ref_id). Would you accept?",
                               'action' => 2,
                               'created_on' => date("Y-m-d H:i:s"), 
                               'status' => 1,
                               'users_id' => $user_id,
+                              'booking_id' => $json->booking_id
                         );
                         $common->insert_records_dynamically('alert_details', $arr_alerts);
     		        }
@@ -649,6 +651,7 @@ class SPBookingController extends ResourceController
                           'created_on' => date("Y-m-d H:i:s"), 
                           'status' => 1,
                           'users_id' => $user_id,
+                          'booking_id' => $json->booking_id
                     );
                     $common->insert_records_dynamically('alert_details', $arr_alerts);
                     
@@ -659,6 +662,7 @@ class SPBookingController extends ResourceController
                           'created_on' => date("Y-m-d H:i:s"), 
                           'status' => 1,
                           'sp_id' => $sp_id,
+                          'booking_id' => $json->booking_id
                     );
                     $common->insert_records_dynamically('alert_details', $arr_alerts);
     		        
@@ -1306,6 +1310,15 @@ class SPBookingController extends ResourceController
     		            $job_title = $arr_sp_details['title'];
     		        }
     		        
+    		        $arr_user_details = $misc_model->get_user_name_by_booking($json->booking_id, $user_id);
+        	        if($arr_user_details != "failure") {
+        	            $user_name = $arr_user_details['fname']." ".$arr_user_details['lname'];
+                        $user_id = $arr_user_details['users_id'];
+        	            $job_title = $arr_user_details['title'];
+        	            $sp_id = $arr_user_details['sp_id'];
+        	            $user_mobile = $arr_user_details['mobile'];
+        	        }
+    		        
     		        $arr_bid_det = array(
         		        'post_job_id' => $json->post_job_id,
         		        'users_id' => $json->sp_id,
@@ -1350,23 +1363,31 @@ class SPBookingController extends ResourceController
                         
                         //Insert into alert_details table
         		        $arr_alerts = array(
-            		          'alert_id' => 2, 
+            		          'alert_id' => 8, 
                               'description' => "You have successfully submitted a bid for job $job_title with $booking_ref_id on ".date('d-m-Y H:i:s',strtotime($json->created_on)),
                               'action' => 1,
                               'created_on' => date("Y-m-d H:i:s"), 
                               'status' => 1,
                               'sp_id' => $sp_id,
+                              'booking_id' => $json->booking_id,
+                              'post_job_id' => $json->post_job_id,
+                              'bid_id' => $bid_det_id,
+                              'bid_sp_id' => $json->sp_id
                         );
                         $common->insert_records_dynamically('alert_details', $arr_alerts);
                         
                         //Insert into alert_details table
         		        $arr_alerts = array(
-            		          'alert_id' => 2, 
+            		          'alert_id' => 8, 
                               'description' => $sp_name." has submitted a bid on post $job_title.",
                               'action' => 2,
                               'created_on' => date("Y-m-d H:i:s"), 
                               'status' => 1,
                               'users_id' => $users_id,
+                              'booking_id' => $json->booking_id,
+                              'post_job_id' => $json->post_job_id,
+                              'bid_id' => $bid_det_id,
+                              'bid_sp_id' => $json->sp_id
                         );
                         $common->insert_records_dynamically('alert_details', $arr_alerts);
                         
@@ -1384,6 +1405,18 @@ class SPBookingController extends ResourceController
             			];
             			
             			$sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
+            			//Send to user
+            			$data = [
+            				"name" => "new_bid",
+            				"mobile" => $user_mobile,
+            				"dat" => [
+            					"var" => $user_name,
+            					"var1" => $job_title,
+            					"var2" => "",
+            				]
+            			];
+            			
+            			$sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
                         
             			return $this->respond([
             			    "post_job_id" => $json->post_job_id,
@@ -1391,6 +1424,8 @@ class SPBookingController extends ResourceController
             			    "status" => 200,
             				"message" => "Success",
             			]);
+            			
+            			
             		}
             		else {
             		    return $this->respond([

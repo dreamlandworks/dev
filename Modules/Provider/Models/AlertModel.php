@@ -77,7 +77,8 @@ class AlertModel extends Model
 	{
 
 		$builder = $this->db->table('alert_details');
-		$builder->select('alert_details.id,alert.alert_type,description,alert_details.created_on');
+		$builder->select('alert_details.id,alert.alert_type,description,alert_details.created_on,booking_id,alert_id,action,category_id,
+		                post_job_id,bid_id,bid_sp_id,reschedule_user_id,reschedule_id');
 		$builder->join('alert', 'alert_details.alert_id = alert.id');
 		//$builder->join('alert_sub', 'alert_details.sub_id = alert_sub.id');
 		$builder->where('sp_id', $id);
@@ -125,7 +126,8 @@ class AlertModel extends Model
 	{
 
 		$builder = $this->db->table('alert_details');
-		$builder->select('alert_details.id,alert.alert_type,status,description,alert_details.created_on');
+		$builder->select('alert_details.id,alert.alert_type,status,description,alert_details.created_on,booking_id,alert_id,action,category_id,
+		                    post_job_id,bid_id,bid_sp_id,reschedule_user_id,reschedule_id');
 		$builder->join('alert', 'alert_details.alert_id = alert.id');
 		//$builder->join('alert_sub', 'alert_details.sub_id = alert_sub.id');
 		$builder->where('sp_id', $id);

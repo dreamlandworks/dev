@@ -57,6 +57,10 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     $routes->post("user_temp_address", "MiscController::user_temp_address"); //Get List of users temp address
     $routes->post("add_address", "MiscController::add_address"); //Add multiple address
     $routes->post("delete_attachment", "MiscController::delete_attachment"); //Add attachment
+    $routes->post("transfer_funds", "MiscController::transfer_funds"); //Transfer Funds
+    $routes->post("withdraw_funds", "MiscController::withdraw_funds"); //Withdraw Funds
+    $routes->post("add_bank_account", "MiscController::add_bank_account"); //Add Bank account
+    $routes->post("user_bank_account_details", "MiscController::get_user_bank_account_details"); //Get bank account details of user
     
     //Routes pertaining to User Booking/Payments
     $routes->post("single_move_booking", "BookingController::single_move_booking"); //Single Move booking
@@ -110,6 +114,8 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     
     //Routes pertaining to User Account
     $routes->get("get_account_details", "MyAccount::get_account_details"); //Get User account details
+	
+	
 });
 
 $routes->group("",["namespace" => "\Modules\User\Controllers\web"],function($routes){

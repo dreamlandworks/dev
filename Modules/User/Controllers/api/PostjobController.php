@@ -231,6 +231,27 @@ class PostjobController extends ResourceController
                         );
                         $common->insert_records_dynamically('alert_details', $arr_alerts);
                         
+                        $arr_user_details = $common->get_details_dynamically('user_details', 'id', $json->users_id);
+            	        if($arr_user_details != 'failure') {
+            	            $user_name = $arr_user_details[0]['fname']." ".$arr_user_details[0]['lname'];
+            	            $user_mobile = $arr_user_details[0]['mobile'];
+            	        }
+                        
+                        //Send SMS
+                        $sms_model = new SmsTemplateModel();
+                        
+                	 	$data = [
+            				"name" => "job_create",
+            				"mobile" => $user_mobile,
+            				"dat" => [
+            					"var" => $user_name,
+            					"var1" => $json->title,
+            					"var2" => str_pad($post_job_id, 6, '0', STR_PAD_LEFT),
+            				]
+            			];
+            			
+            			$sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
+                        
             			return $this->respond([
             			    "post_job_id" => $post_job_id,
             			    "post_job_ref_id" => str_pad($post_job_id, 6, "0", STR_PAD_LEFT),
@@ -459,7 +480,7 @@ class PostjobController extends ResourceController
                               'action' => 1,
                               'created_on' => date("Y-m-d H:i:s"), 
                               'status' => 1,
-                              'users_id' => $users_id,
+                              'users_id' => $json->users_id,
                         );
                         $common->insert_records_dynamically('alert_details', $arr_alerts);
                         
@@ -701,7 +722,7 @@ class PostjobController extends ResourceController
                               'action' => 1,
                               'created_on' => date("Y-m-d H:i:s"), 
                               'status' => 1,
-                              'users_id' => $users_id,
+                              'users_id' => $json->users_id,
                         );
                         $common->insert_records_dynamically('alert_details', $arr_alerts);
                         
@@ -1632,6 +1653,29 @@ class PostjobController extends ResourceController
                             ];
                             $common->update_records_dynamically('bid_det', $upd_bid_det_status, 'id', $json->bid_id);
                             
+                            //Make entry in to wallet
+                            //Check if the wallet is created
+                            $arr_wallet_details = $common->get_details_dynamically('wallet_balance', 'users_id', $json->users_id);
+            		        if($arr_wallet_details != 'failure') {
+            		            //Get total amount and blocked amount
+            		            $wallet_amount = $arr_wallet_details[0]['amount'] + $json->amount;
+            		            $wallet_amount_blocked = $arr_wallet_details[0]['amount_blocked'] + $json->amount;
+            		            
+            		            $arr_update_wallet_data = array(
+            		                'amount' => $wallet_amount,
+                    		        'amount_blocked' => $wallet_amount_blocked
+                                );
+                                $common->update_records_dynamically('wallet_balance', $arr_update_wallet_data, 'users_id', $json->users_id);
+            		        }
+            		        else {
+            		            $arr_wallet_data = array(
+            		                'users_id' => $json->users_id,
+                    		        'amount' => $json->amount,
+                    		        'amount_blocked' => $json->amount
+                                );
+                                $common->insert_records_dynamically('wallet_balance', $arr_wallet_data);
+            		        }
+                            
                             $arr_alerts = array(
                 		          'alert_id' => 2, 
                                   'description' => "You have successfully awarded post $job_title to $sp_name under Booking ID $booking_ref_id.",
@@ -1666,6 +1710,8 @@ class PostjobController extends ResourceController
                 			];
                 			
                 			$sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
+                			
+                			
                         }    
                         
         		        return $this->respond([
@@ -2463,11 +2509,46 @@ class PostjobController extends ResourceController
     		        $arr_inst_details = $common->get_details_dynamically('installment_det', 'id', $json->inst_id);
     		        if($arr_inst_details != 'failure') {
     		            $inst_no = $arr_inst_details[0]['inst_no'];
+    		            $amount = $arr_inst_details[0]['amount'];
     		        }
     		        
     		        $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
                     
                     if($json->status_id == 34) { //approved
+                        //Make debit in to users wallet
+                        $arr_wallet_details = $common->get_details_dynamically('wallet_balance', 'users_id', $json->users_id);
+        		        if($arr_wallet_details != 'failure') {
+        		            //Get total amount and blocked amount
+        		            $wallet_amount = $arr_wallet_details[0]['amount'] - $amount;
+        		            $wallet_amount_blocked = $arr_wallet_details[0]['amount_blocked'] - $amount;
+        		            
+        		            $arr_update_wallet_data = array(
+        		                'amount' => $wallet_amount,
+                		        'amount_blocked' => $wallet_amount_blocked
+                            );
+                            $common->update_records_dynamically('wallet_balance', $arr_update_wallet_data, 'users_id', $json->users_id);
+        		        }
+        		        
+        		        //Make entry in to SP's wallet
+                        //Check if the wallet is created
+                        $arr_wallet_details = $common->get_details_dynamically('wallet_balance', 'users_id', $json->sp_id);
+        		        if($arr_wallet_details != 'failure') {
+        		            //Get total amount and blocked amount
+        		            $wallet_amount = $arr_wallet_details[0]['amount'] + $amount;
+        		            
+        		            $arr_update_wallet_data = array(
+        		                'amount' => $wallet_amount,
+                		    );
+                            $common->update_records_dynamically('wallet_balance', $arr_update_wallet_data, 'users_id', $json->sp_id);
+        		        }
+        		        else {
+        		            $arr_wallet_data = array(
+        		                'users_id' => $json->sp_id,
+                		        'amount' => $amount,
+                		    );
+                            $common->insert_records_dynamically('wallet_balance', $arr_wallet_data);
+        		        }
+        		        
                         //Insert into alerts
                         $arr_alerts = array(
             		          'alert_id' => 2, 

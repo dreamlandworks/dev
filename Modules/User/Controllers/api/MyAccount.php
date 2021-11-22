@@ -43,6 +43,17 @@ class MyAccount extends ResourceController
 		    if($key == $api_key) {
 		       $job_post_model = new JobPostModel();
 		       $misc_model = new MiscModel();
+		       $common = new CommonModel();
+		       
+		       $total_wallet_balance = 0;
+		       $total_wallet_blocked = 0;
+		       
+		       $arr_wallet_details = $common->get_details_dynamically('wallet_balance', 'users_id', $users_id);
+		       if($arr_wallet_details != 'failure') {
+    	            //Get total amount 
+    	            $total_wallet_balance = $arr_wallet_details[0]['amount'] - $arr_wallet_details[0]['amount_blocked'];
+    	            $total_wallet_blocked = $arr_wallet_details[0]['amount_blocked'];
+		       }     
 		       
 		       //Get total Job Posts,Referrals,Bookings
 		       $total_bookings = $misc_model->get_total_bookings($users_id);
@@ -56,6 +67,8 @@ class MyAccount extends ResourceController
 		            "total_job_posts" => $total_job_posts,
 		            "total_referrals" => $total_referrals,
 		            "commission_earned" => $commission_earned,
+		            "wallet_balance" => $total_wallet_balance,
+		            "wallet_blocked_amount" => $total_wallet_blocked,
 		            "activated_plan" => ($res_plan != 'failure') ? $res_plan['name'] : "Regular",
 		            "status" => 200,
     				"message" => "Success",

@@ -35,6 +35,17 @@ class MyAccount extends ResourceController
 		    if($key == $api_key) {
 		       $job_post_model = new JobPostModel();
 		       $misc_model = new MiscModel();
+		       $common = new CommonModel();
+		       
+		       $total_wallet_balance = 0;
+		       $total_wallet_blocked = 0;
+		       
+		       $arr_wallet_details = $common->get_details_dynamically('wallet_balance', 'users_id', $sp_id);
+		       if($arr_wallet_details != 'failure') {
+    	            //Get total amount 
+    	            $total_wallet_balance = $arr_wallet_details[0]['amount'] - $arr_wallet_details[0]['amount_blocked'];
+    	            $total_wallet_blocked = $arr_wallet_details[0]['amount_blocked'];
+		       } 
 		       
 		       $total_bookings = 0;
 		       $total_completed_bookings = 0;
@@ -75,6 +86,8 @@ class MyAccount extends ResourceController
 		            "total_referrals" => $total_referrals,
 		            "commission_earned" => $commission_earned,
 		            "total_reviews" => $total_reviews,
+		            "wallet_balance" => $total_wallet_balance,
+		            "wallet_blocked_amount" => $total_wallet_blocked,
 		            "activated_plan" => ($res_plan != 'failure') ? $res_plan['name'] : "Regular",
 		            "status" => 200,
     				"message" => "Success",
@@ -117,7 +130,7 @@ class MyAccount extends ResourceController
 		       $arr_reviews = $misc_model->get_sp_reviews_details($sp_id);
 		       
 	           return $this->respond([
-		            "sp_reviews" => ($arr_reviews != 'failure') ? $arr_reviews : "No data",
+		            "sp_reviews" => ($arr_reviews != 'failure') ? $arr_reviews : array(),
 		            "status" => 200,
     				"message" => "Success",
     			]);
