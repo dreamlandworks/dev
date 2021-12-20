@@ -13,7 +13,7 @@
                                 </i>
                             </button>
                         </div>
-                        <a class="navbar-brand" href="#pablo">List Booings</a>
+                        <a class="navbar-brand" href="#pablo">List Bookings</a>
                     </div>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -265,7 +265,7 @@
                                                             </div>
                                                         </td>
                                                         <td class="td-actions">
-                                                            <a href="#">
+                                                            <a href="listBookingView">
                                                                 <h4><b>View</b></h4>
                                                             </a>
                                                         </td>
@@ -315,7 +315,7 @@
                                                             </div>
                                                         </td>
                                                         <td class="td-actions">
-                                                            <a href="#">
+                                                            <a href="listBookingView">
                                                                 <h4><b>View</b></h4>
                                                             </a>
                                                         </td>

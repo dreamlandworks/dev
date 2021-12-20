@@ -255,7 +255,7 @@
                                                         <td>Single Move</td>
                                                         <td>Resolved</td>
                                                         <td class="td-actions">
-                                                            <a href="#">
+                                                            <a href="viewTickets">
                                                                 <h4><b>View</b></h4>
                                                             </a>
                                                         </td>

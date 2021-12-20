@@ -65,6 +65,14 @@ class Bookings extends BaseController
 		echo view('\Modules\Admin\Views\bookings\blueCollorForm');
 		echo view('\Modules\Admin\Views\_layout\footer');
 	}
+	
+	public function list_booking_view()
+	{
+		echo view('\Modules\Admin\Views\_layout\header');
+		echo view('\Modules\Admin\Views\_layout\sidebar'); 
+		echo view('\Modules\Admin\Views\bookings\listBookingView');
+		echo view('\Modules\Admin\Views\_layout\footer');
+	}
 	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
 
 }

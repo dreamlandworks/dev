@@ -8,7 +8,7 @@ use Modules\User\Models\UserDetailsModel;
 use Modules\User\Models\AddressModel;
 use Modules\User\Models\ReferralModel;
 use Modules\Provider\Models\CommonModel;
-
+use Modules\User\Models\MiscModel;
 
 helper('Modules\User\custom');
 
@@ -43,7 +43,7 @@ class UserProfileController extends ResourceController
         $con1 = new UserDetailsModel();
         $con2 = new AddressModel();
         $con3 = new ReferralModel();
-
+        $misc_model = new MiscModel();
         
         //$data = $this->request->getJSON();
         $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
@@ -93,6 +93,16 @@ class UserProfileController extends ResourceController
             } else {
                 $referral_id = null;
             }
+            
+            //Get Sub category of SP
+            $arr_subcategory = array();
+            $arr_sp_cat = $misc_model->get_sp_prof_cat($id);
+            if($arr_sp_cat != 'failure') {
+                foreach($arr_sp_cat as $skey => $sval) {
+                    $arr_subcategory[$skey]['id'] = $sval['subcategory_id'];
+                }
+                
+            }
 
             $array = [
                 "fname" => $fname,
@@ -106,7 +116,8 @@ class UserProfileController extends ResourceController
                 "address" => $address,
                 "sp_activated" => $sp_activated,
                 "fcm_token" => $fcm_token,
-                "activation_code" => $activation_code
+                "activation_code" => $activation_code,
+                "subcategories" => $arr_subcategory
             ];
 
             return $this->respond([
@@ -163,6 +174,7 @@ class UserProfileController extends ResourceController
 		else{
         $con = new UsersModel();
         $con1 = new UserDetailsModel();
+        $common = new CommonModel();
 
         //$data = $this->request->getJSON();
         $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
@@ -174,81 +186,81 @@ class UserProfileController extends ResourceController
     	if($key == $api_key)
     	{
     
-        $id = $json->user_id;
-        $fname = $json->fname;
-        $lname = $json->lname;
-        $email = $json->email;
-        $dob = $json->dob;
-        $gender = $json->gender;
-        $file = $json->image;
-        $image = '';
-        if ($file != null) {
+            $id = $json->user_id;
+            $fname = $json->fname;
+            $lname = $json->lname;
+            $email = $json->email;
+            $dob = $json->dob;
+            $gender = $json->gender;
+            $file = $json->image;
+            $image = '';
+            if ($file != null) {
+    
+                $image = generateImage($file);
+                
+                $array = [
+                    "fname" =>  $fname,
+                    "lname" =>  $lname,
+                    "dob" =>  $dob,
+                    "gender" =>  $gender,
+                    "profile_pic" =>  $image
+                ];
+                
+                
+        		        
+    	    }else{
+    
+                $array = [
+                    "fname" =>  $fname,
+                    "lname" =>  $lname,
+                    "dob" =>  $dob,
+                    "gender" =>  $gender,
+                ];
+            }
 
-            $image = generateImage($file);
-            
-            $array = [
-                "fname" =>  $fname,
-                "lname" =>  $lname,
-                "dob" =>  $dob,
-                "gender" =>  $gender,
-                "profile_pic" =>  $image
-            ];
-            
-            $common = new CommonModel();
-    		        
-	    }else{
-
-            $array = [
-                "fname" =>  $fname,
-                "lname" =>  $lname,
-                "dob" =>  $dob,
-                "gender" =>  $gender,
-            ];
-        }
-
-        if (($res = $con->update_email($id, $email)) != 0) {
-
-            $users_id = $res;
-
-            
-            if ($con1->update_user_details($users_id, $array) != null) {
-                if($image != "") {
+            if (($res = $con->update_email($id, $email)) != 0) {
+    
+                $users_id = $res;
+    
+                
+                if ($con1->update_user_details($users_id, $array) != null) {
+                    if($image != "") {
+                        //Insert into alert_details table
+            	        $arr_alerts = array(
+            		          'alert_id' => 4, 
+                              'description' => "You have succesfully updated your profile picture",
+                              'action' => 1,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'users_id' => $id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
+                    }
+                    
                     //Insert into alert_details table
         	        $arr_alerts = array(
         		          'alert_id' => 4, 
-                          'description' => "You have succesfully updated your profile picture",
+                          'description' => "You have succesfully updated your profile",
                           'action' => 1,
                           'created_on' => date("Y-m-d H:i:s"), 
                           'status' => 1,
                           'users_id' => $id,
                     );
                     $common->insert_records_dynamically('alert_details', $arr_alerts);
+                    
+                    
+                    return $this->respond([
+                        "status" => 200,
+                        "message" =>  "Successfully Updated"
+                    ]);
                 }
-                
-                //Insert into alert_details table
-    	        $arr_alerts = array(
-    		          'alert_id' => 4, 
-                      'description' => "You have succesfully updated your profile",
-                      'action' => 1,
-                      'created_on' => date("Y-m-d H:i:s"), 
-                      'status' => 1,
-                      'users_id' => $id,
-                );
-                $common->insert_records_dynamically('alert_details', $arr_alerts);
-                
-                
-                return $this->respond([
-                    "status" => 200,
-                    "message" =>  "Successfully Updated"
-                ]);
-            }
-            else {
-
-                return $this->respond([
-                    "status" => 400,
-                    "message" =>  "Failed to Update"
-                ]);
-            }
+                else {
+    
+                    return $this->respond([
+                        "status" => 400,
+                        "message" =>  "Failed to Update"
+                    ]);
+                }
            }
            
     	}

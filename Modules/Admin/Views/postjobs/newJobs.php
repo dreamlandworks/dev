@@ -261,7 +261,7 @@
                                                         <td>Expired</td>
                                                         <td>Reject</td>
                                                         <td class="td-actions">
-                                                            <a href="#">
+                                                            <a href="viewNewjobs">
                                                                 <h4><b>View</b></h4>
                                                             </a>
                                                         </td>

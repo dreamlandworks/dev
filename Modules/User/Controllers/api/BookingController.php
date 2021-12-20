@@ -858,7 +858,9 @@ class BookingController extends ResourceController
     		       
     		       $users_id = $json->users_id;
     		       
-    		       //Get Single Move Booking Details
+    		       $current_date = date('Y-m-d H:i:s');
+    		       
+    	           //Get Single Move Booking Details
     		       $arr_single_move_booking_details = $misc_model->get_user_single_move_booking_details($users_id); 
     		       
     		       $arr_booking = array();
@@ -868,18 +870,28 @@ class BookingController extends ResourceController
     		           foreach($arr_single_move_booking_details as $key => $book_data) {
     		               $started_at = $book_data['started_at'];
     		               $completed_at = $book_data['completed_at'];
+    		               $scheduled_date = $book_data['scheduled_date']." ".$book_data['from'];
+    		               $booking_end_date = date('Y-m-d H:i:s',strtotime('+1 hour',strtotime($scheduled_date)));
+    		               
     		               $status = "";
-    		               if($started_at == "" || $started_at == "0000-00-00 00:00:00") {
-    		                   $status = "Pending";
+    		               
+    		               if($started_at == "0000-00-00 00:00:00" && $current_date > $booking_end_date){
+    		                    $status = "Expired";
     		               }
     		               else {
-    		                 if($completed_at == "" || $completed_at == "0000-00-00 00:00:00") {
-        		                   $status = "Inprogress";
-        		             }  
-        		             else {
-        		                 $status = "Completed";
-        		             } 
+    		                   if($started_at == "" || $started_at == "0000-00-00 00:00:00") {
+        		                   $status = "Pending";
+        		               }
+        		               else {
+        		                 if($completed_at == "" || $completed_at == "0000-00-00 00:00:00") {
+            		                   $status = "Inprogress";
+            		             }  
+            		             else {
+            		                 $status = "Completed";
+            		             } 
+        		               }
     		               }
+    		               
     		               
     		               $arr_booking[$key]['booking_id'] = $book_data['id'];
         		           $arr_booking[$key]['category_id'] = $book_data['category_id'];
@@ -909,6 +921,7 @@ class BookingController extends ResourceController
     		               $arr_booking[$key]['material_advance'] = $book_data['material_advance'];
     		               $arr_booking[$key]['technician_charges'] = $book_data['technician_charges'];
     		               $arr_booking[$key]['expenditure_incurred'] = $book_data['expenditure_incurred'];
+    		               $arr_booking[$key]['booking_end_date'] = $booking_end_date;
     		               
     		               $arr_booking[$key]['details'][] = array('job_description' => $book_data['job_description'],
 		                                                       'locality' => $book_data['locality'],
@@ -938,17 +951,26 @@ class BookingController extends ResourceController
     		           foreach($arr_blue_collar_booking_details as $bc_book_data) {
     		               $started_at = $bc_book_data['started_at'];
     		               $completed_at = $bc_book_data['completed_at'];
+    		               
+    		               $scheduled_date = $bc_book_data['scheduled_date']." ".$bc_book_data['from'];
+    		               $booking_end_date = date('Y-m-d H:i:s',strtotime('+1 hour',strtotime($scheduled_date)));
+    		               
     		               $status = "";
-    		               if($started_at == "" || $started_at == "0000-00-00 00:00:00") {
-    		                   $status = "Pending";
+    		               if($started_at == "0000-00-00 00:00:00" && $current_date > $booking_end_date){
+        		                    $status = "Expired";
     		               }
     		               else {
-    		                 if($completed_at == "" || $completed_at == "0000-00-00 00:00:00") {
-        		                   $status = "Inprogress";
-        		             }  
-        		             else {
-        		                 $status = "Completed";
-        		             } 
+    		                   if($started_at == "" || $started_at == "0000-00-00 00:00:00") {
+        		                   $status = "Pending";
+        		               }
+        		               else {
+        		                 if($completed_at == "" || $completed_at == "0000-00-00 00:00:00") {
+            		                   $status = "Inprogress";
+            		             }  
+            		             else {
+            		                 $status = "Completed";
+            		             } 
+    		                    }
     		               }
     		               
     		               $arr_booking[$booking_count]['booking_id'] = $bc_book_data['id'];
@@ -971,6 +993,7 @@ class BookingController extends ResourceController
     		               $arr_booking[$booking_count]['material_advance'] = $bc_book_data['material_advance'];
     		               $arr_booking[$booking_count]['technician_charges'] = $bc_book_data['technician_charges'];
     		               $arr_booking[$booking_count]['expenditure_incurred'] = $bc_book_data['expenditure_incurred'];
+    		               $arr_booking[$booking_count]['booking_end_date'] = $booking_end_date;
     		               
     		               $arr_booking[$booking_count]['details'][] = array('job_description' => $bc_book_data['job_description']);
     		               
@@ -1004,19 +1027,27 @@ class BookingController extends ResourceController
     		               if(!array_key_exists($mm_book_data['id'],$arr_exists)) {
     		                   $started_at = $mm_book_data['started_at'];
         		               $completed_at = $mm_book_data['completed_at'];
+        		               $scheduled_date = $mm_book_data['scheduled_date']." ".$mm_book_data['from'];
+    		                   $booking_end_date = date('Y-m-d H:i:s',strtotime('+1 hour',strtotime($scheduled_date)));
+        		               
         		               $status = "";
-        		               if($started_at == "" || $started_at == "0000-00-00 00:00:00") {
-        		                   $status = "Pending";
+        		               
+        		               if($started_at == "0000-00-00 00:00:00" && $current_date > $booking_end_date){
+        		                    $status = "Expired";
         		               }
         		               else {
-        		                 if($completed_at == "" || $completed_at == "0000-00-00 00:00:00") {
-            		                   $status = "Inprogress";
-            		             }  
-            		             else {
-            		                 $status = "Completed";
-            		             } 
-    		                    }
-    		               
+        		                   if($started_at == "" || $started_at == "0000-00-00 00:00:00") {
+            		                   $status = "Pending";
+            		               }
+            		               else {
+            		                 if($completed_at == "" || $completed_at == "0000-00-00 00:00:00") {
+                		                   $status = "Inprogress";
+                		             }  
+                		             else {
+                		                 $status = "Completed";
+                		             } 
+        		                    }
+        		               }
         		               $arr_booking[$booking_count]['booking_id'] = $mm_book_data['id'];
             		           $arr_booking[$booking_count]['category_id'] = $mm_book_data['category_id'];
             		           $arr_booking[$booking_count]['fname'] = $mm_book_data['fname'];
@@ -1037,6 +1068,7 @@ class BookingController extends ResourceController
         		               $arr_booking[$booking_count]['material_advance'] = $mm_book_data['material_advance'];
         		               $arr_booking[$booking_count]['technician_charges'] = $mm_book_data['technician_charges'];
         		               $arr_booking[$booking_count]['expenditure_incurred'] = $mm_book_data['expenditure_incurred'];
+        		               $arr_booking[$booking_count]['booking_end_date'] = $booking_end_date;
         		               
         		               foreach($arr_details[$mm_book_data['id']] as $key => $val) {
         		                   $arr_booking[$booking_count]['details'][$key] = $arr_details[$mm_book_data['id']][$key];
@@ -1398,6 +1430,21 @@ class BookingController extends ResourceController
                     );
     		    }
     		    else if($validate_sp_id == 0) { //Booking Completed
+    		        //Calculate points
+                    $sp_points = 3; //3 points for job completed
+                    
+                    $arr_user_details = $common->get_details_dynamically('user_details', 'id', $sp_id);
+                    if($arr_user_details != 'failure') {
+                        $points_count = $arr_user_details[0]['points_count']; 
+                        
+                        $total_points = $points_count + $sp_points;
+                        
+                        $arr_update_user_data = array(
+    		                'points_count' => $total_points,
+            		    );
+                        $common->update_records_dynamically('user_details', $arr_update_user_data, 'id', $sp_id);
+                    }
+    		    
     		        //Insert into alert_details table
     		        $arr_alerts = array(
         		          'alert_id' => 1, 

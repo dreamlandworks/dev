@@ -4,6 +4,8 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
 
     //Routes pertaining to User Login/ Registration Functionality
     $routes->post("login", "LoginController::login"); // User Login API   
+    $routes->post("logout", "LoginController::logout"); // User Logout API   
+    
     $routes->post("newuser", "UsersController::new_user"); //For New User Registration API
     $routes->post("changepwd", "UsersController::update_pass"); //For Change Password API
     $routes->post("verify", "LoginController::verify"); // User Verification API   
@@ -40,6 +42,8 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     
     //Routes pertaining to FAQ
     $routes->get("user_faq", "MiscController::user_faq"); //Get all the User related Faq
+    
+    $routes->get("get_cities_list", "MiscController::get_cities"); //Get all cities
     
     //Routes pertaining to user plans
     $routes->get("user_plans", "MiscController::user_plans"); //Get all the User plans
@@ -114,6 +118,8 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     
     //Routes pertaining to User Account
     $routes->get("get_account_details", "MyAccount::get_account_details"); //Get User account details
+    
+    
 	
 	
 });

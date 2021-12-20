@@ -1299,7 +1299,7 @@ class SPBookingController extends ResourceController
     		        $sp_mobile = "";
     		        $user_id = 0;
     		        $job_title = "";
-    		        
+    		        $points_count = 0;
     		        
     		        $arr_sp_details = $misc_model->get_sp_name_by_booking($json->booking_id);
     		        if($arr_sp_details != "failure") {
@@ -1308,6 +1308,7 @@ class SPBookingController extends ResourceController
     		            $sp_mobile = $arr_sp_details['mobile'];
     		            $user_id = $arr_sp_details['users_id'];
     		            $job_title = $arr_sp_details['title'];
+    		            $points_count = $arr_sp_details['points_count']; 
     		        }
     		        
     		        $arr_user_details = $misc_model->get_user_name_by_booking($json->booking_id, $user_id);
@@ -1333,6 +1334,15 @@ class SPBookingController extends ResourceController
                     $bid_det_id = $common->insert_records_dynamically('bid_det', $arr_bid_det);
                     
                     if ($bid_det_id > 0) {
+                        //Calculate points
+                        $sp_points = 1; //1 point for bid submission
+                        
+                        $total_points = $points_count + $sp_points;
+                            
+                        $arr_update_user_data = array(
+    		                'points_count' => $total_points,
+            		    );
+                        $common->update_records_dynamically('user_details', $arr_update_user_data, 'id', $json->sp_id);
                         
                         //Insert into booking status
                         $arr_job_post_status = array(
@@ -1364,7 +1374,7 @@ class SPBookingController extends ResourceController
                         //Insert into alert_details table
         		        $arr_alerts = array(
             		          'alert_id' => 8, 
-                              'description' => "You have successfully submitted a bid for job $job_title with $booking_ref_id on ".date('d-m-Y H:i:s',strtotime($json->created_on)),
+                              'description' => "You have successfully submitted a bid for job $job_title with $booking_ref_id on ".date("Y-m-d H:i:s"),
                               'action' => 1,
                               'created_on' => date("Y-m-d H:i:s"), 
                               'status' => 1,
@@ -1383,7 +1393,7 @@ class SPBookingController extends ResourceController
                               'action' => 2,
                               'created_on' => date("Y-m-d H:i:s"), 
                               'status' => 1,
-                              'users_id' => $users_id,
+                              'users_id' => $json->sp_id,
                               'booking_id' => $json->booking_id,
                               'post_job_id' => $json->post_job_id,
                               'bid_id' => $bid_det_id,
@@ -1598,4 +1608,259 @@ class SPBookingController extends ResourceController
        return $dtF->diff($dtT)->format('%a days, %h hours, %i minutes'); // and %s seconds
     }
     //-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+    //---------------------------------------------------------SP Booking details-------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function get_sp_upcoming_booking_details()
+	{
+		if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+                "status" => 405,
+                "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON();
+            /*echo "<pre>";
+            print_r($json);
+            echo "</pre>";
+            exit;*/
+            
+            if(!array_key_exists('sp_id',$json) || !array_key_exists('key',$json)) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->provider_key;
+    		    
+    		    if($key == $api_key) {
+    		       $misc_model = new MiscModel();
+    		       
+    		       $users_id = 0;
+    		       $sp_id = $json->sp_id;
+    		       
+    		       //Get Single Move Booking Details
+    		       $arr_single_move_booking_details = $misc_model->get_user_upcoming_single_move_booking_details($users_id,$sp_id); 
+    		       
+    		       $arr_booking = array();
+    		       $arr_booking_response = array();
+    		       
+    		       if($arr_single_move_booking_details != 'failure') {
+    		           foreach($arr_single_move_booking_details as $key => $book_data) {
+    		               $started_at = $book_data['started_at'];
+    		               $completed_at = $book_data['completed_at'];
+    		               
+    		               if($started_at == "" || $started_at == "0000-00-00 00:00:00") {
+    		                   $status = "Pending";
+    		               }
+    		               else {
+    		                 if($completed_at == "" || $completed_at == "0000-00-00 00:00:00") {
+        		                   $status = "Inprogress";
+        		             }  
+        		             else {
+        		                 $status = "Completed";
+        		             } 
+    		               }
+    		               
+    		               $arr_booking[$key]['booking_id'] = $book_data['id'];
+    		               $arr_booking[$key]['category_id'] = $book_data['category_id'];
+        		           $arr_booking[$key]['fname'] = $book_data['fname'];
+    		               $arr_booking[$key]['lname'] = $book_data['lname'];
+    		               $arr_booking[$key]['mobile'] = $book_data['mobile'];
+    		               $arr_booking[$key]['scheduled_date'] = $book_data['scheduled_date'];
+    		               $arr_booking[$key]['time_slot_id'] = $book_data['time_slot_id'];
+    		               $arr_booking[$key]['started_at'] = $book_data['started_at'];
+    		               $arr_booking[$key]['from'] = $book_data['from'];
+    		               $arr_booking[$key]['estimate_time'] = $book_data['estimate_time'];
+    		               $arr_booking[$key]['estimate_type'] = $book_data['estimate_type'];
+    		               $arr_booking[$key]['amount'] = $book_data['amount'];
+    		               $arr_booking[$key]['sp_id'] = $book_data['sp_id'];
+    		               $arr_booking[$key]['users_id'] = $book_data['users_id'];
+    		               $arr_booking[$key]['profile_pic'] = $book_data['profile_pic'];
+    		               $arr_booking[$key]['booking_status'] = $status;
+    		               $arr_booking[$key]['pause_status'] = ($book_data['status_id'] == 15) ? "Yes" : "No";
+    		               
+    		               $arr_booking[$key]['otp'] = $book_data['otp'];
+    		               $arr_booking[$key]['extra_demand_total_amount'] = $book_data['extra_demand_total_amount'];
+    		               $arr_booking[$key]['material_advance'] = $book_data['material_advance'];
+    		               $arr_booking[$key]['technician_charges'] = $book_data['technician_charges'];
+    		               $arr_booking[$key]['expenditure_incurred'] = $book_data['expenditure_incurred'];
+    		               
+    		               $arr_booking[$key]['details'][] = array('job_description' => $book_data['job_description'],
+		                                                       'locality' => $book_data['locality'],
+		                                                       'latitude' => $book_data['latitude'],
+		                                                       'longitude' => $book_data['longitude'],
+		                                                       'city' => $book_data['city'],
+		                                                       'state' => $book_data['state'],
+		                                                       'country' => $book_data['country'],
+		                                                       'zipcode' => $book_data['zipcode'],
+		                                                       );
+		               }
+    		           
+    		           //echo "<pre>";
+        		       //print_r($arr_booking_details);
+        		       //print_r($arr_booking);
+        		       //echo "</pre>";
+        		       //exit;
+        		   }
+    		       
+    		       $booking_count = (count($arr_booking) > 0) ?  count($arr_booking) : 0; //Increment the key
+    		       
+    		       //Get Blue Collar Booking Details
+    		       $arr_blue_collar_booking_details = $misc_model->get_user_upcoming_blue_collar_booking_details($users_id,$sp_id); 
+    		       
+    		       if($arr_blue_collar_booking_details != 'failure') {
+    		           foreach($arr_blue_collar_booking_details as $bc_book_data) {
+    		               $started_at = $bc_book_data['started_at'];
+    		               $completed_at = $bc_book_data['completed_at'];
+    		               $status = "";
+    		               if($started_at == "" || $started_at == "0000-00-00 00:00:00") {
+    		                   $status = "Pending";
+    		               }
+    		               else {
+    		                 if($completed_at == "" || $completed_at == "0000-00-00 00:00:00") {
+        		                   $status = "Inprogress";
+        		             }  
+        		             else {
+        		                 $status = "Completed";
+        		             } 
+    		               }
+    		               
+    		               $arr_booking[$booking_count]['booking_id'] = $bc_book_data['id'];
+        		           $arr_booking[$booking_count]['category_id'] = $bc_book_data['category_id'];
+        		           $arr_booking[$booking_count]['fname'] = $bc_book_data['fname'];
+    		               $arr_booking[$booking_count]['lname'] = $bc_book_data['lname'];
+    		               $arr_booking[$booking_count]['mobile'] = $bc_book_data['mobile'];
+    		               $arr_booking[$booking_count]['scheduled_date'] = $bc_book_data['scheduled_date'];
+    		               $arr_booking[$booking_count]['time_slot_id'] = $bc_book_data['time_slot_id'];
+    		               $arr_booking[$booking_count]['started_at'] = $bc_book_data['started_at'];
+    		               $arr_booking[$booking_count]['from'] = $bc_book_data['from'];
+    		               $arr_booking[$booking_count]['estimate_time'] = $bc_book_data['estimate_time'];
+    		               $arr_booking[$booking_count]['estimate_type'] = $bc_book_data['estimate_type'];
+    		               $arr_booking[$booking_count]['amount'] = $bc_book_data['amount'];
+    		               $arr_booking[$booking_count]['sp_id'] = $bc_book_data['sp_id'];
+    		               $arr_booking[$booking_count]['users_id'] = $bc_book_data['users_id'];
+    		               $arr_booking[$booking_count]['profile_pic'] = $bc_book_data['profile_pic'];
+    		               $arr_booking[$booking_count]['booking_status'] = $status;
+    		               $arr_booking[$booking_count]['pause_status'] = ($bc_book_data['status_id'] == 15) ? "Yes" : "No";
+    		               $arr_booking[$booking_count]['otp'] = $bc_book_data['otp'];
+    		               $arr_booking[$booking_count]['extra_demand_total_amount'] = $bc_book_data['extra_demand_total_amount'];
+    		               $arr_booking[$booking_count]['material_advance'] = $bc_book_data['material_advance'];
+    		               $arr_booking[$booking_count]['technician_charges'] = $bc_book_data['technician_charges'];
+    		               $arr_booking[$booking_count]['expenditure_incurred'] = $bc_book_data['expenditure_incurred'];
+    		               
+    		               $arr_booking[$booking_count]['details'][] = array('job_description' => $bc_book_data['job_description']);
+    		               
+    		               $booking_count++;
+    		           }
+        		   }
+        		   
+        		   $booking_count = (count($arr_booking) > 0) ?  count($arr_booking) : 0; //Increment the key
+    		       
+    		       //Get Multi Move Booking Details
+    		       $arr_multi_move_booking_details = $misc_model->get_user_upcoming_multi_move_booking_details($users_id,$sp_id); 
+    		       
+    		       $arr_exists = array();
+    		       $arr_details = array();
+    		       
+    		       if($arr_multi_move_booking_details != 'failure') {
+    		           foreach($arr_multi_move_booking_details as $mm_book_data) {
+    		               $arr_details[$mm_book_data['id']][] = array('sequence_no' => $mm_book_data['sequence_no'],
+		                                                       'job_description' => $mm_book_data['job_description'], 
+		                                                       'weight_type' => $mm_book_data['weight_type'], 
+		                                                       'locality' => $mm_book_data['locality'],
+		                                                       'latitude' => $mm_book_data['latitude'],
+		                                                       'longitude' => $mm_book_data['longitude'],
+		                                                       'city' => $mm_book_data['city'],
+		                                                       'state' => $mm_book_data['state'],
+		                                                       'country' => $mm_book_data['country'],
+		                                                       'zipcode' => $mm_book_data['zipcode'],
+		                                                       );
+    		           }
+    		           foreach($arr_multi_move_booking_details as $mm_book_data) {
+    		               if(!array_key_exists($mm_book_data['id'],$arr_exists)) {
+    		                   $started_at = $mm_book_data['started_at'];
+        		               $completed_at = $mm_book_data['completed_at'];
+        		               $status = "";
+        		               if($started_at == "" || $started_at == "0000-00-00 00:00:00") {
+        		                   $status = "Pending";
+        		               }
+        		               else {
+        		                 if($completed_at == "" || $completed_at == "0000-00-00 00:00:00") {
+            		                   $status = "Inprogress";
+            		             }  
+            		             else {
+            		                 $status = "Completed";
+            		             } 
+    		                    }
+    		               
+        		               $arr_booking[$booking_count]['booking_id'] = $mm_book_data['id'];
+            		           $arr_booking[$booking_count]['category_id'] = $mm_book_data['category_id'];
+            		           $arr_booking[$booking_count]['fname'] = $mm_book_data['fname'];
+        		               $arr_booking[$booking_count]['lname'] = $mm_book_data['lname'];
+        		               $arr_booking[$booking_count]['mobile'] = $mm_book_data['mobile'];
+        		               $arr_booking[$booking_count]['scheduled_date'] = $mm_book_data['scheduled_date'];
+        		               $arr_booking[$booking_count]['time_slot_id'] = $mm_book_data['time_slot_id'];
+        		               $arr_booking[$booking_count]['started_at'] = $mm_book_data['started_at'];
+        		               $arr_booking[$booking_count]['from'] = $mm_book_data['from'];
+        		               $arr_booking[$booking_count]['estimate_time'] = $mm_book_data['estimate_time'];
+        		               $arr_booking[$booking_count]['estimate_type'] = $mm_book_data['estimate_type'];
+        		               $arr_booking[$booking_count]['amount'] = $mm_book_data['amount'];
+        		               $arr_booking[$booking_count]['sp_id'] = $mm_book_data['sp_id'];
+        		               $arr_booking[$booking_count]['users_id'] = $mm_book_data['users_id'];
+        		               $arr_booking[$booking_count]['profile_pic'] = $mm_book_data['profile_pic'];
+        		               $arr_booking[$booking_count]['booking_status'] = $status;
+        		               $arr_booking[$booking_count]['pause_status'] = ($mm_book_data['status_id'] == 15) ? "Yes" : "No";
+        		               $arr_booking[$booking_count]['otp'] = $mm_book_data['otp'];
+        		               $arr_booking[$booking_count]['extra_demand_total_amount'] = $mm_book_data['extra_demand_total_amount'];
+        		               $arr_booking[$booking_count]['material_advance'] = $mm_book_data['material_advance'];
+        		               $arr_booking[$booking_count]['technician_charges'] = $mm_book_data['technician_charges'];
+        		               $arr_booking[$booking_count]['expenditure_incurred'] = $mm_book_data['expenditure_incurred'];
+        		               
+        		               foreach($arr_details[$mm_book_data['id']] as $key => $val) {
+        		                   $arr_booking[$booking_count]['details'][$key] = $arr_details[$mm_book_data['id']][$key];
+        		               }
+        		               
+        		               $arr_exists[$mm_book_data['id']] = $mm_book_data['id'];
+        		               
+        		               $booking_count++;
+    		               }
+    		           }
+        		   }
+        		   
+        		   //echo "<pre>";
+        		   //print_r($arr_booking_details);
+        		   //print_r($arr_booking);
+        		   //echo "</pre>";
+        		   //exit;
+        		   if(count($arr_booking) > 0) {
+        		       return $this->respond([
+        		            "booking_details" => $arr_booking,
+        		            "status" => 200,
+            				"message" => "Success",
+            			]);
+        		   }
+    		       else {
+            		    return $this->respond([
+            		        "status" => 404,
+        					"message" => "No Bookings"
+        				]);
+            		}
+    		    }
+    		    else {
+        		    return $this->respond([
+            				'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+            			]);
+        		}
+            }
+        } 
+	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
 }

@@ -41,11 +41,11 @@ function get_login_activity($id)
 
 //---------------------------------------------------GET Search Results STARTS-----------------------------------------------------
 //-----------------------------------------------------------***************------------------------------------------------------------    
-function get_search_results($keyword_id,$city,$current_lat,$current_lng)
+function get_search_results($keyword_id,$city,$current_lat,$current_lng,$subcat_id)
 {
 
     $builder = $this->db->table('sp_location');
-    $builder->select('sp_location.*, user_details.*,sp_det.about_me,qualification,list_profession.name as profession,exp,GROUP_CONCAT(language.name) as "languages_known", 
+    $builder->select('sp_location.*, user_details.*,sp_det.about_me,qualification,list_profession.name as profession,exp,GROUP_CONCAT(distinct language.name) as "languages_known", 
                       per_hour,per_day,min_charges,extra_charge,list_profession.category_id,list_profession.subcategory_id,fcm_token,
                       (3959 * acos (cos ( radians('.$current_lat.') ) * cos( radians( sp_location.latitude ) ) * cos( radians( sp_location.longitude ) - radians('.$current_lng.') )
                           + sin ( radians('.$current_lat.') ) * sin( radians( sp_location.latitude ) ) )) AS distance_miles');
@@ -55,15 +55,20 @@ function get_search_results($keyword_id,$city,$current_lat,$current_lng)
     $builder->join('sp_skill', 'sp_skill.users_id = sp_location.users_id AND sp_skill.users_id = user_details.id');
     $builder->join('tariff', 'tariff.users_id = sp_location.users_id AND tariff.users_id = user_details.id');
     $builder->join('sp_qual', 'sp_qual.id = sp_det.qual_id');
-    $builder->join('list_profession', 'list_profession.id = sp_det.profession_id');
+    $builder->join('sp_profession', 'sp_profession.users_id = sp_location.users_id AND sp_profession.profession_id = sp_skill.profession_id');
+    $builder->join('list_profession', 'list_profession.id = sp_profession.profession_id');
     //$builder->join('subcategories', 'subcategories.id = list_profession.subcategory_id');
-    $builder->join('sp_exp', 'sp_exp.id = sp_det.exp_id');
+    $builder->join('sp_exp', 'sp_exp.id = sp_profession.exp_id');
     $builder->join('city', 'city.id = sp_location.city');
     $builder->join('user_lang_list', 'user_lang_list.users_id = sp_location.users_id');
     $builder->join('language', 'language.id = user_lang_list.language_id');
     $builder->where('sp_location.id in (select max(id) from sp_location group by users_id)');
+    $builder->where('users.online_status_id',1);
     if($keyword_id > 0) {
         $builder->where('keywords_id',$keyword_id);
+    }
+    else { //pick using subcat id
+        $builder->where('list_profession.subcategory_id',$subcat_id);
     }
     $builder->where('city.city',$city);
     $builder->where('sp_activated',3);
@@ -144,9 +149,13 @@ function get_search_results_by_city($city)
 //-----------------------------------------------------------***************------------------------------------------------------------    
 function get_keywords_id($search_phrase_id,$subcat_id)
 {
-
     $builder = $this->db->table('search_phrase');
-    $builder->where(['id' => $search_phrase_id, 'subcategory_id' => $subcat_id]);
+    if($search_phrase_id > 0) {
+        $builder->where(['id' => $search_phrase_id, 'subcategory_id' => $subcat_id]);
+    }    
+    else {
+        $builder->where(['phrase' => $search_phrase_id, 'subcategory_id' => $subcat_id]);
+    }
     $builder->orderBy('id','DESC');
     $query = $builder->get(1);
 
@@ -159,7 +168,8 @@ function get_keywords_id($search_phrase_id,$subcat_id)
         $data = array('phrase' => $search_phrase_id,'keywords_id' => 0,'subcategory_id' => $subcat_id);
         $builder->insert($data);
         
-        return $this->db->insertID();
+        //return $this->db->insertID();
+        return 0;
     }
 }
 //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
@@ -276,10 +286,10 @@ function get_single_move_details($booking_id)
     $builder = $this->db->table('single_move');
     $builder->select('single_move.id,single_move.address_id,single_move.job_description,address.locality,address.latitude,address.longitude,city,state,country,zipcode');
     $builder->join('address', 'address.id = single_move.address_id');
-    $builder->join('country', 'country.id = address.country_id');
-    $builder->join('state', 'state.id = address.state_id');
-    $builder->join('city', 'city.id = address.city_id');
     $builder->join('zipcode', 'zipcode.id = address.zipcode_id');
+	$builder->join('city', 'city.id = zipcode.city_id');
+	$builder->join('state', 'state.id = city.state_id');
+	$builder->join('country', 'country.id = state.country_id');
     $builder->where('single_move.booking_id',$booking_id);
     $result = $builder->get()->getResultArray();
     //echo "<br> str ".$this->db->getLastQuery();exit;
@@ -927,7 +937,8 @@ function get_sp_plan_details($users_id)
 function get_complaints_details($users_id)
 {
     $builder = $this->db->table('complaints');
-    $builder->select('complaints.*,complaint_status.action_taken,complaint_status.status,complaint_status.created_on as complaint_status_date,complaint_status.id as complaint_status_id');
+    $builder->select('complaints.*,complaint_status.action_taken,complaint_status.status,complaint_status.created_on as complaint_status_date,
+                        complaint_status.id as complaint_status_id,assigned_to');
     $builder->join('complaint_status', 'complaint_status.complaints_id = complaints.id',"LEFT");
     $builder->where('users_id',$users_id);
     $builder->where('complaints.id >',0);
@@ -997,7 +1008,7 @@ function get_sp_name_by_booking($booking_id = 0, $sp_id = 0)
 {
 
     $builder = $this->db->table('booking');
-    $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,fcm_token,post_job.title');
+    $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,fcm_token,post_job.title,points_count');
     $builder->join('user_details', 'user_details.id = booking.sp_id');
     $builder->join('users', 'users.users_id = booking.sp_id');
     $builder->join('post_job', 'post_job.booking_id = booking.id','LEFT');
@@ -1076,4 +1087,461 @@ function get_sp_name_by_post($post_job_id = 0, $sp_id = 0)
     }
 }
 //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//Function to check duplicate Address by user ID
+public function get_address_by_user_id($id,$locality,$latitude,$longitude,$city_id,$state_id,$country_id,$zipcode_id)
+{
+    $builder = $this->db->table('address');
+	$builder->select('*');
+	$builder->where('locality', $locality);
+	$builder->where('latitude', $latitude);
+	$builder->where('longitude', $longitude);
+	$builder->where('zipcode_id', $zipcode_id);
+	$builder->where('city_id', $city_id);
+	$builder->where('state_id', $state_id);
+	$builder->where('country_id', $country_id);
+	$builder->where('users_id', $id);
+	$builder->limit(1);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_bank_details($users_id,$account_no)
+{
+    $builder = $this->db->table('user_bank_details');
+    $builder->select('*');
+    $builder->where('users_id',$users_id);
+    //$builder->where('account_name',$account_name);
+    $builder->where('account_no',$account_no);
+    //$builder->where('ifsc_code',$ifsc_code);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_keywords($keyword)
+{
+    $builder = $this->db->table('keywords');
+    $builder->select('*');
+    $builder->where('keyword',$keyword);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET Training Videos STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_training_videos($arr_subcategories_id)
+{
+
+    $builder = $this->db->table('list_video');
+    $builder->select('video_categories.name,description,list_video.*');
+    $builder->join('video_categories', 'video_categories.id = list_video.video_categories_id');
+    $builder->where('subcategories_id',0);
+    if(count($arr_subcategories_id) > 0) {
+        $builder->orWhereIn('subcategories_id',$arr_subcategories_id);
+    }
+    $builder->orderBy("list_video.id","DESC");
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------Get video watch STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_watched_videos($sp_id, $video_id = 0)
+{
+
+    $builder = $this->db->table('video_watch');
+    $builder->select('video_watch.*,video_categories.name,description,list_video.*');
+    $builder->join('list_video', 'list_video.id = video_watch.list_videos_id');
+    $builder->join('video_categories', 'video_categories.id = list_video.video_categories_id');
+    $builder->where('users_id',$sp_id);
+    if($video_id > 0) {
+        $builder->where('list_videos_id',$video_id);
+    }
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET SP Profession category STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_sp_prof_cat($sp_id)
+{
+
+    $builder = $this->db->table('list_profession');
+    $builder->select('list_profession.*');
+    $builder->join('sp_profession', 'sp_profession.profession_id = list_profession.id');
+    $builder->where('sp_profession.users_id',$sp_id);
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+function get_sp_keywords($ar_sp_id)
+{
+
+    $builder = $this->db->table('sp_skill');
+    $builder->select('users_id, GROUP_CONCAT(distinct keyword) as keywords');
+    $builder->join('keywords', 'keywords.id = sp_skill.keywords_id');
+    $builder->whereIn('users_id',$ar_sp_id);
+    $builder->groupBy("sp_skill.users_id");
+    $builder->orderBy('users_id', 'ASC');
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+
+function get_sp_preferred_day_time_slot($sp_id)
+{
+
+    $builder = $this->db->table('user_time_slot');
+    $builder->select('users_id,time_slot_id,min(time_slot_from) as time_slot_from, max(time_slot_from) time_slot_to,day_slot');
+    $builder->where('users_id',$sp_id);
+    $builder->groupBy("day_slot");
+    $builder->orderBy('day_slot', 'ASC');
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//---------------------------------------------------GET Leaderboard details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_leaderboard_details($city,$sp_id)
+{
+
+    $builder = $this->db->table('sp_location');
+    $builder->select('sp_location.*, user_details.*,city.city,users.online_status_id,GROUP_CONCAT(list_profession.name) as profession');
+    $builder->join('user_details', 'user_details.id = sp_location.users_id');
+    $builder->join('users', 'users.users_id = user_details.id AND users.users_id = sp_location.users_id');
+    $builder->join('sp_profession', 'sp_profession.users_id = sp_location.users_id');
+    $builder->join('list_profession', 'list_profession.id = sp_profession.profession_id');
+    $builder->join('city', 'city.id = sp_location.city');
+    $builder->where('sp_location.id in (select max(id) from sp_location group by users_id)');
+    $builder->where('city.id',$city);
+    $builder->where('sp_activated',3);
+    $builder->where('points_count >',0);
+    //$builder->where('sp_location.users_id != ',$sp_id);
+    $builder->groupBy("sp_location.users_id");
+    $builder->orderBy("points_count","DESC");
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_sp_leaderboard_details($sp_id)
+{
+
+    $builder = $this->db->table('sp_location');
+    $builder->select('fname,lname,profile_pic,points_count,GROUP_CONCAT(list_profession.name) as profession');
+    $builder->join('user_details', 'user_details.id = sp_location.users_id');
+    $builder->join('users', 'users.users_id = user_details.id AND users.users_id = sp_location.users_id');
+    $builder->join('sp_profession', 'sp_profession.users_id = sp_location.users_id');
+    $builder->join('list_profession', 'list_profession.id = sp_profession.profession_id');
+    $builder->where('sp_location.id in (select max(id) from sp_location group by users_id)');
+    $builder->where('sp_activated',3);
+    $builder->where('sp_location.users_id = ',$sp_id);
+    $builder->groupBy("sp_location.users_id");
+    $builder->orderBy("points_count","DESC");
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_sp_review_data($arr_sp_id)
+{
+
+    $builder = $this->db->table('user_review');
+    $builder->select('sum(average_review) as sum_average_review,count(id) as total_people,sp_id');
+    $builder->whereIn('sp_id',$arr_sp_id);
+    $builder->groupBy("sp_id");
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_sp_booking_count($sp_id)
+{
+
+    $builder = $this->db->table('booking');
+    $builder->select('count(id) as booking_count');
+    $builder->where('sp_id',$sp_id);
+    $builder->groupBy("sp_id");
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result[0]['booking_count']; 
+    }
+    else {
+        return 0; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_sp_booking_completed($sp_id)
+{
+
+    $builder = $this->db->table('booking');
+    $builder->select('count(id) as booking_completed,sum(amount) as amount');
+    $builder->where('sp_id',$sp_id);
+    $builder->where('completed_at != "0000-00-00 00:00:00"');
+    $builder->groupBy("sp_id");
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result[0]; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_sp_bids_count($sp_id)
+{
+
+    $builder = $this->db->table('bid_det');
+    $builder->select('count(id) as bids_count');
+    $builder->where('users_id',$sp_id);
+    $builder->groupBy("users_id");
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result[0]['bids_count']; 
+    }
+    else {
+        return 0; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_sp_bids_awarded($sp_id)
+{
+
+    $builder = $this->db->table('bid_det');
+    $builder->select('count(id) as bids_awarded');
+    $builder->where('users_id',$sp_id);
+    $builder->where('status_id',27); //Awarded
+    $builder->groupBy("users_id");
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result[0]['bids_awarded']; 
+    }
+    else {
+        return 0; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET User Single Move Booking Details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_user_upcoming_single_move_booking_details($users_id = 0,$sp_id = 0)
+{
+
+    $builder = $this->db->table('booking');
+    $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,
+                    time_slot.from,estimate_type.name as estimate_type,single_move.job_description,address.locality,address.latitude,
+                    address.longitude,city,state,country,zipcode,profile_pic,estimate_type.name as estimate_type,extra_demand.amount as extra_demand_total_amount,
+                    material_advance,technician_charges,expenditure_incurred');
+    $builder->join('time_slot', 'time_slot.id = booking.time_slot_id');
+    $builder->join('estimate_type', 'estimate_type.id = booking.estimate_type_id');
+    $builder->join('single_move', 'single_move.booking_id = booking.id');
+    $builder->join('address', 'address.id = single_move.address_id');
+    $builder->join('country', 'country.id = address.country_id');
+    $builder->join('state', 'state.id = address.state_id');
+    $builder->join('city', 'city.id = address.city_id');
+    $builder->join('zipcode', 'zipcode.id = address.zipcode_id');
+    $builder->join('extra_demand', 'extra_demand.booking_id = booking.id','LEFT');
+    $builder->join('transaction', 'transaction.booking_id = booking.id');
+    $builder->where('payment_status','Success');
+    $builder->where('name_id',2); //Booking Amount
+    $builder->where('started_at','0000-00-00 00:00:00'); 
+    $builder->where('completed_at','0000-00-00 00:00:00'); 
+    $builder->where('scheduled_date > ',date('Y-m-d')); 
+    
+    if($sp_id > 0) {
+        $builder->join('user_details', 'user_details.id = booking.users_id','LEFT');
+        $builder->where('booking.sp_id',$sp_id);
+    }
+    $builder->where('booking.category_id',1);
+    $result = $builder->get()->getResultArray();
+    echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET User Blue Collar Booking Details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_user_upcoming_blue_collar_booking_details($users_id = 0,$sp_id = 0)
+{
+
+    $builder = $this->db->table('booking');
+    $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,
+                    time_slot.from,estimate_type.name as estimate_type,blue_collar.job_description,profile_pic,estimate_type.name as estimate_type,
+                    extra_demand.amount as extra_demand_total_amount,material_advance,technician_charges,expenditure_incurred');
+    $builder->join('time_slot', 'time_slot.id = booking.time_slot_id');
+    $builder->join('estimate_type', 'estimate_type.id = booking.estimate_type_id');
+    $builder->join('blue_collar', 'blue_collar.booking_id = booking.id');
+    $builder->join('extra_demand', 'extra_demand.booking_id = booking.id','LEFT');
+    $builder->join('transaction', 'transaction.booking_id = booking.id');
+    if($sp_id > 0) {
+        $builder->join('user_details', 'user_details.id = booking.users_id','LEFT');
+        $builder->where('booking.sp_id',$sp_id);
+        $builder->where('started_at','0000-00-00 00:00:00'); 
+        $builder->where('completed_at','0000-00-00 00:00:00'); 
+        $builder->where('scheduled_date > ',date('Y-m-d H:i:s')); 
+    }
+    $builder->where('booking.category_id',2);
+    $builder->where('payment_status','Success');
+    $builder->where('name_id',2); //Booking Amount
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+//---------------------------------------------------GET User Multi Move Booking Details STARTS-----------------------------------------------------
+//-----------------------------------------------------------***************------------------------------------------------------------    
+function get_user_upcoming_multi_move_booking_details($users_id = 0,$sp_id = 0)
+{
+
+    $builder = $this->db->table('booking');
+    $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,
+                    time_slot.from,estimate_type.name as estimate_type,multi_move.sequence_no,job_description,weight_type,address.locality,address.latitude,
+                    address.longitude,city,state,country,zipcode,profile_pic,estimate_type.name as estimate_type,
+                    extra_demand.amount as extra_demand_total_amount,material_advance,technician_charges,expenditure_incurred');
+    $builder->join('time_slot', 'time_slot.id = booking.time_slot_id');
+    $builder->join('estimate_type', 'estimate_type.id = booking.estimate_type_id');
+    $builder->join('multi_move', 'multi_move.booking_id = booking.id');
+    $builder->join('address', 'address.id = multi_move.address_id');
+    $builder->join('country', 'country.id = address.country_id');
+    $builder->join('state', 'state.id = address.state_id');
+    $builder->join('city', 'city.id = address.city_id');
+    $builder->join('zipcode', 'zipcode.id = address.zipcode_id');
+    $builder->join('extra_demand', 'extra_demand.booking_id = booking.id','LEFT');
+    $builder->join('transaction', 'transaction.booking_id = booking.id');
+    if($sp_id > 0) {
+        $builder->join('user_details', 'user_details.id = booking.users_id','LEFT');
+        $builder->where('booking.sp_id',$sp_id);
+        $builder->where('started_at','0000-00-00 00:00:00'); 
+        $builder->where('completed_at','0000-00-00 00:00:00'); 
+        $builder->where('scheduled_date > ',date('Y-m-d H:i:s')); 
+    }
+    $builder->where('booking.category_id',3);
+    $builder->where('name_id',2); //Booking Amount
+    $builder->where('payment_status','Success');
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
+    $count = count($result);
+        
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
+//--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+
 }

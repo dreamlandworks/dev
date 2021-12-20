@@ -33,11 +33,11 @@ class Activation extends ResourceController
             //getting JSON data from API
             $json = $this->request->getJSON(true);
             
-            if(!array_key_exists('user_id',$json) || !array_key_exists('experience',$json) || !array_key_exists('about_me',$json) 
-                            || !array_key_exists('tariff_per_hour',$json) || !array_key_exists('tariff_per_day',$json) || !array_key_exists('tariff_min_charges',$json)
-                            || !array_key_exists('tariff_extra_charges',$json) || !array_key_exists('id_proof',$json) 
+            if(!array_key_exists('user_id',$json) || !array_key_exists('about_me',$json) 
+                            /*|| !array_key_exists('tariff_per_hour',$json) || !array_key_exists('tariff_per_day',$json) || !array_key_exists('tariff_min_charges',$json)
+                            || !array_key_exists('tariff_extra_charges',$json) || !array_key_exists('id_proof',$json) */
                             || !array_key_exists('profession_responses',$json) || !array_key_exists('qualification_responses',$json) || !array_key_exists('lang_responses',$json)
-                            || !array_key_exists('keywords_responses',$json) || !array_key_exists('timeslot_responses',$json) || !array_key_exists('key',$json)
+                            || !array_key_exists('timeslot_responses',$json) || !array_key_exists('key',$json)
                             ) {
     		    return $this->respond([
         				'status' => 403,
@@ -53,6 +53,7 @@ class Activation extends ResourceController
     		    if($key == $api_key) {
     		        $common = new CommonModel();
     		        $sp = new ServiceProviderModel();
+    		        $misc_model = new MiscModel();
     		        
     		        $sp_det_id = 0;
     			    $tariff_id = 0;
@@ -63,41 +64,112 @@ class Activation extends ResourceController
     		        if ($sp_dtails != 'failure') {
             			foreach($sp_dtails as $details) {
             			    $sp_det_id = $details['sp_det_id'];
-            			    $tariff_id = $details['tariff_id'];
             			    $sp_verify_id = $details['sp_verify_id'];
             			}
             		}
     		        
     		        //Check whether Profession exists in list_profession, if not create
-    		        $act_model = new ActivationModel;
-					
-					if($json['profession_responses'][0]['prof_id'] == 0){
-						
-						$prof_res = $common->get_details_dynamically('list_profession','name',$json['profession_responses'][0]['name']);
-						
-						if($prof_res == 'failure'){
-							$arr_ins_profession_det = array(
-    		                'name' => $json['profession_responses'][0]['name'],
-							'subcategory_id' => 0
-        		        );
-																	
-							$json['profession_responses'][0]['prof_id'] = $common->insert_records_dynamically('list_profession', $arr_ins_profession_det);
-						
-						}else{
-							
-							$json['profession_responses'][0]['prof_id'] = $prof_res[0]['id'];
-						}
-					}
-					
-					
     		        
-    		        //Check whether Qualification exists in sp_qual, if not create
+    		        /*echo "<pre>";
+    		        print_r($json['profession_responses']);
+    		        echo "</pre>";
+    		        exit;*/
+    		        if(count($json['profession_responses']) > 0) {
+    		            //Delete the old professions
+    		            $common->delete_records_dynamically('sp_profession', 'users_id', $json['user_id']);
+    		            $common->delete_records_dynamically('sp_skill', 'users_id', $json['user_id']);
+    		            $common->delete_records_dynamically('tariff', 'users_id', $json['user_id']);
+    		            
+    		            foreach($json['profession_responses'] as $pkey => $arr_prof_data) {
+    		                $prof_id = $arr_prof_data['prof_id'];
+    		                $name = $arr_prof_data['name'];
+    		                $exp_id = $arr_prof_data['experience'];
+    		                
+    		                /*echo "<pre>";
+            		        print_r($arr_prof_data['keywords_responses']);
+            		        echo "</pre>";
+            		        exit;*/
+    		                
+    						if($prof_id == 0){
+    							$arr_ins_profession_det = array(
+            		                'name' => $name,
+            		                'subcategory_id' => 0
+                		        );
+    																	
+    							$prof_id = $common->insert_records_dynamically('list_profession', $arr_ins_profession_det);
+    						
+    						}
+    						
+    						$arr_ins_sp_profession = array(
+        		                'users_id' => $json['user_id'],
+    							'profession_id' => $prof_id,
+    							'exp_id' => $exp_id
+            		        );
+							
+							$common->insert_records_dynamically('sp_profession', $arr_ins_sp_profession);
+							//echo "<br> prof_id ".$prof_id;
+							
+							
+							//*******************Keywords
+							//Insert into keywords
+							foreach($arr_prof_data['keywords_responses'] as $keywords_key => $keywords_data) {
+                                $keyword_id = $keywords_data['keyword_id'];
+                                $key_res = $misc_model->get_keywords($keywords_data['name']);
+        							if($key_res == 'failure') { //Insert into keywords :: keyword,subcategories_id
+            
+                                        //Check whether keyword exists in keywords, if not create
+                        		        $arr_ins_keywords_master_det = array(
+                    		                'keyword' => $keywords_data['name'],
+                    		                'status' => 'Inactive'
+                        		        );
+                        		        /*echo "<pre>";
+                        		        print_r($arr_ins_keywords_master_det);
+                        		        echo  "</pre>";*/
+                        		        
+                        		        $keyword_id = $common->insert_records_dynamically('keywords', $arr_ins_keywords_master_det);
+                        		        //echo "<br> keyword id ".$keyword_id;
+                                    }else{
+            							$keyword_id = $key_res[0]['id'];
+            						}
+                                
+                                //Build data Array
+            		            $arr_keyword_det = array(
+            		                'users_id' => $json['user_id'],
+            		                'keywords_id' => $keyword_id,
+            		                'profession_id' => $prof_id,
+            		            );
+                		        
+                		        $sp_skill_id = $common->insert_records_dynamically('sp_skill', $arr_keyword_det);
+                            }
+                            
+                            //*********************Tariff
+                            //Insert into tariff ::	per_hour,per_day,min_charges,extra_charge,users_id
+                            $arr_tariff_det = array(
+        		                'users_id' => $json['user_id'],
+        		                'per_hour' => $arr_prof_data['tariff_per_hour'],
+        		                'per_day' => $arr_prof_data['tariff_per_day'],
+        		                'min_charges' => $arr_prof_data['tariff_min_charges'],
+        		                'extra_charge' => $arr_prof_data['tariff_extra_charges'],
+        		                'profession_id' => $prof_id
+            		        );
+            		        /*echo                            "<pre>";
+            		        print_r($arr_ins_tariff_det);
+            		        echo                              "</pre>";*/
+            		        //exit;
+            		        
+            		        $tariff_id = $common->insert_records_dynamically('tariff', $arr_tariff_det);
+                            //echo "<br>".$common->getLastQuery();
+                            //echo '<br> sp_tariff_id  '.$sp_tariff_id;    
+                        }
+    		        }
+					
+					//Check whether Qualification exists in sp_qual, if not create
     		        
 					if($json['qualification_responses'][0]['qual_id'] == 0) {
 						
 						$qual_res = $common->get_details_dynamically('sp_qual','qualification',$json['qualification_responses'][0]['name']);
 						
-						if($prof_res == 'failure'){
+						if($qual_res == 'failure'){
 							$arr_ins_qual_det = array(
     		                'qualification' => $json['qualification_responses'][0]['name']
 							      );
@@ -113,9 +185,9 @@ class Activation extends ResourceController
     		        
     		        //Build data Array
 		            $arr_sp_det = array(
-		                'profession_id' => $json['profession_responses'][0]['prof_id'],
+		                //'profession_id' => $json['profession_responses'][0]['prof_id'],
 		                'qual_id' => $json['qualification_responses'][0]['qual_id'],
-		                'exp_id' => $json['experience'],
+		                //'exp_id' => $json['experience'],
 		                'about_me' => $json['about_me'],
     		        );
     		        
@@ -160,76 +232,6 @@ class Activation extends ResourceController
         		        $user_lang_list_id = $common->insert_records_dynamically('user_lang_list', $arr_lang_det);
                         //echo '<br> user_lang_list_id  '.$user_lang_list_id;
                     }
-                    
-                    //*******************Keywords
-                    
-                    $common->delete_records_dynamically('sp_skill', 'users_id', $json['user_id']);
-                    
-                    foreach($json['keywords_responses'] as $keywords_key => $keywords_data) {
-                        $keyword_id = $keywords_data['keyword_id'];
-                        if($keywords_data['keyword_id'] == 0){
-							$key_res = $common->get_details_dynamically('keywords','keyword',$keywords_data['name']);
-							if($key_res == 'failure') { //Insert into keywords :: keyword,subcategories_id
-    
-                                //Check whether keyword exists in keywords, if not create
-                		        $arr_ins_keywords_master_det = array(
-            		                'keyword' => $keywords_data['name'],
-            		                'profession_id' => $json['profession_responses'][0]['prof_id'],
-    								//'subcategories_id' => 6, //Temporary subvategory, needs admin approval
-            		                'status' => 'Inactive'
-                		        );
-                		        /*echo "<pre>";
-                		        print_r($arr_ins_keywords_master_det);
-                		        echo  "</pre>";*/
-                		        
-                		        $keyword_id = $common->insert_records_dynamically('keywords', $arr_ins_keywords_master_det);
-                		        //echo "<br> keyword id ".$keyword_id;
-                            }else{
-    							$keyword_id = $key_res[0]['id'];
-    						}
-						}
-                        
-                        //Build data Array
-    		            $arr_keyword_det = array(
-    		                'users_id' => $json['user_id'],
-    		                'keywords_id' => $keyword_id,
-    		            );
-        		        
-        		        $sp_skill_id = $common->insert_records_dynamically('sp_skill', $arr_keyword_det);
-                        
-                        /*echo                        "<pre>";
-        		        print_r($arr_ins_keyword_det);
-        		        echo                          "</pre>";*/
-        		        //echo '<br> user_keyword_list_id  '.$user_keyword_list_id;
-                    }
-                    
-                    //*********************Tariff
-                    //Insert into tariff ::	per_hour,per_day,min_charges,extra_charge,users_id
-
-    		        $arr_tariff_det = array(
-		                'users_id' => $json['user_id'],
-		                'per_hour' => $json['tariff_per_hour'],
-		                'per_day' => $json['tariff_per_day'],
-		                'min_charges' => $json['tariff_min_charges'],
-		                'extra_charge' => $json['tariff_extra_charges'],
-    		        );
-    		        /*echo                            "<pre>";
-    		        print_r($arr_ins_tariff_det);
-    		        echo                              "</pre>";*/
-    		        //exit;
-    		        
-    		        if($tariff_id == 0) {
-    		            $arr_tariff_det['users_id'] = $json['user_id'];
-    		            
-    		            $tariff_id = $common->insert_records_dynamically('tariff', $arr_tariff_det);
-    		        }
-    		        else { //Update
-        		        $common->update_records_dynamically('tariff', $arr_tariff_det, 'users_id', $json['user_id']);
-        		    }
-                        
-                    
-                    //echo "<br>".$common->getLastQuery();
-                    //echo '<br> sp_tariff_id  '.$sp_tariff_id;
                     
                     //*****************user_time_slot
                     //Get master time slot
@@ -307,31 +309,10 @@ class Activation extends ResourceController
                         //echo '<br> user_timeslot_list_id  '.$user_timeslot_list_id;
     		        }
     		        
-                    //*********************ID Proof
-                    $id_proof_file = $json['id_proof'];
-                    if ($id_proof_file != null) {
-                        $image = generateDynamicImage("images/id_proof",$id_proof_file);
-                            
-                        $arr_verify_det = array(
-    		                'users_id' => $json['user_id'],
-    		                'id_card' => $image,
-    		            );
-    		            
-    		            if($sp_verify_id == 0) {
-    		                $arr_verify_det['users_id'] = $json['user_id'];
-    		                $user_id_proof_id = $common->insert_records_dynamically('sp_verify', $arr_verify_det);
-    		            }
-                        else { //Update
-            		        $common->update_records_dynamically('sp_verify', $arr_verify_det, 'users_id', $json['user_id']);
-            		    }
-                        
-                        //echo '<br> user_id_proof_id  '.$user_id_proof_id;
-                    }
-                    
                     //update users activation code
-                    $arr_users_update = array('activation_code' => 1);
+                    //$arr_users_update = array('activation_code' => 1);
                     
-                    $common->update_records_dynamically('users', $arr_users_update, 'users_id', $json['user_id']);
+                    //$common->update_records_dynamically('users', $arr_users_update, 'users_id', $json['user_id']);
                     
                     return $this->respond([
                           "status" => 200,
@@ -463,16 +444,89 @@ class Activation extends ResourceController
     		        $ar_sp_id[$sp_id] = $sp_id;
     		        $total_days = 0;
     		        $weekend_check = 0;
-    		        $slot_selection =                 "";
+    		        $slot_selection =  "";
     		        
     		        //Query all the tables to check whether data exists:: Save/Update operation
-    		        $sp_details = $sp->get_sp_professional_details($sp_id);
+    		        $sp_details = $sp->get_sp_details($sp_id);
+    		        
+    		        //Get Professional details
+    		        
+    		        $arr_professional_details = array();
+    		        $arr_skills_details = array();
+    		        
     		        //Get Skills details
-	                $arr_skills_details = $misc_model->get_sp_skills($sp_id);
-	                //Get Language details
+	                $arr_skills_list = $sp->get_sp_professional_skills($sp_id);
+	                if($arr_skills_list != 'failure') {
+	                    foreach($arr_skills_list as $skey => $skill_data) {
+	                        $arr_skills_details[$skill_data['profession_id']][$skill_data['keywords_id']] = $skill_data['keyword'];
+	                    }
+	                }
+	                
+	                /*echo "<pre>";
+	                print_r($arr_skills_details);
+	                echo "</pre>";*/
+    		        
+	                $arr_professional_list = $sp->get_sp_professional_details($sp_id);
+	                if($arr_professional_list != 'failure') {
+	                    foreach($arr_professional_list as $key => $prof_data) {
+	                        $arr_professional_details[$key]['profession_id'] = $prof_data['profession_id'];
+	                        $arr_professional_details[$key]['category_id'] = $prof_data['category_id'];
+	                        $arr_professional_details[$key]['tariff_id'] = $prof_data['tariff_id'];
+	                        $arr_professional_details[$key]['profession_name'] = $prof_data['profession_name'];
+	                        $arr_professional_details[$key]['exp'] = $prof_data['exp'];
+	                        $arr_professional_details[$key]['tariff_per_hour'] = $prof_data['tariff_per_hour'];
+	                        $arr_professional_details[$key]['tariff_per_day'] = $prof_data['tariff_per_day'];
+	                        $arr_professional_details[$key]['tariff_min_charges'] = $prof_data['tariff_min_charges'];
+	                        $arr_professional_details[$key]['tariff_extra_charges'] = $prof_data['tariff_extra_charges'];
+	                        $arr_professional_details[$key]['skills'] = array();
+	                        
+	                        if(array_key_exists($prof_data['profession_id'],$arr_skills_details)) {
+	                            foreach($arr_skills_details[$prof_data['profession_id']] as $keywords_id => $keyword) {
+		                           $arr_professional_details[$key]['skills'][] = array('keywords_id' => $keywords_id,'keyword' => $keyword);
+		                        }
+	                            
+	                            /*echo "<br> profession_id ".$prof_data['profession_id'];
+	                            echo "<pre>";
+            	                print_r($arr_skills_details[$prof_data['profession_id']]);
+            	                echo "</pre>";*/
+	                        }
+	                    }
+	                }
+    		        
+    		        //Get Language details
 	                $arr_language_details = $misc_model->get_sp_lang($sp_id);
+	                
+	                $arr_day_time_slots = array();
+	                $arr_preferred_time_slots = array();
+	                
 	                //Get SP's preferred day/timeslot data
-                    $arr_preferred_time_slots_list = $misc_model->get_sp_preferred_time_slot($ar_sp_id);
+	                $arr_preferred_time_slots_list = $misc_model->get_sp_preferred_day_time_slot($sp_id);
+                    if($arr_preferred_time_slots_list != 'failure') {
+                        foreach($arr_preferred_time_slots_list as $slots) {
+                            $arr_day_time_slots[$slots['time_slot_id']]['day_slots'][] =  $slots['day_slot'];
+                            $arr_day_time_slots[$slots['time_slot_id']]['time_slot_from'] =  $slots['time_slot_from'];
+                            $arr_day_time_slots[$slots['time_slot_id']]['time_slot_to'] =  $slots['time_slot_to'];
+                        }
+                    }
+                    
+                    $i = 0;
+                    if(count($arr_day_time_slots) > 0) {
+                        foreach($arr_day_time_slots as $time_slot_id => $sdata) {
+                            $arr_preferred_time_slots[$i]['time_slot_id'] = $time_slot_id;
+                            $arr_preferred_time_slots[$i]['day_slots'] = implode(",",$sdata['day_slots']);
+                            $arr_preferred_time_slots[$i]['time_slot_from'] = $sdata['time_slot_from'];
+                            $arr_preferred_time_slots[$i]['time_slot_to'] = $sdata['time_slot_to'];
+                            
+                            $i++;
+                        }
+                    }
+                    
+	                /*echo "<pre>";
+	                print_r($arr_day_time_slots);
+	                print_r($arr_preferred_time_slots);
+	                echo "</pre>";
+	                exit;*/
+                    /*$arr_preferred_time_slots_list = $misc_model->get_sp_preferred_time_slot($ar_sp_id);
                     if($arr_preferred_time_slots_list != 'failure') {
                         foreach($arr_preferred_time_slots_list as $slots) {
                             if($slots['day_slot'] == 1) {
@@ -484,22 +538,23 @@ class Activation extends ResourceController
                     }
                     
                     if($total_days == 8 && $weekend_check == 1) {
-                        $slot_selection =             "Weekends";
+                        $slot_selection = "Weekends";
                     }
                     else if($total_days == 28 && $weekend_check == 0) {
-                        $slot_selection =             "Everyday";
+                        $slot_selection = "Everyday";
                     }
                     else if($total_days == 20 && $weekend_check == 0) {
-                        $slot_selection =             "Weekday";
-                    }
+                        $slot_selection = "Weekday";
+                    }*/
     		        
     		        if($sp_details != 'failure') {
     		            return $this->respond([
         		                                      "sp_details" => $sp_details[0],
-        		                                      "skills" => ($arr_skills_details != 'failure') ? $arr_skills_details : array(),
+        		                                      "profession" => $arr_professional_details,
+        		                                      //"skills" => ($arr_skills_details != 'failure') ? $arr_skills_details : array(),
         		                                      "language" => ($arr_language_details != 'failure') ? $arr_language_details : array(),
-        		                                      "preferred_time_slots" => ($arr_preferred_time_slots_list != 'failure') ? $arr_preferred_time_slots_list : array(),
-        		                                      "slot_selection" => $slot_selection,
+        		                                      "preferred_time_slots" => $arr_preferred_time_slots,
+        		                                      //"slot_selection" => $slot_selection,
         					                          "status" => 200,
         					                          "message" => "Success"
         				]);
@@ -521,16 +576,16 @@ class Activation extends ResourceController
         if ($this->request->getMethod() != 'post') {
 
             $this->respond([
-                                                      "status" => 405,
-                                                      "message" => "Method Not Allowed"
+              "status" => 405,
+              "message" => "Method Not Allowed"
             ]);
         } else {
             //getting JSON data from API
             $json = $this->request->getJSON(true);
             
-            if(!array_key_exists('user_id',$json) || !array_key_exists('experience',$json) || !array_key_exists('about_me',$json) 
+            if(!array_key_exists('user_id',$json) || !array_key_exists('about_me',$json) 
                             || !array_key_exists('profession_responses',$json) || !array_key_exists('qualification_responses',$json) || !array_key_exists('lang_responses',$json)
-                            || !array_key_exists('keywords_responses',$json) || !array_key_exists('key',$json)
+                            || !array_key_exists('key',$json)
                             ) {
     		    return $this->respond([
         				'status' => 403,
@@ -546,6 +601,7 @@ class Activation extends ResourceController
     		    if($key == $api_key) {
     		        $common = new CommonModel();
     		        $sp = new ServiceProviderModel();
+    		        $misc_model = new MiscModel();
     		        
     		        $sp_det_id = 0;
     			    $tariff_id = 0;
@@ -556,18 +612,109 @@ class Activation extends ResourceController
     		        if ($sp_dtails != 'failure') {
             			foreach($sp_dtails as $details) {
             			    $sp_det_id = $details['sp_det_id'];
-            			    $tariff_id = $details['tariff_id'];
             			    $sp_verify_id = $details['sp_verify_id'];
             			}
             		}
+            		
+            		/*echo "<pre>";
+            		print_r($sp_dtails);
+            		echo "</pre>";
+            		exit;*/
     		        
     		        //Check whether Profession exists in list_profession, if not create
-    		        if($json['profession_responses'][0]['prof_id'] == 0) {
-    		            $arr_ins_profession_det = array(
-    		                'name' => $json['profession_responses'][0]['name'],
-							'subcategory_id' => 0
-        		        );
-        		        $json['profession_responses'][0]['prof_id'] = $common->insert_records_dynamically('list_profession', $arr_ins_profession_det);
+    		        
+    		        /*echo "<pre>";
+    		        print_r($json['profession_responses']);
+    		        echo "</pre>";
+    		        exit;*/
+    		        if(count($json['profession_responses']) > 0) {
+    		            //Delete the old professions
+    		            $common->delete_records_dynamically('sp_profession', 'users_id', $json['user_id']);
+    		            $common->delete_records_dynamically('sp_skill', 'users_id', $json['user_id']);
+    		            $common->delete_records_dynamically('tariff', 'users_id', $json['user_id']);
+    		            
+    		            foreach($json['profession_responses'] as $pkey => $arr_prof_data) {
+    		                $prof_id = $arr_prof_data['prof_id'];
+    		                $name = $arr_prof_data['name'];
+    		                $exp_id = $arr_prof_data['experience'];
+    		                
+    		                /*echo "<pre>";
+            		        print_r($arr_prof_data['keywords_responses']);
+            		        echo "</pre>";
+            		        exit;*/
+    		                
+    						if($prof_id == 0){
+    							$arr_ins_profession_det = array(
+            		                'name' => $name,
+            		                'profession_id' => $prof_id,
+        							'subcategory_id' => 0
+                		        );
+    																	
+    							$prof_id = $common->insert_records_dynamically('list_profession', $arr_ins_profession_det);
+    						
+    						}
+    						
+    						$arr_ins_sp_profession = array(
+        		                'users_id' => $json['user_id'],
+    							'profession_id' => $prof_id,
+    							'exp_id' => $exp_id
+            		        );
+							
+							$common->insert_records_dynamically('sp_profession', $arr_ins_sp_profession);
+							//echo "<br> prof_id ".$prof_id;
+							
+							
+							//*******************Keywords
+							//Insert into keywords
+							foreach($arr_prof_data['keywords_responses'] as $keywords_key => $keywords_data) {
+                                $keyword_id = $keywords_data['keyword_id'];
+                                $key_res = $misc_model->get_keywords($keywords_data['name']);
+        							if($key_res == 'failure') { //Insert into keywords :: keyword,subcategories_id
+            
+                                        //Check whether keyword exists in keywords, if not create
+                        		        $arr_ins_keywords_master_det = array(
+                    		                'keyword' => $keywords_data['name'],
+                    		                'status' => 'Inactive'
+                        		        );
+                        		        /*echo "<pre>";
+                        		        print_r($arr_ins_keywords_master_det);
+                        		        echo  "</pre>";*/
+                        		        
+                        		        $keyword_id = $common->insert_records_dynamically('keywords', $arr_ins_keywords_master_det);
+                        		        //echo "<br> keyword id ".$keyword_id;
+                                    }else{
+            							$keyword_id = $key_res[0]['id'];
+            						}
+                                
+                                //Build data Array
+            		            $arr_keyword_det = array(
+            		                'users_id' => $json['user_id'],
+            		                'keywords_id' => $keyword_id,
+            		                'profession_id' => $prof_id,
+            		            );
+                		        
+                		        $sp_skill_id = $common->insert_records_dynamically('sp_skill', $arr_keyword_det);
+                            }
+                            
+                            //*********************Tariff
+                            //Insert into tariff ::	per_hour,per_day,min_charges,extra_charge,users_id
+                            $arr_tariff_det = array(
+        		                'users_id' => $json['user_id'],
+        		                'per_hour' => $arr_prof_data['tariff_per_hour'],
+        		                'per_day' => $arr_prof_data['tariff_per_day'],
+        		                'min_charges' => $arr_prof_data['tariff_min_charges'],
+        		                'extra_charge' => $arr_prof_data['tariff_extra_charges'],
+        		                'profession_id' => $prof_id
+            		        );
+            		        /*echo "<pre>";
+            		        print_r($arr_ins_tariff_det);
+            		        echo "</pre>";*/
+            		        //exit;
+            		        
+            		        $tariff_id = $common->insert_records_dynamically('tariff', $arr_tariff_det);
+                            //echo "<br>".$common->getLastQuery();
+                            //echo '<br> sp_tariff_id  '.$sp_tariff_id;    
+                        }
     		        }
     		        
     		        //Check whether Qualification exists in sp_qual, if not create
@@ -580,9 +727,7 @@ class Activation extends ResourceController
     		        
     		        //Build data Array
 		            $arr_sp_det = array(
-		                'profession_id' => $json['profession_responses'][0]['prof_id'],
 		                'qual_id' => $json['qualification_responses'][0]['qual_id'],
-		                'exp_id' => $json['experience'],
 		                'about_me' => $json['about_me'],
     		        );
     		        
@@ -623,46 +768,9 @@ class Activation extends ResourceController
                         //echo '<br> user_lang_list_id  '.$user_lang_list_id;
                     }
                     
-                    //*******************Keywords
-                    
-                    $common->delete_records_dynamically('sp_skill', 'users_id', $json['user_id']);
-                    
-                    foreach($json['keywords_responses'] as $keywords_key => $keywords_data) {
-                        $keyword_id = $keywords_data['keyword_id'];
-                        if($keywords_data['keyword_id'] == 0) { //Insert into keywords :: keyword,subcategories_id
-
-                            //Check whether keyword exists in keywords, if not create
-            		        $arr_ins_keywords_master_det = array(
-        		                'keyword' => $keywords_data['name'],
-        		                'profession_id' => $json['profession_responses'][0]['prof_id'],
-								//'subcategories_id' => 6, //Temporary subcategory, needs admin approval
-        		                'status' => 'Inactive'
-            		        );
-            		        /*echo "<pre>";
-            		        print_r($arr_ins_keywords_master_det);
-            		        echo                      "</pre>";*/
-            		        
-            		        $keyword_id = $common->insert_records_dynamically('keywords', $arr_ins_keywords_master_det);
-            		        //echo                    "<br> keyword id ".$keyword_id;
-                        }
-                        
-                        //Build data Array
-    		            $arr_keyword_det = array(
-    		                'users_id' => $json['user_id'],
-    		                'keywords_id' => $keyword_id,
-    		            );
-        		        
-        		        $sp_skill_id = $common->insert_records_dynamically('sp_skill', $arr_keyword_det);
-                        
-                        /*echo                        "<pre>";
-        		        print_r($arr_ins_keyword_det);
-        		        echo                          "</pre>";*/
-        		        //echo '<br> user_keyword_list_id  '.$user_keyword_list_id;
-                    }
-                    
                     return $this->respond([
-    					                              "status" => 200,
-    					                              "message" => "Success"
+                        "status" => 200,
+                        "message" => "Success"
     				]);
     		        
     		    }
@@ -689,8 +797,10 @@ class Activation extends ResourceController
             //getting JSON data from API
             $json = $this->request->getJSON(true);
             
-            if(!array_key_exists('user_id',$json) || !array_key_exists('tariff_per_hour',$json) || !array_key_exists('tariff_per_day',$json) || !array_key_exists('tariff_min_charges',$json)
-                            || !array_key_exists('tariff_extra_charges',$json) || !array_key_exists('timeslot_responses',$json) || !array_key_exists('key',$json)
+            if(!array_key_exists('user_id',$json) 
+            /*|| !array_key_exists('tariff_per_hour',$json) || !array_key_exists('tariff_per_day',$json) || !array_key_exists('tariff_min_charges',$json)
+                            || !array_key_exists('tariff_extra_charges',$json)*/
+                || !array_key_exists('timeslot_responses',$json) || !array_key_exists('key',$json)
                             ) {
     		    return $this->respond([
         				'status' => 403,
@@ -705,7 +815,7 @@ class Activation extends ResourceController
     		    
     		    if($key == $api_key) {
     		        $common = new CommonModel();
-    		        $sp = new ServiceProviderModel();
+    		        /*$sp = new ServiceProviderModel();
     		        
     		        $sp_det_id = 0;
     			    $tariff_id = 0;
@@ -729,23 +839,23 @@ class Activation extends ResourceController
 		                'per_day' => $json['tariff_per_day'],
 		                'min_charges' => $json['tariff_min_charges'],
 		                'extra_charge' => $json['tariff_extra_charges'],
-    		        );
+    		        );*/
     		        /*echo                            "<pre>";
     		        print_r($arr_ins_tariff_det);
     		        echo                              "</pre>";*/
     		        //exit;
     		        
-    		        if($tariff_id == 0) {
+    		        /*if($tariff_id == 0) {
     		            $arr_tariff_det['users_id'] = $json['user_id'];
     		            
     		            $tariff_id = $common->insert_records_dynamically('tariff', $arr_tariff_det);
     		        }
     		        else { //Update
         		        $common->update_records_dynamically('tariff', $arr_tariff_det, 'users_id', $json['user_id']);
-        		    }
+        		    }*/
                         
                     
-                    //echo                            "<br>".$common->getLastQuery();
+                    //echo "<br>".$common->getLastQuery();
                     //echo '<br> sp_tariff_id  '.$sp_tariff_id;
                     
                     //*****************user_time_slot
@@ -782,6 +892,95 @@ class Activation extends ResourceController
                     return $this->respond([
     					                              "status" => 200,
     					                              "message" => "Success"
+    				]);
+    		        
+    		    }
+    		    else {
+        		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+        		}
+            }
+        }    
+    }
+    
+    public function id_proof()
+    {
+
+        if ($this->request->getMethod() != 'post') {
+
+            $this->respond([
+              "status" => 405,
+              "message" => "Method Not Allowed"
+            ]);
+        } else {
+            //getting JSON data from API
+            $json = $this->request->getJSON(true);
+            
+            /*echo "<pre>";
+	        print_r($json);
+	        echo "</pre>";
+	        exit;*/
+            
+            if(!array_key_exists('user_id',$json) || !array_key_exists('id_proof',$json) || !array_key_exists('key',$json)
+                            ) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json['key']); //Dld0F54x99UeL8nZkByWC0BwUEi4aF4O
+                $apiconfig = new \Config\ApiConfig();
+		
+    		    $api_key = $apiconfig->provider_key;
+    		    
+    		    if($key == $api_key) {
+    		        $common = new CommonModel();
+    		        $sp = new ServiceProviderModel();
+    		        $misc_model = new MiscModel();
+    		        
+    		        $sp_verify_id = 0;
+    		        
+    		        //Query all the tables to check whether data exists:: Save/Update operation
+    		        $sp_dtails = $sp->get_sp_activation_details($json['user_id']);
+    		        if ($sp_dtails != 'failure') {
+            			foreach($sp_dtails as $details) {
+            			    $sp_det_id = $details['sp_det_id'];
+            			    $sp_verify_id = $details['sp_verify_id'];
+            			}
+            		}
+    		        
+    		        //*********************ID Proof
+                    $id_proof_file = $json['id_proof'];
+                    if ($id_proof_file != null) {
+                        $image = generateDynamicImage("images/id_proof",$id_proof_file);
+                            
+                        $arr_verify_det = array(
+    		                'users_id' => $json['user_id'],
+    		                'id_card' => $image,
+    		            );
+    		            
+    		            if($sp_verify_id == 0) {
+    		                $arr_verify_det['users_id'] = $json['user_id'];
+    		                $user_id_proof_id = $common->insert_records_dynamically('sp_verify', $arr_verify_det);
+    		            }
+                        else { //Update
+            		        $common->update_records_dynamically('sp_verify', $arr_verify_det, 'users_id', $json['user_id']);
+            		    }
+                        
+                        //echo '<br> user_id_proof_id  '.$user_id_proof_id;
+                    }
+                    
+                    //update users activation code
+                    $arr_users_update = array('activation_code' => 1);
+                    
+                    $common->update_records_dynamically('users', $arr_users_update, 'users_id', $json['user_id']);
+                    
+                    return $this->respond([
+                          "status" => 200,
+                          "message" => "Success"
     				]);
     		        
     		    }

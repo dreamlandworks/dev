@@ -843,11 +843,14 @@ class PostjobController extends ResourceController
     		               $arr_job_post[$key]['title'] = $book_data['title'];
     		               $arr_job_post[$key]['bid_range_name'] = $book_data['bid_range_name'];
     		               $arr_job_post[$key]['range_slots'] = $book_data['range_slots'];
-    		               $arr_job_post[$key]['booking_status'] = $status;
     		               $arr_job_post[$key]['bids_period'] = $book_data['bids_period']; //in days, 1,3,7
     		               $arr_job_post[$key]['post_created_on'] = $book_data['created_dts'];
     		               //Calculate bid end date
     		               $arr_job_post[$key]['bid_end_date'] = date('Y-m-d H:i:s', strtotime('+'.$arr_job_post[$key]['bids_period'].' day', strtotime($arr_job_post[$key]['post_created_on'])));
+    		               
+    		               $expires_in = ($current_date < $arr_job_post[$key]['bid_end_date']) ? $this->calc_days_hrs_mins($arr_job_post[$key]['bid_end_date'],$current_date) : "Expired";
+    		               
+    		               $arr_job_post[$key]['booking_status'] = ($expires_in == "Expired" && $status == 'Pending') ? $expires_in : $status;
     		               $arr_job_post[$key]['current_date'] = $current_date;
     		               $arr_job_post[$key]['expires_in'] = ($current_date < $arr_job_post[$key]['bid_end_date']) ? $this->calc_days_hrs_mins($arr_job_post[$key]['bid_end_date'],$current_date) : 0;
     		               $arr_job_post[$key]['total_bids'] = $total_bids;
@@ -902,11 +905,14 @@ class PostjobController extends ResourceController
     		               $arr_job_post[$booking_count]['title'] = $bc_book_data['title'];
     		               $arr_job_post[$booking_count]['bid_range_name'] = $bc_book_data['bid_range_name'];
     		               $arr_job_post[$booking_count]['range_slots'] = $bc_book_data['range_slots'];
-    		               $arr_job_post[$booking_count]['booking_status'] = $status;
     		               $arr_job_post[$booking_count]['bids_period'] = $bc_book_data['bids_period']; //in days, 1,3,7
     		               $arr_job_post[$booking_count]['post_created_on'] = $bc_book_data['created_dts'];
     		               //Calculate bid end date
     		               $arr_job_post[$booking_count]['bid_end_date'] = date('Y-m-d H:i:s', strtotime('+'.$arr_job_post[$booking_count]['bids_period'].' day', strtotime($arr_job_post[$booking_count]['post_created_on'])));
+    		               
+    		               $expires_in = ($current_date < $arr_job_post[$booking_count]['bid_end_date']) ? $this->calc_days_hrs_mins($arr_job_post[$booking_count]['bid_end_date'],$current_date) : "Expired";
+    		               $arr_job_post[$booking_count]['booking_status'] = ($expires_in == "Expired" && $status == 'Pending') ? $expires_in : $status;
+    		               
     		               $arr_job_post[$booking_count]['current_date'] = $current_date;
     		               $arr_job_post[$booking_count]['expires_in'] = ($current_date < $arr_job_post[$booking_count]['bid_end_date']) ? $this->calc_days_hrs_mins($arr_job_post[$booking_count]['bid_end_date'],$current_date) : 0;
     		               $arr_job_post[$booking_count]['total_bids'] = $total_bids;
@@ -965,11 +971,14 @@ class PostjobController extends ResourceController
         		               $arr_job_post[$booking_count]['title'] = $mm_book_data['title'];
         		               $arr_job_post[$booking_count]['bid_range_name'] = $mm_book_data['bid_range_name'];
         		               $arr_job_post[$booking_count]['range_slots'] = $mm_book_data['range_slots'];
-        		               $arr_job_post[$booking_count]['booking_status'] = $status;
         		               $arr_job_post[$booking_count]['bids_period'] = $mm_book_data['bids_period']; //in days, 1,3,7
         		               $arr_job_post[$booking_count]['post_created_on'] = $mm_book_data['created_dts'];
         		               //Calculate bid end date
         		               $arr_job_post[$booking_count]['bid_end_date'] = date('Y-m-d H:i:s', strtotime('+'.$arr_job_post[$booking_count]['bids_period'].' day', strtotime($arr_job_post[$booking_count]['post_created_on'])));
+        		               
+        		               $expires_in = ($current_date < $arr_job_post[$booking_count]['bid_end_date']) ? $this->calc_days_hrs_mins($arr_job_post[$booking_count]['bid_end_date'],$current_date) : "Expired";
+        		               $arr_job_post[$booking_count]['booking_status'] = ($expires_in == "Expired" && $status == 'Pending') ? $expires_in : $status;
+        		               
         		               $arr_job_post[$booking_count]['current_date'] = $current_date;
         		               $arr_job_post[$booking_count]['expires_in'] = ($current_date < $arr_job_post[$booking_count]['bid_end_date']) ? $this->calc_days_hrs_mins($arr_job_post[$booking_count]['bid_end_date'],$current_date) : 0;
         		               $arr_job_post[$booking_count]['total_bids'] = $total_bids;

@@ -585,23 +585,35 @@ class MiscController extends ResourceController
                     if ($zip_id == 0) {
                         $zip_id = $zip_model->create_zip($json->postal_code, $city_id);
                     }
-                    //JSON Objects declared into variables
-                    $data = [
-                        'name' => $json->name,
-                        'flat_no' => $json->flat,
-                        'apartment_name' => $json->apartment,
-                        'landmark' => $json->landmark,
-                        'locality' => $json->address,
-                        'latitude' => $json->user_lat,
-                        'longitude' => $json->user_long,
-                        'city_id' => $city_id,
-                        'state_id' => $state_id,
-                        'country_id' => $country_id,
-                        'zipcode_id' => $zip_id,
-                        'users_id' => $json->users_id
-                    ];
+                    
+                    //Check if address already exists, if yes, update else insert
+                    $misc_model = new MiscModel();
                     $common = new CommonModel();
-                    $id = $common->insert_records_dynamically('address', $data);
+                    
+                    $check_address_exists = $misc_model->get_address_by_user_id($json->users_id,$json->address,$json->user_lat,$json->user_long,$city_id,$state_id,$country_id,$zip_id);
+                    
+                    if($check_address_exists == 'failure') {
+                        //JSON Objects declared into variables
+                        $data = [
+                            'name' => $json->name,
+                            'flat_no' => $json->flat,
+                            'apartment_name' => $json->apartment,
+                            'landmark' => $json->landmark,
+                            'locality' => $json->address,
+                            'latitude' => $json->user_lat,
+                            'longitude' => $json->user_long,
+                            'city_id' => $city_id,
+                            'state_id' => $state_id,
+                            'country_id' => $country_id,
+                            'zipcode_id' => $zip_id,
+                            'users_id' => $json->users_id
+                        ];
+                        
+                        $id = $common->insert_records_dynamically('address', $data);
+                    }
+                    else {
+                        $id = $check_address_exists[0]['id'];
+                    }
                     
                     if ($id > 0) {
                         return $this->respond([
@@ -681,7 +693,7 @@ class MiscController extends ResourceController
    }
 
 
-//--------------------------------------------------UPDATE USER PROFILE ENDS------------------------------------------------------------
+//--------------------------------------------------UPDATE FCM ENDS------------------------------------------------------------
 //---------------------------------------------------------GET LIST of Addresses for autocomplete HERE -------------------------------------------------
 //-------------------------------------------------------------**************** -----------------------------------------------------
 
@@ -760,6 +772,8 @@ class MiscController extends ResourceController
         		if ($res != 'failure') {
         			return $this->respond([
         			    "activated_plan" => ($res_plan != 'failure') ? $res_plan['plans_id'] : 0,
+        			    "valid_from_date" => ($res_plan != 'failure') ? $res_plan['start_date'] : "",
+        			    "valid_till_date" => ($res_plan != 'failure') ? $res_plan['end_date'] : "",
         				"status" => 200,
         				"message" => "Success",
         				"data" => $res
@@ -965,6 +979,16 @@ class MiscController extends ResourceController
                           'users_id' => $json->users_id,
                     );
                     $complaint_id = $common->insert_records_dynamically('complaints', $arr_complaints);
+                    
+                    //Insert into complaint_status
+                    $arr_complaint_status = array(
+        		          'complaints_id' => $complaint_id,
+        		          'assigned_to' => 0,
+                          'action_taken' => "",
+                          'status' => "Pending",
+                          'created_on' => $json->created_on,
+                    );
+                    $complaint_status_id = $common->insert_records_dynamically('complaint_status', $arr_complaint_status);
                     
                     if ($complaint_id > 0) {
                         $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
@@ -1363,6 +1387,8 @@ class MiscController extends ResourceController
     		        
     		        $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
     		        
+    		        $average_review = ($json->overall_rating + $json->professionalism + $json->skill + $json->behaviour + $json->satisfaction)/5;
+    		        
     		        //Insert into user_review table
     		        $arr_user_review = array(
     		              'overall_rating' => $json->overall_rating,
@@ -1371,16 +1397,48 @@ class MiscController extends ResourceController
         		          'behaviour' => $json->behaviour,
                           'satisfaction' => $json->satisfaction,
                           'feedback' => $json->feedback,
+                          'average_review' => $average_review,
                           'booking_id' => $json->booking_id,
                           'sp_id' => $json->sp_id,
                     );
                     $review_id = $common->insert_records_dynamically('user_review', $arr_user_review);
+                    
+                    //Calculate points
+                    $sp_points = 0;
+                    
+                    if($average_review >= 4) { //Positive rating :: 4 star and 5 star reviews will get positives/Rating 1, 2 will be sorted in ascending order and shown as negative reviews 
+                        $sp_points += 5;
+                    }
+                    if($json->overall_rating >= 3.5 && $json->overall_rating <= 4.5) { //> 3.5 and < 4.5 => 1 points
+                        $sp_points += 1;
+                    }
+                    if($json->overall_rating >= 4.5) { //> 4.5 => 2 points
+                        $sp_points += 2;
+                    }
+                    if($json->professionalism == 5) { //professionalism == 5 => 3 points
+                        $sp_points += 3;
+                    }
+                    
+                    if($sp_points > 0) {
+                        $arr_user_details = $common->get_details_dynamically('user_details', 'id', $json->sp_id);
+                        if($arr_user_details != 'failure') {
+                            $points_count = $arr_user_details[0]['points_count']; 
+                            
+                            $total_points = $points_count + $sp_points;
+                            
+                            $arr_update_user_data = array(
+        		                'points_count' => $total_points,
+                		    );
+                            $common->update_records_dynamically('user_details', $arr_update_user_data, 'id', $json->sp_id);
+                        }
+                    }
                     
                     if ($review_id > 0) {
                         $arr_user_details = $misc_model->get_user_name_by_booking($json->booking_id);
         		        if($arr_user_details != "failure") {
         		            $user_name = $arr_user_details['fname']." ".$arr_user_details['lname'];
                             $user_id = $arr_user_details['users_id'];
+                            $points_count = $arr_user_details[0]['points_count']; 
         		        }
             		        
                         //Insert into alert_details table
@@ -1457,10 +1515,10 @@ class MiscController extends ResourceController
         		            $arr_main_data[$res_data["id"]] = $res_data["id"];
         		            $temp_data[$res_data["id"]]["id"] = $res_data["id"];
         		            $temp_data[$res_data["id"]]["description"] = $res_data["description"];
-        		            $temp_data[$res_data["id"]]["status"] = ($res_data["status"] != "") ? $res_data["status"] : "";
+        		            $temp_data[$res_data["id"]]["status"] = ($res_data["status"] != "") ? $res_data["status"] : "Pending";
         		            $temp_data[$res_data["id"]]['replies'] = array();
         		            
-        		            if($res_data["complaint_status_id"] > 0) {
+        		            if($res_data["complaint_status_id"] > 0 && $res_data["assigned_to"] > 0) {
         		                $temp_data[$res_data["id"]]['replies'][$cnt]['action_taken'] = ($res_data["action_taken"] != "") ? $res_data["action_taken"] : "";
             		            $temp_data[$res_data["id"]]['replies'][$cnt]['status'] = ($res_data["status"] != "") ? $res_data["status"] : "";
             		            $temp_data[$res_data["id"]]['replies'][$cnt]["created_on"] = ($res_data["complaint_status_date"] != "") ? $res_data["complaint_status_date"] : "";
@@ -1470,7 +1528,7 @@ class MiscController extends ResourceController
         		            $temp_data[$res_data["id"]]["status"] = $res_data["status"];
         		            if($res_data["complaint_status_id"] > 0) {
         		                $temp_replies_data[$res_data["id"]]['replies']['action_taken'] = ($res_data["action_taken"] != "") ? $res_data["action_taken"] : "";
-            		            $temp_replies_data[$res_data["id"]]['replies']['status'] = ($res_data["status"] != "") ? $res_data["status"] : "";
+            		            $temp_replies_data[$res_data["id"]]['replies']['status'] = ($res_data["status"] != "") ? $res_data["status"] : "Pending";
             		            $temp_replies_data[$res_data["id"]]['replies']["created_on"] = ($res_data["complaint_status_date"] != "") ? $res_data["complaint_status_date"] : "";
             		            array_push($temp_data[$res_data["id"]]['replies'],$temp_replies_data[$res_data["id"]]['replies']);
         		            }
@@ -1734,20 +1792,30 @@ class MiscController extends ResourceController
     		    if($key == $api_key) {
     		        $common = new CommonModel();
     		        
-    		        //Insert into user_bank_details table
-    		        $arr_user_bank_details = array(
-        		          'users_id' => $json->users_id,
-                          'account_name' => $json->account_name,
-                          'account_no' => $json->account_no,
-                          'ifsc_code' => $json->ifsc_code,
-                    );
-                    $ubd_id = $common->insert_records_dynamically('user_bank_details', $arr_user_bank_details);
+    		        //Check whether the details exists
+    		        $misc_model = new MiscModel();
+    		        
+    		        $validate_bank_details = $misc_model->get_bank_details($json->users_id,$json->account_no);
+    		        
+    		        if($validate_bank_details == 'failure') {
+    		            //Insert into user_bank_details table
+        		        $arr_user_bank_details = array(
+            		          'users_id' => $json->users_id,
+                              'account_name' => $json->account_name,
+                              'account_no' => $json->account_no,
+                              'ifsc_code' => $json->ifsc_code,
+                        );
+                        $ubd_id = $common->insert_records_dynamically('user_bank_details', $arr_user_bank_details);
+    		        }
+    		        else {
+    		            $ubd_id = $validate_bank_details[0]['ubd_id'];
+    		        }
                     
                     if($ubd_id > 0) { 
                         return $this->respond([
             			    "ubd_id" => $ubd_id,
             				"status" => 200,
-            				"message" => "Success",
+            				"message" => ($validate_bank_details == 'failure') ? "Success" : "Account already exist",
             			]);
                     }
             		else {
@@ -1818,5 +1886,52 @@ class MiscController extends ResourceController
             }
         } 
 	}
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//-------------------------------------------------------------**************** -----------------------------------------------------
+
+	public function get_cities()
+	{
+		$validate_key = $this->request->getVar('key');
+		if($validate_key == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+    		    $common = new CommonModel();
+        		$res = $common->get_table_details_dynamically('city', 'id', 'ASC');
+        
+        		if ($res != 'failure') {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "Success",
+        				"data" => $res
+        			]);
+        		} else {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "No Faq to Show"
+        			]);
+        		}
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}	
+		}
+		
+		
+	}
+
 	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
 }

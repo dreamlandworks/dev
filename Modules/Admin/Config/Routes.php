@@ -19,6 +19,10 @@ $routes->group("admin", ["namespace" => "\Modules\Admin\Controllers\api"], funct
     $routes->post("key/update","CategoryController::updateKey"); // Update Keywords
     $routes->get("key/show","CategoryController::showKey"); // show All Keywords
     $routes->post("key/delete","CategoryController::deleteKey"); // Delete Keywords
+	
+	
+	//Routes pertaining to User deletion
+	$routes->post("user/delete","MiscController::delete_user"); // Delete user
  
 
 });
@@ -50,12 +54,15 @@ $routes->group("ct",["namespace" => "\Modules\Admin\Controllers\web"],function($
 	$routes->add("singleMoveForm", "Bookings::single_move_form"); 
 	$routes->add("multiMoveForm", "Bookings::multi_move_form");
 	$routes->add("blueCollorForm", "Bookings::blue_collor_form"); 
+	$routes->add("listBookingView", "Bookings::list_booking_view"); 
 	
 	$routes->add("newJobs", "Postjob::new_jobs"); 
 	$routes->add("postJob", "Postjob::post_job");
+	$routes->add("viewNewjobs", "Postjob::view_newjobs");
 	
 	$routes->add("createTickets", "Support::create_tickets"); 
 	$routes->add("listAllTickets", "Support::list_tickets");
+	$routes->add("viewTickets", "Support::view_tickets");
 	
 	$routes->add("categories", "General::categories"); 
 	$routes->add("subcategories", "General::subcategories");

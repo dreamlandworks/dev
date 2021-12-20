@@ -160,8 +160,8 @@ class SmsController extends ResourceController
         				"name" => "Register_OTP",
         				"mobile" => $phone,
         				"dat" => [
-        					"var1" => $fname,
-        					"var2" => $otp
+        					"var" => $fname,
+        					"var1" => $otp
         				]
         			];
         
@@ -227,8 +227,8 @@ class SmsController extends ResourceController
 				"name" => "Forgot_OTP",
 				"mobile" => $mobile,
 				"dat" => [
-					"var1" => $name,
-					"var2" => $otp
+					"var" => $name,
+					"var1" => $otp
 				]
 			];
 

@@ -643,5 +643,188 @@ class MiscController extends ResourceController
 		
 	}
 
+	//-------------------------------------------------------------Get Training Videos---------------------------------------------------------
+	public function get_training_list()
+	{
+		$json = $this->request->getVar();
+		if(!array_key_exists('key',$json) && !array_key_exists('sp_id',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($json['key']); //Dld0F54x99UeL8nZkByWC0BwUEi4aF4O
+		    $apiconfig = new \Config\ApiConfig();
+		    
+    		$api_key = $apiconfig->provider_key;
+    		
+    		if($key == $api_key) {
+    		    $misc_model = new MiscModel();
+    		    $common = new CommonModel();
+    		    
+    		    $recent_videos = array();
+    		    $watched_videos = array();
+    		    $recommended_videos = array();
+    		    $total_points = 0;
+    		    $points_earned = 0;
+    		    $total_videos = 0;
+    		    $watched_videos_cnt = 0;
+    		    $arr_subcategories = array();
+    		    
+    		    //Get SP sub category
+    		    $arr_sp_prof_list = $misc_model->get_sp_prof_cat($json['sp_id']);
+    		    if($arr_sp_prof_list != 'failure') {
+        		    foreach($arr_sp_prof_list as $prof_data) {
+    		            $arr_subcategories[$prof_data['subcategory_id']] = $prof_data['subcategory_id'];
+        		    }
+        		}
+    		    
+    		    //Get sp watched videos
+    		    $arr_watched_videos = $misc_model->get_watched_videos($json['sp_id']);
+        		
+        		if($arr_watched_videos != 'failure') {
+        		    foreach($arr_watched_videos as $wkey => $wvideo_data) {
+    		            $watched_videos[$wkey]["id"] = $wvideo_data["id"];
+        		        $watched_videos[$wkey]["name"] = $wvideo_data["name"];
+        		        $watched_videos[$wkey]["description"] = $wvideo_data["description"];
+        		        $watched_videos[$wkey]["url"] = $wvideo_data["url"];
+        		        $watched_videos[$wkey]["video_categories_id"] = $wvideo_data["video_categories_id"];
+        		        $watched_videos[$wkey]["subcategories_id"] = $wvideo_data["subcategories_id"];
+        		        $watched_videos[$wkey]["points"] = $wvideo_data["points"];
+        		        $watched_videos[$wkey]["created_on"] = $wvideo_data["created_on"];
+        		        
+        		        $points_earned += $wvideo_data["points"];
+        		        $watched_videos_cnt ++;
+        		    }
+        		}    
+    		    
+        		$res = $misc_model->get_training_videos($arr_subcategories);
+        		if($res != 'failure') {
+        		    $rec_key = 0;
+        		    foreach($res as $key => $video_data) {
+        		        if($key < 5) {
+        		            $recent_videos[$key]["id"] = $video_data["id"];
+            		        $recent_videos[$key]["name"] = $video_data["name"];
+            		        $recent_videos[$key]["description"] = $video_data["description"];
+            		        $recent_videos[$key]["url"] = $video_data["url"];
+            		        $recent_videos[$key]["video_categories_id"] = $video_data["video_categories_id"];
+            		        $recent_videos[$key]["subcategories_id"] = $video_data["subcategories_id"];
+            		        $recent_videos[$key]["points"] = $video_data["points"];
+            		        $recent_videos[$key]["created_on"] = $video_data["created_on"];
+        		        }
+        		        
+        		        if(array_key_exists($video_data["subcategories_id"],$arr_subcategories)) {
+        		            $recommended_videos[$rec_key]["id"] = $video_data["id"];
+            		        $recommended_videos[$rec_key]["name"] = $video_data["name"];
+            		        $recommended_videos[$rec_key]["description"] = $video_data["description"];
+            		        $recommended_videos[$rec_key]["url"] = $video_data["url"];
+            		        $recommended_videos[$rec_key]["video_categories_id"] = $video_data["video_categories_id"];
+            		        $recommended_videos[$rec_key]["subcategories_id"] = $video_data["subcategories_id"];
+            		        $recommended_videos[$rec_key]["points"] = $video_data["points"];
+            		        $recommended_videos[$rec_key]["created_on"] = $video_data["created_on"];
+            		        
+            		        $rec_key++;
+        		        }
+        		        
+        		        $total_points += $video_data["points"];
+        		        $total_videos ++;
+        		    }
+        		}
+        		
+        		
+        		
+        		if ($res != 'failure') {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "Success",
+        				"recent_videos" => $recent_videos,
+        				"watched_videos" => $watched_videos,
+        				"recommended_videos" => $recommended_videos,
+        				"points_earned" => $points_earned,
+        				"total_points" => $total_points,
+        				"watched_videos_count" => $watched_videos_cnt,
+        				"total_videos" => $total_videos,
+        			]);
+        		} else {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "No Data to Show"
+        			]);
+        		}
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
+		}
+	}
+
+
+	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+	//-------------------------------------------------------------Update SP watched Training Videos---------------------------------------------------------
+	public function update_sp_watched_video()
+	{
+		$json = $this->request->getVar();
+		if(!array_key_exists('key',$json) && !array_key_exists('video_id',$json) && !array_key_exists('sp_id',$json) && !array_key_exists('points',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($json['key']); //Dld0F54x99UeL8nZkByWC0BwUEi4aF4O
+		    $apiconfig = new \Config\ApiConfig();
+		    
+    		$api_key = $apiconfig->provider_key;
+    		
+    		if($key == $api_key) {
+    		    $misc_model = new MiscModel();
+    		    $common = new CommonModel();
+    		    
+    		    //Check whether the user has already watched the videos
+    		    
+        		$arr_watched_videos = $misc_model->get_watched_videos($json['sp_id'],$json['video_id']);
+        		
+        		if($arr_watched_videos == 'failure') {
+        		    //Insert and allot points
+        		    $arr_video_watch = array(
+                        'list_videos_id' => $json['video_id'],
+                        'users_id' => $json['sp_id'],
+                    );
+    		        
+    		        $video_watch_id = $common->insert_records_dynamically('video_watch', $arr_video_watch);
+    		        if($video_watch_id > 0) {
+    		            $arr_user_details = $common->get_details_dynamically('user_details', 'id', $json['sp_id']);
+                        if($arr_user_details != 'failure') {
+                            $points_count = $arr_user_details[0]['points_count']; 
+                            
+                            $total_points = $points_count + $json['points'];
+                            
+                            $arr_update_user_data = array(
+        		                'points_count' => $total_points,
+                		    );
+                            $common->update_records_dynamically('user_details', $arr_update_user_data, 'id', $json['sp_id']);
+                        }
+    		        }
+        		}
+        		
+        		return $this->respond([
+                    "id" => 200,
+                    "message" => "Successfully Updated"
+                ]);
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
+		}
+	}
+
+
 	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
 }

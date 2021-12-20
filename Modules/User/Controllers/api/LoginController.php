@@ -216,5 +216,66 @@ class LoginController extends ResourceController
     		}
 		}
 	}
+	//--------------------------------------------------Logout STARTS------------------------------------------------------------
+    //-----------------------------------------------****************************----------------------------------------------------------
+
+    /**
+     * Function to logout user and clear the Fcm Token
+     * 
+     * JSON data is passed into this function to update user profile using
+     * @method POST with 
+     * @param mixed $user_id, @param string $fname, @param string $lname,
+     * @param mixed $email, @param mixed $dob, @param string $image [Base64 encoded]  
+     * @return [JSON] Success|Fail
+     */
+    public function logout()
+    {
+
+        $json = $this->request->getJSON();
+        
+        if(!array_key_exists('user_id',$json) || !array_key_exists('key',$json)) {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else{
+        $common = new CommonModel();
+        
+        $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		$apiconfig = new \Config\ApiConfig();
+		
+    	$api_key = $apiconfig->user_key;
+    		
+    	if($key == $api_key)
+    	{
+    
+            $id = $json->user_id;
+            
+            $upd_fcm_token = [
+                "fcm_token" =>  "",
+            ];
+            
+            $common->update_records_dynamically('users', $upd_fcm_token, 'users_id', $id);
+    
+            return $this->respond([
+                "status" => 200,
+                "message" =>  "Successfully Logged out"
+            ]);
+           
+    	}
+    	else {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Access Denied ! Authentication Failed'
+    			]);
+		}
+        
+     }
+   }
+
+
+//--------------------------------------------------UPDATE USER PROFILE ENDS------------------------------------------------------------
 	
 }

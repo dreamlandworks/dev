@@ -80,6 +80,7 @@ class AddressModel extends Model
 			->join('city', 'zipcode.city_id=city.id')
 			->join('state', 'city.state_id=state.id')
 			->join('country', 'state.country_id=country.id')
+			->groupBy("address.locality,address.city_id,address.state_id,address.country_id,address.zipcode_id,address.latitude,address.longitude")
 			->where('users_id', $id)->findAll();
 
 		if ($res) {
