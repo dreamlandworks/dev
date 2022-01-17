@@ -258,6 +258,52 @@ class MiscController extends ResourceController
     		}
 		}		
 	}
+	
+	public function get_keywords_autocomplete_by_category()
+	{
+		$validate_key = $this->request->getVar('key');
+		$category_id = $this->request->getVar('category_id');
+		if($validate_key == "" || $category_id == "") {
+		    return $this->respond([
+    				'status' => 403,
+                    'message' => 'Invalid Parameters'
+    		]);
+		}
+		else {
+		    $key = md5($validate_key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+		    
+		    $apiconfig = new \Config\ApiConfig();
+		
+    		$api_key = $apiconfig->user_key;
+    		
+    		if($key == $api_key) {
+		
+        		$keyword = new keywordModel();
+        		$res = $keyword->get_keywords($category_id);
+        
+        		if ($res != null) {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "Success",
+        				"data" => $res
+        			]);
+        		} else {
+        			return $this->respond([
+        				"status" => 200,
+        				"message" => "No Data to Show"
+        			]);
+        		}
+    		}
+    		else {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Access Denied ! Authentication Failed'
+        			]);
+    		}
+		}		
+	}
+	
+	
 	//---------------------------------------------------------GET LIST of Faq HERE -------------------------------------------------
 	//-------------------------------------------------------------**************** -----------------------------------------------------
 
@@ -1435,10 +1481,10 @@ class MiscController extends ResourceController
                     
                     if ($review_id > 0) {
                         $arr_user_details = $misc_model->get_user_name_by_booking($json->booking_id);
-        		        if($arr_user_details != "failure") {
+                        if($arr_user_details != "failure") {
         		            $user_name = $arr_user_details['fname']." ".$arr_user_details['lname'];
                             $user_id = $arr_user_details['users_id'];
-                            $points_count = $arr_user_details[0]['points_count']; 
+                            $points_count = $arr_user_details['points_count']; 
         		        }
             		        
                         //Insert into alert_details table

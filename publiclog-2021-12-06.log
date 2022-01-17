@@ -1,0 +1,17 @@
+ERROR - 2021-12-06 00:42:12 --> Unknown column 'category_id' in 'field list'
+ERROR - 2021-12-06 01:02:01 --> Unknown column 'about_me' in 'field list'
+ERROR - 2021-12-06 01:02:14 --> Unknown column 'users.id' in 'where clause'
+ERROR - 2021-12-06 01:30:26 --> Unknown column 'profession_id' in 'where clause'
+ERROR - 2021-12-06 01:31:40 --> Unknown column 'profession_id' in 'where clause'
+ERROR - 2021-12-06 01:33:24 --> Unknown column 'profession_id' in 'where clause'
+ERROR - 2021-12-06 01:53:33 --> Unknown column 'profession_id' in 'where clause'
+INFO - 2021-12-06 02:21:53 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2021-12-06 02:23:18 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2021-12-06 02:23:18 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2021-12-06 02:23:19 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2021-12-06 11:16:20 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2021-12-06 11:16:20 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2021-12-06 11:16:21 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2021-12-06 18:54:09 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2021-12-06 18:54:09 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2021-12-06 18:54:11 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.

@@ -1,0 +1,4 @@
+INFO - 2021-12-29 01:39:25 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+ERROR - 2021-12-29 02:14:27 --> Unknown column 'booking_id' in 'field list'
+ERROR - 2021-12-29 02:15:14 --> Unknown column 'booking_id' in 'field list'
+INFO - 2021-12-29 21:57:03 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.

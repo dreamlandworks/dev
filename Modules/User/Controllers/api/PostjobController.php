@@ -42,7 +42,10 @@ class PostjobController extends ResourceController
             
             if(!array_key_exists('scheduled_date',$json) || !array_key_exists('time_slot_from',$json)  || !array_key_exists('job_description',$json) 
                 || !array_key_exists('bids_period',$json) || !array_key_exists('bid_per',$json) || !array_key_exists('bid_range_id',$json) 
-                || !array_key_exists('address_id',$json) || !array_key_exists('title',$json) || !array_key_exists('lang_responses',$json)
+                || !array_key_exists('address_id',$json) || !array_key_exists('city',$json) 
+                || !array_key_exists('state',$json) || !array_key_exists('country',$json) || !array_key_exists('postal_code',$json) 
+                || !array_key_exists('address',$json) || !array_key_exists('user_lat',$json) || !array_key_exists('user_long',$json)
+                || !array_key_exists('title',$json) || !array_key_exists('lang_responses',$json)
                 || !array_key_exists('bid_range_id',$json) || !array_key_exists('keywords_responses',$json) || !array_key_exists('created_on',$json)
                 || !array_key_exists('attachments',$json) || !array_key_exists('estimate_time',$json) || !array_key_exists('estimate_type_id',$json)
                 || !array_key_exists('users_id',$json) || !array_key_exists('key',$json)
@@ -94,6 +97,51 @@ class PostjobController extends ResourceController
                     if ($booking_id > 0) {
                         
                         $address_id = $json->address_id;
+                        
+                        if($address_id == 0) {
+                            //Insert into address table
+                            $city = $json->city;
+                    
+                            $zip_model = new ZipcodeModel();
+                            $city_model = new CityModel();
+                            $state_model = new StateModel();
+                            $country_model = new CountryModel();
+                            
+                            $country_id = $country_model->search_by_country($json->country);
+            		        $state_id = $state_model->search_by_state($json->state);
+            		        $city_id = $city_model->search_by_city($json->city);
+            		        $zip_id = $zip_model->search_by_zipcode($json->postal_code);
+                
+                            if ($country_id == 0) {
+                                $country_id = $country_model->create_country($json->country);
+                            }
+            		        if ($state_id == 0) {
+                                $state_id = $state_model->create_state($json->state, $country_id);
+                            }
+            		        if ($city_id == 0) {
+            		            $city_id = $city_model->create_city($json->city, $state_id);
+                            }
+                            if ($zip_id == 0) {
+                                $zip_id = $zip_model->create_zip($json->postal_code, $city_id);
+                            }
+                            //JSON Objects declared into variables
+                            $data_address = [
+                                'users_id' => $json->users_id,
+                                'name' => "",
+                                'flat_no' => "",
+                                'apartment_name' => "",
+                                'landmark' => "",
+                                'locality' => $json->address,
+                                'latitude' => $json->user_lat,
+                                'longitude' => $json->user_long,
+                                'city_id' => $city_id,
+                                'state_id' => $state_id,
+                                'country_id' => $country_id,
+                                'zipcode_id' => $zip_id,
+                            ];
+                            
+                            $address_id = $common->insert_records_dynamically('address', $data_address);
+                        }
                         
                         //Insert into Single move table
                         $arr_single_move = array(
@@ -202,19 +250,34 @@ class PostjobController extends ResourceController
                         if(count($attachments) > 0) {
                             foreach($attachments as $attach_key => $arr_file) {
                                 foreach($arr_file as $attach_name => $file) {
-                                    if ($file != null) {
-                                        $image = generateDynamicImage("images/attachments",$file);
+                                    $pos = strpos($file, 'firebasestorage');
+                                    
+                                    if ($pos !== false) { //URL
+                                        $url = $file;
+    
+                                        list($path,$token) = explode('?',$url);
                                         
-                                        $arr_attach = array(
-                                                'booking_id' => $booking_id,
-                                                'file_name' => $image,
-                                                'file_location' => 'images/attachments',
-                                                'created_on' => $json->created_on,
-                                                'created_by' => $json->users_id,
-                                                'status_id' => 1
-                                            );
-                                        $common->insert_records_dynamically('attachments', $arr_attach);
+                                        $type = pathinfo($path, PATHINFO_EXTENSION);
+                                        $data = file_get_contents($url);
+                                        $base64_file = base64_encode($data);
+                                        
+                                        $file = $base64_file;
                                     }
+                                    else {
+                                        $type = "png";
+                                    }
+                                    
+                                    $image = generateDynamicImage("images/attachments",$file,$type);
+                                        
+                                    $arr_attach = array(
+                                            'booking_id' => $booking_id,
+                                            'file_name' => $image,
+                                            'file_location' => 'images/attachments',
+                                            'created_on' => $json->created_on,
+                                            'created_by' => $json->users_id,
+                                            'status_id' => 1
+                                        );
+                                    $common->insert_records_dynamically('attachments', $arr_attach);
                                 }
                             }
                         }
@@ -455,19 +518,34 @@ class PostjobController extends ResourceController
                         if(count($attachments) > 0) {
                             foreach($attachments as $attach_key => $arr_file) {
                                 foreach($arr_file as $attach_name => $file) {
-                                    if ($file != null) {
-                                        $image = generateDynamicImage("images/attachments",$file);
+                                    $pos = strpos($file, 'firebasestorage');
+                                    
+                                    if ($pos !== false) { //URL
+                                        $url = $file;
+    
+                                        list($path,$token) = explode('?',$url);
                                         
-                                        $arr_attach = array(
-                                                'booking_id' => $booking_id,
-                                                'file_name' => $image,
-                                                'file_location' => 'images/attachments',
-                                                'created_on' => $json->created_on,
-                                                'created_by' => $json->users_id,
-                                                'status_id' => 1
-                                            );
-                                        $common->insert_records_dynamically('attachments', $arr_attach);
+                                        $type = pathinfo($path, PATHINFO_EXTENSION);
+                                        $data = file_get_contents($url);
+                                        $base64_file = base64_encode($data);
+                                        
+                                        $file = $base64_file;
                                     }
+                                    else {
+                                        $type = "png";
+                                    }
+                                    
+                                    $image = generateDynamicImage("images/attachments",$file,$type);
+                                        
+                                    $arr_attach = array(
+                                            'booking_id' => $booking_id,
+                                            'file_name' => $image,
+                                            'file_location' => 'images/attachments',
+                                            'created_on' => $json->created_on,
+                                            'created_by' => $json->users_id,
+                                            'status_id' => 1
+                                        );
+                                    $common->insert_records_dynamically('attachments', $arr_attach);
                                 }
                             }
                         }
@@ -585,11 +663,58 @@ class PostjobController extends ResourceController
                         
                         if(count($addresses) > 0) {
                             foreach($addresses as $address_key => $arr_address) {
+                                $address_id = $arr_address->address_id;
+                                if($address_id == 0) {
+                                    //Insert into address table
+                                    
+                                    $city = $arr_address->city;
+                            
+                                    $zip_model = new ZipcodeModel();
+                                    $city_model = new CityModel();
+                                    $state_model = new StateModel();
+                                    $country_model = new CountryModel();
+                                    
+                                    $country_id = $country_model->search_by_country($arr_address->country);
+                    		        $state_id = $state_model->search_by_state($arr_address->state);
+                    		        $city_id = $city_model->search_by_city($arr_address->city);
+                    		        $zip_id = $zip_model->search_by_zipcode($arr_address->postal_code);
+                        
+                                    if ($country_id == 0) {
+                                        $country_id = $country_model->create_country($arr_address->country);
+                                    }
+                    		        if ($state_id == 0) {
+                                        $state_id = $state_model->create_state($arr_address->state, $country_id);
+                                    }
+                    		        if ($city_id == 0) {
+                    		            $city_id = $city_model->create_city($arr_address->city, $state_id);
+                                    }
+                                    if ($zip_id == 0) {
+                                        $zip_id = $zip_model->create_zip($arr_address->postal_code, $city_id);
+                                    }
+                                    //JSON Objects declared into variables
+                                    $data_address = [
+                                        'users_id' => $json->users_id,
+                                        'name' => "",
+                                        'flat_no' => "",
+                                        'apartment_name' => "",
+                                        'landmark' => "",
+                                        'locality' => $arr_address->address,
+                                        'latitude' => $arr_address->user_lat,
+                                        'longitude' => $arr_address->user_long,
+                                        'city_id' => $city_id,
+                                        'state_id' => $state_id,
+                                        'country_id' => $country_id,
+                                        'zipcode_id' => $zip_id,
+                                    ];
+                                    
+                                    $address_id = $common->insert_records_dynamically('address', $data_address);
+                                }
+                                
                                 //Insert into multi_move table
                                 $arr_multi_move[] = array(
                                         'booking_id' => $booking_id,
                                         'sequence_no' => $arr_address->sequence_no,
-                                        'address_id' => $arr_address->address_id,
+                                        'address_id' => $address_id,
                                         'job_description' => $arr_address->job_description,
                                         'weight_type' => $arr_address->weight_type,
                                     );
@@ -697,19 +822,34 @@ class PostjobController extends ResourceController
                         if(count($attachments) > 0) {
                             foreach($attachments as $attach_key => $arr_file) {
                                 foreach($arr_file as $attach_name => $file) {
-                                    if ($file != null) {
-                                        $image = generateDynamicImage("images/attachments",$file);
+                                    $pos = strpos($file, 'firebasestorage');
+                                    
+                                    if ($pos !== false) { //URL
+                                        $url = $file;
+    
+                                        list($path,$token) = explode('?',$url);
                                         
-                                        $arr_attach = array(
-                                                'booking_id' => $booking_id,
-                                                'file_name' => $image,
-                                                'file_location' => 'images/attachments',
-                                                'created_on' => $json->created_on,
-                                                'created_by' => $json->users_id,
-                                                'status_id' => 1
-                                            );
-                                        $common->insert_records_dynamically('attachments', $arr_attach);
+                                        $type = pathinfo($path, PATHINFO_EXTENSION);
+                                        $data = file_get_contents($url);
+                                        $base64_file = base64_encode($data);
+                                        
+                                        $file = $base64_file;
                                     }
+                                    else {
+                                        $type = "png";
+                                    }
+                                    
+                                    $image = generateDynamicImage("images/attachments",$file,$type);
+                                        
+                                    $arr_attach = array(
+                                            'booking_id' => $booking_id,
+                                            'file_name' => $image,
+                                            'file_location' => 'images/attachments',
+                                            'created_on' => $json->created_on,
+                                            'created_by' => $json->users_id,
+                                            'status_id' => 1
+                                        );
+                                    $common->insert_records_dynamically('attachments', $arr_attach);
                                 }
                             }
                         }

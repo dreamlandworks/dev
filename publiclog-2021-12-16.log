@@ -1,0 +1,16 @@
+ERROR - 2021-12-16 03:08:49 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'GROUP_CONCAT(list_profession.name) as "profession")
+JOIN `user_details` ON `user' at line 2
+ERROR - 2021-12-16 03:09:30 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'GROUP_CONCAT(list_profession.name) as profession)
+JOIN `user_details` ON `user_d' at line 2
+ERROR - 2021-12-16 03:10:23 --> SELECT command denied to user 'satraskn_admin'@'localhost' for table 'name'
+ERROR - 2021-12-16 03:13:36 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'GROUP_CONCAT(list_profession.name) as profession
+JOIN `users` ON `users`.`users_' at line 3
+ERROR - 2021-12-16 05:11:32 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '`=` IN :sp_location.users_id = :
+GROUP BY `sp_id`' at line 4
+ERROR - 2021-12-16 05:11:54 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '`=` IN :sp_location.users_id = :
+GROUP BY `sp_id`' at line 4
+ERROR - 2021-12-16 05:12:17 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '`=` IN :sp_location.users_id = :
+GROUP BY `sp_id`' at line 4
+ERROR - 2021-12-16 05:12:58 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '`=` IN :sp_location.users_id = :' at line 4
+ERROR - 2021-12-16 05:13:29 --> Unknown column 'sp_location.id' in 'IN/ALL/ANY subquery'
+ERROR - 2021-12-16 05:13:52 --> Unknown column 'sp_location.id' in 'IN/ALL/ANY subquery'

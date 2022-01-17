@@ -1,0 +1,8 @@
+ERROR - 2021-12-15 00:16:55 --> Table 'satraskn_dbase.list_videos' doesn't exist
+ERROR - 2021-12-15 00:17:03 --> Table 'satraskn_dbase.list_videos' doesn't exist
+ERROR - 2021-12-15 01:55:02 --> Unknown column 'video_watch.list_video_id' in 'on clause'
+ERROR - 2021-12-15 01:56:18 --> Unknown column 'video_watch.list_video_id' in 'on clause'
+INFO - 2021-12-15 12:43:07 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2021-12-15 12:43:08 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2021-12-15 12:43:09 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+ERROR - 2021-12-15 22:34:06 --> Table 'satraskn_dbase.l' doesn't exist

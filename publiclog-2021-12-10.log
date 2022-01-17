@@ -1,0 +1,5 @@
+ERROR - 2021-12-10 01:15:50 --> Unknown column 'profession_id' in 'field list'
+INFO - 2021-12-10 03:12:24 --> Used the default controller.
+INFO - 2021-12-10 07:51:10 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2021-12-10 07:51:11 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2021-12-10 18:52:42 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.

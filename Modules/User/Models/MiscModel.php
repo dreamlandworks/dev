@@ -41,7 +41,7 @@ function get_login_activity($id)
 
 //---------------------------------------------------GET Search Results STARTS-----------------------------------------------------
 //-----------------------------------------------------------***************------------------------------------------------------------    
-function get_search_results($keyword_id,$city,$current_lat,$current_lng,$subcat_id)
+function get_search_results($keyword_id,$city,$current_lat,$current_lng,$subcat_id,$users_id)
 {
 
     $builder = $this->db->table('sp_location');
@@ -62,7 +62,7 @@ function get_search_results($keyword_id,$city,$current_lat,$current_lng,$subcat_
     $builder->join('city', 'city.id = sp_location.city');
     $builder->join('user_lang_list', 'user_lang_list.users_id = sp_location.users_id');
     $builder->join('language', 'language.id = user_lang_list.language_id');
-    $builder->where('sp_location.id in (select max(id) from sp_location group by users_id)');
+    $builder->where('sp_location.id in (select max(id) from sp_location where users_id != '.$users_id.' group by users_id)');
     $builder->where('users.online_status_id',1);
     if($keyword_id > 0) {
         $builder->where('keywords_id',$keyword_id);
@@ -74,6 +74,7 @@ function get_search_results($keyword_id,$city,$current_lat,$current_lng,$subcat_
     $builder->where('sp_activated',3);
     $builder->where('online_status_id',1);
     $builder->groupBy("sp_location.users_id");
+    $builder->orderBy("distance_miles","ASC");
     $result = $builder->get()->getResultArray();
     //echo "<br> str ".$this->db->getLastQuery();exit;
     $count = count($result);
@@ -147,18 +148,23 @@ function get_search_results_by_city($city)
 //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
 //---------------------------------------------------GET LAST LOGIN ACTIVITY STARTS-----------------------------------------------------
 //-----------------------------------------------------------***************------------------------------------------------------------    
-function get_keywords_id($search_phrase_id,$subcat_id)
+function get_keywords_id($search_phrase_id,$subcat_id = 0)
 {
     $builder = $this->db->table('search_phrase');
     if($search_phrase_id > 0) {
-        $builder->where(['id' => $search_phrase_id, 'subcategory_id' => $subcat_id]);
+        $builder->where(['id' => $search_phrase_id]);
     }    
     else {
-        $builder->where(['phrase' => $search_phrase_id, 'subcategory_id' => $subcat_id]);
+        $builder->where(['phrase' => $search_phrase_id]);
     }
+    
+    if($subcat_id > 0) {
+        $builder->where(['subcategory_id' => $subcat_id]);
+    }
+    
     $builder->orderBy('id','DESC');
     $query = $builder->get(1);
-
+    //echo "<br> str ".$this->db->getLastQuery();exit;
     if($query->getResult() != null){
         $result = $query->getResultArray();
         
@@ -177,8 +183,9 @@ function get_sp_preferred_time_slot($ar_sp_id)
 {
 
     $builder = $this->db->table('user_time_slot');
-    $builder->select('user_time_slot.*');
+    $builder->select('users_id,time_slot_id,min(time_slot_from) as time_slot_from, max(time_slot_from) time_slot_to,day_slot');
     $builder->whereIn('users_id',$ar_sp_id);
+    $builder->groupBy("users_id,day_slot");
     $builder->orderBy('users_id,day_slot,time_slot_from', 'ASC');
     $result = $builder->get()->getResultArray();
     //echo "<br> str ".$this->db->getLastQuery();exit;
@@ -309,7 +316,7 @@ function get_blue_collar_details($booking_id)
 {
 
     $builder = $this->db->table('blue_collar');
-    $builder->where('blue_collar.booking_id',$booking_id);
+    $builder->where('booking_id',$booking_id);
     $result = $builder->get()->getResultArray();
     //echo "<br> str ".$this->db->getLastQuery();exit;
     $count = count($result);
@@ -427,7 +434,7 @@ function get_user_single_move_booking_details($users_id = 0,$sp_id = 0)
     $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,
                     time_slot.from,estimate_type.name as estimate_type,single_move.job_description,address.locality,address.latitude,
                     address.longitude,city,state,country,zipcode,profile_pic,estimate_type.name as estimate_type,extra_demand.amount as extra_demand_total_amount,
-                    material_advance,technician_charges,expenditure_incurred');
+                    material_advance,technician_charges,expenditure_incurred,fcm_token');
     $builder->join('time_slot', 'time_slot.id = booking.time_slot_id');
     $builder->join('estimate_type', 'estimate_type.id = booking.estimate_type_id');
     $builder->join('single_move', 'single_move.booking_id = booking.id');
@@ -443,12 +450,15 @@ function get_user_single_move_booking_details($users_id = 0,$sp_id = 0)
     
     if($users_id > 0) {
         $builder->join('user_details', 'user_details.id = booking.sp_id','LEFT');
+        $builder->join('users', 'users.users_id = user_details.id','LEFT');
         $builder->where('booking.users_id',$users_id);
     }
     if($sp_id > 0) {
         $builder->join('user_details', 'user_details.id = booking.users_id','LEFT');
+        $builder->join('users', 'users.users_id = user_details.id','LEFT');
         $builder->where('booking.sp_id',$sp_id);
     }
+    
     $builder->where('booking.category_id',1);
     $result = $builder->get()->getResultArray();
     //echo "<br> str ".$this->db->getLastQuery();exit;    
@@ -470,7 +480,7 @@ function get_user_blue_collar_booking_details($users_id = 0,$sp_id = 0)
     $builder = $this->db->table('booking');
     $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,
                     time_slot.from,estimate_type.name as estimate_type,blue_collar.job_description,profile_pic,estimate_type.name as estimate_type,
-                    extra_demand.amount as extra_demand_total_amount,material_advance,technician_charges,expenditure_incurred');
+                    extra_demand.amount as extra_demand_total_amount,material_advance,technician_charges,expenditure_incurred,fcm_token');
     $builder->join('time_slot', 'time_slot.id = booking.time_slot_id');
     $builder->join('estimate_type', 'estimate_type.id = booking.estimate_type_id');
     $builder->join('blue_collar', 'blue_collar.booking_id = booking.id');
@@ -478,10 +488,12 @@ function get_user_blue_collar_booking_details($users_id = 0,$sp_id = 0)
     $builder->join('transaction', 'transaction.booking_id = booking.id');
     if($users_id > 0) {
         $builder->join('user_details', 'user_details.id = booking.sp_id','LEFT');
+        $builder->join('users', 'users.users_id = user_details.id','LEFT');
         $builder->where('booking.users_id',$users_id);
     }
     if($sp_id > 0) {
         $builder->join('user_details', 'user_details.id = booking.users_id','LEFT');
+        $builder->join('users', 'users.users_id = user_details.id','LEFT');
         $builder->where('booking.sp_id',$sp_id);
     }
     $builder->where('booking.category_id',2);
@@ -508,7 +520,7 @@ function get_user_multi_move_booking_details($users_id = 0,$sp_id = 0)
     $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,
                     time_slot.from,estimate_type.name as estimate_type,multi_move.sequence_no,job_description,weight_type,address.locality,address.latitude,
                     address.longitude,city,state,country,zipcode,profile_pic,estimate_type.name as estimate_type,
-                    extra_demand.amount as extra_demand_total_amount,material_advance,technician_charges,expenditure_incurred');
+                    extra_demand.amount as extra_demand_total_amount,material_advance,technician_charges,expenditure_incurred,fcm_token');
     $builder->join('time_slot', 'time_slot.id = booking.time_slot_id');
     $builder->join('estimate_type', 'estimate_type.id = booking.estimate_type_id');
     $builder->join('multi_move', 'multi_move.booking_id = booking.id');
@@ -521,10 +533,12 @@ function get_user_multi_move_booking_details($users_id = 0,$sp_id = 0)
     $builder->join('transaction', 'transaction.booking_id = booking.id');
     if($users_id > 0) {
         $builder->join('user_details', 'user_details.id = booking.sp_id','LEFT');
+        $builder->join('users', 'users.users_id = user_details.id','LEFT');
         $builder->where('booking.users_id',$users_id);
     }
     if($sp_id > 0) {
         $builder->join('user_details', 'user_details.id = booking.users_id','LEFT');
+        $builder->join('users', 'users.users_id = user_details.id','LEFT');
         $builder->where('booking.sp_id',$sp_id);
     }
     $builder->where('booking.category_id',3);
@@ -817,6 +831,7 @@ function get_booking_status_list($booking_id)
     $builder->select('*');
     $builder->join('booking_status_code', 'booking_status_code.id = booking_status.status_id');  
     $builder->where('booking_id',$booking_id);
+    $builder->WhereIn('status_id',array(13,23));
     $builder->orderBy('booking_status_id','ASC');
     $result = $builder->get()->getResultArray();
     //echo "<br> str ".$this->db->getLastQuery();exit;    
@@ -980,7 +995,7 @@ function get_user_name_by_booking($booking_id = 0, $users_id = 0)
 {
 
     $builder = $this->db->table('booking');
-    $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,fcm_token,post_job.title');
+    $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,fcm_token,post_job.title,points_count');
     $builder->join('user_details', 'user_details.id = booking.users_id');
     $builder->join('users', 'users.users_id = booking.users_id');
     $builder->join('post_job', 'post_job.booking_id = booking.id','LEFT');
@@ -1454,7 +1469,7 @@ function get_user_upcoming_single_move_booking_details($users_id = 0,$sp_id = 0)
     }
     $builder->where('booking.category_id',1);
     $result = $builder->get()->getResultArray();
-    echo "<br> str ".$this->db->getLastQuery();exit;    
+    //echo "<br> str ".$this->db->getLastQuery();exit;    
     $count = count($result);
         
     if($count > 0) {
@@ -1543,5 +1558,38 @@ function get_user_upcoming_multi_move_booking_details($users_id = 0,$sp_id = 0)
     }
 }
 //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+function get_sp_search_ranking_details($city_id,$keyword_id = 0,$subcat_id = 0)
+{
 
+    $builder = $this->db->table('sp_location');
+    $builder->select('sp_location.*, user_details.*,city.city,users.online_status_id,GROUP_CONCAT(list_profession.name) as profession');
+    $builder->join('user_details', 'user_details.id = sp_location.users_id');
+    $builder->join('users', 'users.users_id = user_details.id AND users.users_id = sp_location.users_id');
+    $builder->join('sp_profession', 'sp_profession.users_id = sp_location.users_id');
+    $builder->join('list_profession', 'list_profession.id = sp_profession.profession_id');
+    $builder->join('city', 'city.id = sp_location.city');
+    $builder->join('sp_skill', 'sp_skill.users_id = sp_location.users_id AND sp_skill.users_id = user_details.id');
+    $builder->where('sp_location.id in (select max(id) from sp_location group by users_id)');
+    $builder->where('city.id',$city_id);
+    $builder->where('sp_activated',3);
+    $builder->where('points_count >',0);
+    if($keyword_id > 0) {
+        $builder->where('keywords_id',$keyword_id);
+    }
+    else { //pick using subcat id
+        $builder->where('list_profession.subcategory_id',$subcat_id);
+    }
+    $builder->groupBy("sp_location.users_id");
+    $builder->orderBy("points_count","DESC");
+    $result = $builder->get()->getResultArray();
+    //echo "<br> str ".$this->db->getLastQuery();exit;
+    $count = count($result);
+            
+    if($count > 0) {
+        return $result; 
+    }
+    else {
+        return 'failure'; 
+    }
+}
 }

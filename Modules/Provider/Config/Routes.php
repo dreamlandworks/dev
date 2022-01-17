@@ -43,6 +43,7 @@ $routes->group("provider", ["namespace" => "\Modules\Provider\Controllers\api"],
     $routes->post("sp_post_bid", "SPBookingController::sp_post_bid"); //SP Post Bids 
     $routes->post("sp_edit_bid", "SPBookingController::sp_edit_bid"); //SP Edit Bids 
     $routes->post("delete_bid_attachment", "SPBookingController::delete_bid_attachment"); //Delete attachment
+    $routes->post("sp_new_job_post_list", "SPBookingController::get_sp_new_job_post_list"); //New jobs
     
     $routes->post("get_sp_upcoming_booking_details", "SPBookingController::get_sp_upcoming_booking_details"); //SP Upcoming Booking
     

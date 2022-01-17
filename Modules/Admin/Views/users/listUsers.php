@@ -139,9 +139,6 @@
                                     <th>Lastname</th>
                                     <th>Mobile</th>
                                     <th>Email</th>
-                                    <th>City</th>
-                                    <th>State</th>
-                                    <th>Country</th>
                                     <th>User since (days)</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -154,429 +151,51 @@
                                     <th>Lastname</th>
                                     <th>Mobile</th>
                                     <th>Email</th>
-                                    <th>City</th>
-                                    <th>State</th>
-                                    <th>Country</th>
                                     <th>User since (days)</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                   </tr>
                                 </tfoot>
                                 <tbody>
-        
-                                  <tr>
-                                    <td class="text-center">1</td>
-                                    <td>Andrew </td>
-                                    <td>Mike</td>
-                                    <td>9887886754</td>
-                                    <td>andrew@gmail.com</td>
-                                    <td>Mumbai</td>
-                                    <td>Maharastra</td>
-                                    <td>India</td>
-                                    <td>60 days</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                       <a href="editUsers">
-									   <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                         <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-									  </a>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td class="text-center">2</td>
-        
-                                    <td>Andrew </td>
-                                    <td>Mike</td>
-                                    <td>9887886754</td>
-                                    <td>andrew@gmail.com</td>
-                                    <td>Mumbai</td>
-                                    <td>Maharastra</td>
-                                    <td>India</td>
-                                    <td>60 days</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-        
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td class="text-center">3</td>
-        
-                                    <td>Andrew </td>
-                                    <td>Mike</td>
-                                    <td>9887886754</td>
-                                    <td>andrew@gmail.com</td>
-                                    <td>Mumbai</td>
-                                    <td>Maharastra</td>
-                                    <td>India</td>
-                                    <td>60 days</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-        
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-                                  <tr>
-                                    <td class="text-center">4</td>
-                                    <td>Andrew </td>
-                                    <td>Mike</td>
-                                    <td>9887886754</td>
-                                    <td>andrew@gmail.com</td>
-                                    <td>Mumbai</td>
-                                    <td>Maharastra</td>
-                                    <td>India</td>
-                                    <td>60 days</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-        
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-                                  <tr>
-                                    <td class="text-center">5</td>
-        
-                                    <td>Andrew </td>
-                                    <td>Mike</td>
-                                    <td>9887886754</td>
-                                    <td>andrew@gmail.com</td>
-                                    <td>Mumbai</td>
-                                    <td>Maharastra</td>
-                                    <td>India</td>
-                                    <td>60 days</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-        
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-        
-                                  <tr>
-                                    <td class="text-center">6</td>
-        
-                                    <td>Andrew </td>
-                                    <td>Mike</td>
-                                    <td>9887886754</td>
-                                    <td>andrew@gmail.com</td>
-                                    <td>Mumbai</td>
-                                    <td>Maharastra</td>
-                                    <td>India</td>
-                                    <td>60 days</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-        
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-        
-                                  <tr>
-                                    <td class="text-center">7</td>
-        
-                                    <td>Andrew </td>
-                                    <td>Mike</td>
-                                    <td>9887886754</td>
-                                    <td>andrew@gmail.com</td>
-                                    <td>Mumbai</td>
-                                    <td>Maharastra</td>
-                                    <td>India</td>
-                                    <td>60 days</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-        
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">8</td>
-        
-                                    <td>Andrew </td>
-                                    <td>Mike</td>
-                                    <td>9887886754</td>
-                                    <td>andrew@gmail.com</td>
-                                    <td>Mumbai</td>
-                                    <td>Maharastra</td>
-                                    <td>India</td>
-                                    <td>60 days</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-        
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">9</td>
-        
-                                    <td>Andrew </td>
-                                    <td>Mike</td>
-                                    <td>9887886754</td>
-                                    <td>andrew@gmail.com</td>
-                                    <td>Mumbai</td>
-                                    <td>Maharastra</td>
-                                    <td>India</td>
-                                    <td>60 days</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-        
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">10</td>
-        
-                                    <td>Andrew </td>
-                                    <td>Mike</td>
-                                    <td>9887886754</td>
-                                    <td>andrew@gmail.com</td>
-                                    <td>Mumbai</td>
-                                    <td>Maharastra</td>
-                                    <td>India</td>
-                                    <td>60 days</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-        
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">11</td>
-        
-                                    <td>Andrew </td>
-                                    <td>Mike</td>
-                                    <td>9887886754</td>
-                                    <td>andrew@gmail.com</td>
-                                    <td>Mumbai</td>
-                                    <td>Maharastra</td>
-                                    <td>India</td>
-                                    <td>60 days</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-        
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">12</td>
-        
-                                    <td>Andrew </td>
-                                    <td>Mike</td>
-                                    <td>9887886754</td>
-                                    <td>andrew@gmail.com</td>
-                                    <td>Mumbai</td>
-                                    <td>Maharastra</td>
-                                    <td>India</td>
-                                    <td>60 days</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-        
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
+                                  <?php
+                                  if($arr_users != 'failure') {
+                                      foreach($arr_users as $key => $users) {
+                                      ?>
+                                      <tr>
+                                        <td class="text-center"><?php echo ($key+1); ?></td>
+                                        <td><?php echo $users['fname']; ?> </td>
+                                        <td><?php echo $users['lname']; ?> </td>
+                                        <td><?php echo $users['mobile']; ?> </td>
+                                        <td><?php echo $users['email']; ?></td>
+                                        <td>60 days</td>
+                                        <td>
+                                          <div class="togglebutton">
+                                            <label>
+                                              <input type="checkbox" checked="">
+                                              <span class="toggle"></span>
+                                            </label>
+                                          </div>
+                                        </td>
+                                        <td class="td-actions">
+                                           <a href="editUsers">
+    									   <button type="button" rel="tooltip" class="btn btn-success btn-round">
+                                            <i class="material-icons">
+                                             <img src="../../assets/img/create-white-18dp (1).svg" />
+                                            </i>
+                                          </button>
+    									  </a>
+                                          <button type="button" rel="tooltip" class="btn btn-danger btn-round">
+                                            <i class="material-icons">
+                                              <img src="../../assets/img/close-white-18dp.svg" />
+                                            </i>
+                                          </button>
+                                        </td>
+                                    </tr>
+                                      <?php
+                                      }
+                                  }
+                                  ?>
+                                  
                                 </tbody>
                               </table>
                             </div>

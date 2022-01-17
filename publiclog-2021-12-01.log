@@ -1,0 +1,6 @@
+ERROR - 2021-12-01 04:49:04 --> Operand should contain 1 column(s)
+INFO - 2021-12-01 08:43:40 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+ERROR - 2021-12-01 11:48:50 --> Error connecting to the database: Too many connections
+ERROR - 2021-12-01 11:48:50 --> Error connecting to the database: Too many connections
+INFO - 2021-12-01 22:18:41 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2021-12-01 22:18:42 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.

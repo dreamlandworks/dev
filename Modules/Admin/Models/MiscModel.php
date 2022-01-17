@@ -21,7 +21,28 @@ class MiscModel extends Model
         }
     }
     //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
-
+    //---------------------------------------------------GET Users STARTS-----------------------------------------------------
+    //-----------------------------------------------------------***************------------------------------------------------------------    
+    function get_users_list()
+    {
+    
+        $builder = $this->db->table('user_details');
+        $builder->select('*');
+        $builder->join('users', 'users.users_id = user_details.id');
+        //$builder->where('online_status_id',1);
+        $result = $builder->get()->getResultArray();
+        $builder->orderBy('id','DESC');
+        //echo "<br> str ".$this->db->getLastQuery();exit;
+        $count = count($result);
+                
+        if($count > 0) {
+            return $result; 
+        }
+        else {
+            return 'failure'; 
+        }
+    }
+    //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
 
     
 

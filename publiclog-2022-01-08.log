@@ -1,0 +1,17 @@
+ERROR - 2022-01-08 13:36:22 --> Unknown column 'user_details.id.id' in 'on clause'
+ERROR - 2022-01-08 13:41:23 --> Unknown column 'user_details.id.id' in 'on clause'
+ERROR - 2022-01-08 15:37:21 --> Unknown column 'fcm_token' in 'field list'
+ERROR - 2022-01-08 15:37:25 --> Unknown column 'fcm_token' in 'field list'
+ERROR - 2022-01-08 15:37:26 --> Unknown column 'fcm_token' in 'field list'
+ERROR - 2022-01-08 15:37:41 --> Unknown column 'fcm_token' in 'field list'
+ERROR - 2022-01-08 15:42:45 --> Unknown column 'fcm_token' in 'field list'
+ERROR - 2022-01-08 16:09:08 --> Unknown column 'fcm_token' in 'field list'
+INFO - 2022-01-08 17:29:29 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2022-01-08 17:29:30 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2022-01-08 17:29:33 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2022-01-08 17:43:17 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2022-01-08 17:43:17 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2022-01-08 17:43:23 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+ERROR - 2022-01-08 20:36:54 --> Unknown column 'booking_id' in 'field list'
+ERROR - 2022-01-08 20:36:59 --> Unknown column 'booking_id' in 'field list'
+ERROR - 2022-01-08 20:37:07 --> Unknown column 'booking_id' in 'field list'

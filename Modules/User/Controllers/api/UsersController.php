@@ -78,6 +78,7 @@ class UsersController extends ResourceController
                     $userdetails_model = new UserDetailsModel();
                     $users_model = new UsersModel();
                     $alert_model = new AlertModel();
+                    $common = new CommonModel();
                 
                     //JSON Objects declared into variables
                     $fname = $json->first_name;
@@ -205,13 +206,18 @@ class UsersController extends ResourceController
                                 $bb = $this->create_ref($fname, $mobile, $referral_id, $user_id);
                                 $cc = $this->delete_temp($mobile);
                                 $dd = $userdetails_model->update_user_details($users_id, ['referral_id' => $bb['id']]);
-                                $ale = $alert_model->create_record([
-                                    "alert_id" => 4,
-                                    "sub_id" => 1,
-                                    "users_id" => $user_id
-                                ]);
-        
-                                if ($aa != 0 && $bb != null && $cc != 0 && $dd != null && $ale != null) {
+                                //Insert into alert_details table
+                		        $arr_alerts = array(
+                    		          'alert_id' => 4, 
+                                      'description' => "You have succesfully registered",
+                                      'action' => 1,
+                                      'created_on' => date("Y-m-d H:i:s"), 
+                                      'status' => 1,
+                                      'users_id' => $user_id,
+                                );
+                                $ale = $common->insert_records_dynamically('alert_details', $arr_alerts);
+                                
+                                if ($aa != 0 && $bb != null && $cc != 0 && $dd != null && $ale > 0) {
                                     //Send SMS
                                     $sms_model = new SmsTemplateModel();
                                     

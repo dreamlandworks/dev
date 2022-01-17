@@ -1,0 +1,5 @@
+ERROR - 2021-12-25 07:10:56 --> Unknown column 'booking_id' in 'field list'
+ERROR - 2021-12-25 07:10:57 --> Unknown column 'booking_id' in 'field list'
+ERROR - 2021-12-25 07:10:58 --> Unknown column 'booking_id' in 'field list'
+ERROR - 2021-12-25 09:21:38 --> Unknown column 'extra_demand.amount' in 'field list'
+INFO - 2021-12-25 15:35:01 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.

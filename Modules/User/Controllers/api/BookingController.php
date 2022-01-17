@@ -43,6 +43,9 @@ class BookingController extends ResourceController
             if(!array_key_exists('scheduled_date',$json) || !array_key_exists('time_slot_from',$json)  
                 || !array_key_exists('started_at',$json) || !array_key_exists('job_description',$json) 
                 || !array_key_exists('address_id',$json) || !array_key_exists('temp_address_id',$json)
+                || !array_key_exists('city',$json) 
+                || !array_key_exists('state',$json) || !array_key_exists('country',$json) || !array_key_exists('postal_code',$json) 
+                || !array_key_exists('address',$json) || !array_key_exists('user_lat',$json) || !array_key_exists('user_long',$json)
                 || !array_key_exists('amount',$json) || !array_key_exists('sp_id',$json) || !array_key_exists('created_on',$json) 
                 || !array_key_exists('attachments',$json) || !array_key_exists('estimate_time',$json) || !array_key_exists('estimate_type_id',$json)
                 || !array_key_exists('users_id',$json) || !array_key_exists('key',$json) || $json->users_id == $json->sp_id
@@ -93,32 +96,50 @@ class BookingController extends ResourceController
                     if ($booking_id > 0) {
                         
                         $address_id = $json->address_id;
-                        if($address_id == 0 && $json->temp_address_id > 0 ) {
+                        if($address_id == 0) {
                             //Insert into address table
-                            $arr_temp_address = $common->get_details_dynamically('user_temp_address', 'id', $json->temp_address_id);
                             
-                            if($arr_temp_address != 'failure') {
-                                $data_address = [
-                                    'users_id' => $json->users_id,
-                                    'name' => "",
-                                    'flat_no' => "",
-                                    'apartment_name' => "",
-                                    'landmark' => "",
-                                    'locality' => $arr_temp_address[0]['locality'],
-                                    'latitude' => $arr_temp_address[0]['latitude'],
-                                    'longitude' => $arr_temp_address[0]['longitude'],
-                                    'city_id' => $arr_temp_address[0]['city_id'],
-                                    'state_id' => $arr_temp_address[0]['state_id'],
-                                    'country_id' => $arr_temp_address[0]['country_id'],
-                                    'zipcode_id' => $arr_temp_address[0]['zipcode_id'],
-                                ];
-                                
-                                $address_id = $common->insert_records_dynamically('address', $data_address);
-                                if($address_id > 0) {
-                                    //Delete temp address
-                                    $common->delete_records_dynamically('user_temp_address', 'id', $json->temp_address_id);
-                                }
+                            $city = $json->city;
+                    
+                            $zip_model = new ZipcodeModel();
+                            $city_model = new CityModel();
+                            $state_model = new StateModel();
+                            $country_model = new CountryModel();
+                            
+                            $country_id = $country_model->search_by_country($json->country);
+            		        $state_id = $state_model->search_by_state($json->state);
+            		        $city_id = $city_model->search_by_city($json->city);
+            		        $zip_id = $zip_model->search_by_zipcode($json->postal_code);
+                
+                            if ($country_id == 0) {
+                                $country_id = $country_model->create_country($json->country);
                             }
+            		        if ($state_id == 0) {
+                                $state_id = $state_model->create_state($json->state, $country_id);
+                            }
+            		        if ($city_id == 0) {
+            		            $city_id = $city_model->create_city($json->city, $state_id);
+                            }
+                            if ($zip_id == 0) {
+                                $zip_id = $zip_model->create_zip($json->postal_code, $city_id);
+                            }
+                            //JSON Objects declared into variables
+                            $data_address = [
+                                'users_id' => $json->users_id,
+                                'name' => "",
+                                'flat_no' => "",
+                                'apartment_name' => "",
+                                'landmark' => "",
+                                'locality' => $json->address,
+                                'latitude' => $json->user_lat,
+                                'longitude' => $json->user_long,
+                                'city_id' => $city_id,
+                                'state_id' => $state_id,
+                                'country_id' => $country_id,
+                                'zipcode_id' => $zip_id,
+                            ];
+                            
+                            $address_id = $common->insert_records_dynamically('address', $data_address);
                         }
                         
                         //Insert into Single move table
@@ -145,24 +166,62 @@ class BookingController extends ResourceController
                         if(count($attachments) > 0) {
                             foreach($attachments as $attach_key => $arr_file) {
                                 foreach($arr_file as $attach_name => $file) {
-                                    if ($file != null) {
-                                        $image = generateDynamicImage("images/attachments",$file);
+                                    $pos = strpos($file, 'firebasestorage');
+                                    
+                                    if ($pos !== false) { //URL
+                                        $url = $file;
+    
+                                        list($path,$token) = explode('?',$url);
                                         
-                                        $arr_attach = array(
-                                                'booking_id' => $booking_id,
-                                                'file_name' => $image,
-                                                'file_location' => 'images/attachments',
-                                                'created_on' => $json->created_on,
-                                                'created_by' => $json->users_id,
-                                                'status_id' => 1
-                                            );
-                                        $common->insert_records_dynamically('attachments', $arr_attach);
+                                        $type = pathinfo($path, PATHINFO_EXTENSION);
+                                        $data = file_get_contents($url);
+                                        $base64_file = base64_encode($data);
+                                        
+                                        $file = $base64_file;
                                     }
+                                    else {
+                                        $type = "png";
+                                    }
+                                    
+                                    $image = generateDynamicImage("images/attachments",$file,$type);
+                                        
+                                    $arr_attach = array(
+                                            'booking_id' => $booking_id,
+                                            'file_name' => $image,
+                                            'file_location' => 'images/attachments',
+                                            'created_on' => $json->created_on,
+                                            'created_by' => $json->users_id,
+                                            'status_id' => 1
+                                        );
+                                    $common->insert_records_dynamically('attachments', $arr_attach);
                                 }
                             }
                         }
                         
-                        
+                        $otp = $this->get_otp_token();
+            		    $booking_ref_id = str_pad($booking_id, 6, "0", STR_PAD_LEFT);
+            		    $users_id = $json->users_id;
+            		    
+            		    //Insert into alert_details table
+        		        $arr_alerts = array(
+            		          'alert_id' => 1, 
+                              'description' => "Your OTP to Start Booking $booking_ref_id is $otp. Please provide it to your service provider to start booking.",
+                              'action' => 1,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'users_id' => $users_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
+            		    
+            		    $arr_booking_update = array(
+                            'otp' => $otp,
+                            'otp_raised_by' => $users_id
+            		    );
+            		    /*echo "<pre>";
+            		    print_r($arr_booking_update);
+            		    echo "</pre>";
+            		    exit;*/
+            		    $common->update_records_dynamically('booking', $arr_booking_update, 'id', $booking_id);
                         
             			return $this->respond([
             			    "booking_id" => $booking_id,
@@ -281,22 +340,61 @@ class BookingController extends ResourceController
                         if(count($attachments) > 0) {
                             foreach($attachments as $attach_key => $arr_file) {
                                 foreach($arr_file as $attach_name => $file) {
-                                    if ($file != null) {
-                                        $image = generateDynamicImage("images/attachments",$file);
+                                    $pos = strpos($file, 'firebasestorage');
+                                    
+                                    if ($pos !== false) { //URL
+                                        $url = $file;
+    
+                                        list($path,$token) = explode('?',$url);
                                         
-                                        $arr_attach = array(
-                                                'booking_id' => $booking_id,
-                                                'file_name' => $image,
-                                                'file_location' => 'images/attachments',
-                                                'created_on' => $json->created_on,
-                                                'created_by' => $json->users_id,
-                                                'status_id' => 1
-                                            );
-                                        $common->insert_records_dynamically('attachments', $arr_attach);
+                                        $type = pathinfo($path, PATHINFO_EXTENSION);
+                                        $data = file_get_contents($url);
+                                        $base64_file = base64_encode($data);
+                                        
+                                        $file = $base64_file;
                                     }
+                                    else {
+                                        $type = "png";
+                                    }
+                                    
+                                    $image = generateDynamicImage("images/attachments",$file,$type);
+                                        
+                                    $arr_attach = array(
+                                            'booking_id' => $booking_id,
+                                            'file_name' => $image,
+                                            'file_location' => 'images/attachments',
+                                            'created_on' => $json->created_on,
+                                            'created_by' => $json->users_id,
+                                            'status_id' => 1
+                                        );
+                                    $common->insert_records_dynamically('attachments', $arr_attach);
                                 }
                             }
                         }
+                        
+                        $otp = $this->get_otp_token();
+            		    $booking_ref_id = str_pad($booking_id, 6, "0", STR_PAD_LEFT);
+            		    $users_id = $json->users_id;
+            		    
+            		    //Insert into alert_details table
+        		        $arr_alerts = array(
+            		          'alert_id' => 1, 
+                              'description' => "Your OTP to Start Booking $booking_ref_id is $otp. Please provide it to your service provider to start booking.",
+                              'action' => 1,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'users_id' => $users_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
+            		    
+            		    $arr_booking_update = array(
+                            'otp' => $otp,
+            		    );
+            		    /*echo "<pre>";
+            		    print_r($arr_booking_update);
+            		    echo "</pre>";
+            		    exit;*/
+            		    $common->update_records_dynamically('booking', $arr_booking_update, 'id', $booking_id);
                         
                         return $this->respond([
             			    "booking_id" => $booking_id,
@@ -396,11 +494,59 @@ class BookingController extends ResourceController
                         
                         if(count($addresses) > 0) {
                             foreach($addresses as $address_key => $arr_address) {
+                                //Check if existing address is given if not create a new one.
+                                $address_id = $arr_address->address_id;
+                                if($address_id == 0) {
+                                    //Insert into address table
+                                    
+                                    $city = $arr_address->city;
+                            
+                                    $zip_model = new ZipcodeModel();
+                                    $city_model = new CityModel();
+                                    $state_model = new StateModel();
+                                    $country_model = new CountryModel();
+                                    
+                                    $country_id = $country_model->search_by_country($arr_address->country);
+                    		        $state_id = $state_model->search_by_state($arr_address->state);
+                    		        $city_id = $city_model->search_by_city($arr_address->city);
+                    		        $zip_id = $zip_model->search_by_zipcode($arr_address->postal_code);
+                        
+                                    if ($country_id == 0) {
+                                        $country_id = $country_model->create_country($arr_address->country);
+                                    }
+                    		        if ($state_id == 0) {
+                                        $state_id = $state_model->create_state($arr_address->state, $country_id);
+                                    }
+                    		        if ($city_id == 0) {
+                    		            $city_id = $city_model->create_city($arr_address->city, $state_id);
+                                    }
+                                    if ($zip_id == 0) {
+                                        $zip_id = $zip_model->create_zip($arr_address->postal_code, $city_id);
+                                    }
+                                    //JSON Objects declared into variables
+                                    $data_address = [
+                                        'users_id' => $json->users_id,
+                                        'name' => "",
+                                        'flat_no' => "",
+                                        'apartment_name' => "",
+                                        'landmark' => "",
+                                        'locality' => $arr_address->address,
+                                        'latitude' => $arr_address->user_lat,
+                                        'longitude' => $arr_address->user_long,
+                                        'city_id' => $city_id,
+                                        'state_id' => $state_id,
+                                        'country_id' => $country_id,
+                                        'zipcode_id' => $zip_id,
+                                    ];
+                                    
+                                    $address_id = $common->insert_records_dynamically('address', $data_address);
+                                }
+                                
                                 //Insert into multi_move table
                                 $arr_multi_move[] = array(
                                         'booking_id' => $booking_id,
                                         'sequence_no' => $arr_address->sequence_no,
-                                        'address_id' => $arr_address->address_id,
+                                        'address_id' => $address_id,
                                         'job_description' => $arr_address->job_description,
                                         'weight_type' => $arr_address->weight_type,
                                     );
@@ -424,22 +570,61 @@ class BookingController extends ResourceController
                         if(count($attachments) > 0) {
                             foreach($attachments as $attach_key => $arr_file) {
                                 foreach($arr_file as $attach_name => $file) {
-                                    if ($file != null) {
-                                        $image = generateDynamicImage("images/attachments",$file);
+                                    $pos = strpos($file, 'firebasestorage');
+                                    
+                                    if ($pos !== false) { //URL
+                                        $url = $file;
+    
+                                        list($path,$token) = explode('?',$url);
                                         
-                                        $arr_attach = array(
-                                                'booking_id' => $booking_id,
-                                                'file_name' => $image,
-                                                'file_location' => 'images/attachments',
-                                                'created_on' => $json->created_on,
-                                                'created_by' => $json->users_id,
-                                                'status_id' => 1
-                                            );
-                                        $common->insert_records_dynamically('attachments', $arr_attach);
+                                        $type = pathinfo($path, PATHINFO_EXTENSION);
+                                        $data = file_get_contents($url);
+                                        $base64_file = base64_encode($data);
+                                        
+                                        $file = $base64_file;
                                     }
+                                    else {
+                                        $type = "png";
+                                    }
+                                    
+                                    $image = generateDynamicImage("images/attachments",$file,$type);
+                                        
+                                    $arr_attach = array(
+                                            'booking_id' => $booking_id,
+                                            'file_name' => $image,
+                                            'file_location' => 'images/attachments',
+                                            'created_on' => $json->created_on,
+                                            'created_by' => $json->users_id,
+                                            'status_id' => 1
+                                        );
+                                    $common->insert_records_dynamically('attachments', $arr_attach);
                                 }
                             }
                         }
+                        
+                        $otp = $this->get_otp_token();
+            		    $booking_ref_id = str_pad($booking_id, 6, "0", STR_PAD_LEFT);
+            		    $users_id = $json->users_id;
+            		    
+            		    //Insert into alert_details table
+        		        $arr_alerts = array(
+            		          'alert_id' => 1, 
+                              'description' => "Your OTP to Start Booking $booking_ref_id is $otp. Please provide it to your service provider to start booking.",
+                              'action' => 1,
+                              'created_on' => date("Y-m-d H:i:s"), 
+                              'status' => 1,
+                              'users_id' => $users_id,
+                        );
+                        $common->insert_records_dynamically('alert_details', $arr_alerts);
+            		    
+            		    $arr_booking_update = array(
+                            'otp' => $otp,
+            		    );
+            		    /*echo "<pre>";
+            		    print_r($arr_booking_update);
+            		    echo "</pre>";
+            		    exit;*/
+            		    $common->update_records_dynamically('booking', $arr_booking_update, 'id', $booking_id);
                         
                         return $this->respond([
             			    "booking_id" => $booking_id,
@@ -640,7 +825,8 @@ class BookingController extends ResourceController
 	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
 	//---------------------------------------------------------Booking details-------------------------------------------------
 	//-------------------------------------------------------------**************** -----------------------------------------------------
-
+	
+	
 	public function get_booking_details()
 	{
 		if ($this->request->getMethod() != 'post') {
@@ -725,9 +911,10 @@ class BookingController extends ResourceController
 		               $arr_booking['material_advance'] = ($arr_booking_details['material_advance'] > 0) ? $arr_booking_details['material_advance'] : 0;
 		               $arr_booking['technician_charges'] = ($arr_booking_details['technician_charges'] > 0) ? $arr_booking_details['technician_charges'] : 0;
 		               $arr_booking['expenditure_incurred'] = ($arr_booking_details['expenditure_incurred'] > 0) ? $arr_booking_details['expenditure_incurred'] : 0;
-		               $arr_booking['extra_demand_status'] = $arr_booking_details['extra_demand_status'];
+		               $arr_booking['extra_demand_status'] = ($arr_booking_details['extra_demand_status'] != "") ? $arr_booking_details['extra_demand_status'] : 0;
 		               $arr_booking['post_job_id'] = ($arr_booking_details['post_job_id'] > 0) ? $arr_booking_details['post_job_id'] : 0;
 		               $arr_booking['reschedule_status'] = $reschedule_status;
+		               $arr_booking['otp_raised_by'] = $arr_booking_details['otp_raised_by'];
 		               
 		               $attachment_count = $arr_booking_details['attachment_count'];
 		               
@@ -855,10 +1042,16 @@ class BookingController extends ResourceController
     		    
     		    if($key == $api_key) {
     		       $misc_model = new MiscModel();
+    		       $common = new CommonModel();
     		       
     		       $users_id = $json->users_id;
     		       
     		       $current_date = date('Y-m-d H:i:s');
+    		       
+    		       $arr_user_details = $common->get_details_dynamically('users', 'users_id', $users_id);
+    		       if($arr_user_details != 'failure') {
+    		           $user_fcm_token = $arr_user_details[0]['fcm_token'];
+    		       }
     		       
     	           //Get Single Move Booking Details
     		       $arr_single_move_booking_details = $misc_model->get_user_single_move_booking_details($users_id); 
@@ -872,10 +1065,26 @@ class BookingController extends ResourceController
     		               $completed_at = $book_data['completed_at'];
     		               $scheduled_date = $book_data['scheduled_date']." ".$book_data['from'];
     		               $booking_end_date = date('Y-m-d H:i:s',strtotime('+1 hour',strtotime($scheduled_date)));
+    		               $current_date_time = date('Y-m-d H:i:s');
+    		               $remaining_days = 0; 
+		                   $remaining_hours = 0;
+		                   $remaining_minutes = 0;
+    		               
+    		               if($current_date_time < $scheduled_date) {
+    		                   $dateDiff = intval((strtotime($scheduled_date) - strtotime($current_date_time)) / 60);
+    		                   $remaining_days = intval($dateDiff/(60*24)); 
+    		                   $remaining_hours = intval($dateDiff / 60);
+    		                   $remaining_minutes = $dateDiff % 60;
+    		               }
+    		               
+                           $status_id = $book_data['status_id'];
     		               
     		               $status = "";
     		               
-    		               if($started_at == "0000-00-00 00:00:00" && $current_date > $booking_end_date){
+    		               if($status_id == '24' || $status_id == '25') { //Cancelled by user/sp
+    		                   $status = "Cancelled";
+    		               }
+    		               else if($started_at == "0000-00-00 00:00:00" && $current_date > $booking_end_date){
     		                    $status = "Expired";
     		               }
     		               else {
@@ -922,6 +1131,11 @@ class BookingController extends ResourceController
     		               $arr_booking[$key]['technician_charges'] = $book_data['technician_charges'];
     		               $arr_booking[$key]['expenditure_incurred'] = $book_data['expenditure_incurred'];
     		               $arr_booking[$key]['booking_end_date'] = $booking_end_date;
+    		               $arr_booking[$key]['remaining_days_to_start'] = $remaining_days;
+    		               $arr_booking[$key]['remaining_hours_to_start'] = $remaining_hours;
+    		               $arr_booking[$key]['remaining_minutes_to_start'] = $remaining_minutes;
+    		               $arr_booking[$key]['sp_fcm_token'] = $book_data['fcm_token'];
+    		               $arr_booking[$key]['user_fcm_token'] = $user_fcm_token;
     		               
     		               $arr_booking[$key]['details'][] = array('job_description' => $book_data['job_description'],
 		                                                       'locality' => $book_data['locality'],
@@ -954,9 +1168,25 @@ class BookingController extends ResourceController
     		               
     		               $scheduled_date = $bc_book_data['scheduled_date']." ".$bc_book_data['from'];
     		               $booking_end_date = date('Y-m-d H:i:s',strtotime('+1 hour',strtotime($scheduled_date)));
+    		               $current_date_time = date('Y-m-d H:i:s');
+    		               $remaining_days = 0; 
+		                   $remaining_hours = 0;
+		                   $remaining_minutes = 0;
+    		               
+    		               if($current_date_time < $scheduled_date) {
+    		                   $dateDiff = intval((strtotime($scheduled_date) - strtotime($current_date_time)) / 60);
+    		                   $remaining_days = intval($dateDiff/(60*24)); 
+    		                   $remaining_hours = intval($dateDiff / 60);
+    		                   $remaining_minutes = $dateDiff % 60;
+    		               }
+    		               $status_id = $bc_book_data['status_id'];
     		               
     		               $status = "";
-    		               if($started_at == "0000-00-00 00:00:00" && $current_date > $booking_end_date){
+    		               
+    		               if($status_id == '24' || $status_id == '25') { //Cancelled by user/sp
+    		                   $status = "Cancelled";
+    		               }
+    		               else if($started_at == "0000-00-00 00:00:00" && $current_date > $booking_end_date){
         		                    $status = "Expired";
     		               }
     		               else {
@@ -994,6 +1224,11 @@ class BookingController extends ResourceController
     		               $arr_booking[$booking_count]['technician_charges'] = $bc_book_data['technician_charges'];
     		               $arr_booking[$booking_count]['expenditure_incurred'] = $bc_book_data['expenditure_incurred'];
     		               $arr_booking[$booking_count]['booking_end_date'] = $booking_end_date;
+    		               $arr_booking[$booking_count]['remaining_days_to_start'] = $remaining_days;
+    		               $arr_booking[$booking_count]['remaining_hours_to_start'] = $remaining_hours;
+    		               $arr_booking[$booking_count]['remaining_minutes_to_start'] = $remaining_minutes;
+    		               $arr_booking[$booking_count]['sp_fcm_token'] = $bc_book_data['fcm_token'];
+    		               $arr_booking[$booking_count]['user_fcm_token'] = $user_fcm_token;
     		               
     		               $arr_booking[$booking_count]['details'][] = array('job_description' => $bc_book_data['job_description']);
     		               
@@ -1029,10 +1264,25 @@ class BookingController extends ResourceController
         		               $completed_at = $mm_book_data['completed_at'];
         		               $scheduled_date = $mm_book_data['scheduled_date']." ".$mm_book_data['from'];
     		                   $booking_end_date = date('Y-m-d H:i:s',strtotime('+1 hour',strtotime($scheduled_date)));
+    		                   $current_date_time = date('Y-m-d H:i:s');
+    		                   $remaining_days = 0; 
+    		                   $remaining_hours = 0;
+    		                   $remaining_minutes = 0;
         		               
+        		               if($current_date_time < $scheduled_date) {
+        		                   $dateDiff = intval((strtotime($scheduled_date) - strtotime($current_date_time)) / 60);
+        		                   $remaining_days = intval($dateDiff/(60*24)); 
+        		                   $remaining_hours = intval($dateDiff / 60);
+        		                   $remaining_minutes = $dateDiff % 60;
+        		               }
+        		               $status_id = $mm_book_data['status_id'];
+    		               
         		               $status = "";
         		               
-        		               if($started_at == "0000-00-00 00:00:00" && $current_date > $booking_end_date){
+        		               if($status_id == '24' || $status_id == '25') { //Cancelled by user/sp
+        		                   $status = "Cancelled";
+        		               }
+        		               else if($started_at == "0000-00-00 00:00:00" && $current_date > $booking_end_date){
         		                    $status = "Expired";
         		               }
         		               else {
@@ -1069,6 +1319,11 @@ class BookingController extends ResourceController
         		               $arr_booking[$booking_count]['technician_charges'] = $mm_book_data['technician_charges'];
         		               $arr_booking[$booking_count]['expenditure_incurred'] = $mm_book_data['expenditure_incurred'];
         		               $arr_booking[$booking_count]['booking_end_date'] = $booking_end_date;
+        		               $arr_booking[$booking_count]['remaining_days_to_start'] = $remaining_days;
+        		               $arr_booking[$booking_count]['remaining_hours_to_start'] = $remaining_hours;
+        		               $arr_booking[$booking_count]['remaining_minutes_to_start'] = $remaining_minutes;
+        		               $arr_booking[$booking_count]['sp_fcm_token'] = $mm_book_data['fcm_token'];
+        		               $arr_booking[$booking_count]['user_fcm_token'] = $user_fcm_token;
         		               
         		               foreach($arr_details[$mm_book_data['id']] as $key => $val) {
         		                   $arr_booking[$booking_count]['details'][$key] = $arr_details[$mm_book_data['id']][$key];
@@ -1276,6 +1531,8 @@ class BookingController extends ResourceController
 		
     		$api_key = $apiconfig->user_key;
     		
+    		$common = new CommonModel();
+    		
     		if($key == $api_key) {
     		    $otp = $this->get_otp_token();
     		    $booking_ref_id = str_pad($validate_booking_id, 6, "0", STR_PAD_LEFT);
@@ -1289,9 +1546,7 @@ class BookingController extends ResourceController
                     $sp_id = $arr_booking_details[0]['sp_id'];
                 }
     		    
-    		    $common = new CommonModel();
-    		    
-    		    if($json->user_type == 'User') {
+    		    /*if($user_type == 'User') {
         		    //Insert into alert_details table
     		        $arr_alerts = array(
         		          'alert_id' => 1, 
@@ -1302,8 +1557,8 @@ class BookingController extends ResourceController
                           'users_id' => $users_id,
                     );
                     $common->insert_records_dynamically('alert_details', $arr_alerts);
-    		    }
-    		    if($json->user_type == 'SP') {
+    		    }*/
+    		    if($user_type == 'SP') {
         		    //Insert into alert_details table
     		        $arr_alerts = array(
         		          'alert_id' => 1, 
@@ -1318,6 +1573,7 @@ class BookingController extends ResourceController
     		    
     		    $arr_booking_update = array(
                     'otp' => $otp,
+                    'otp_raised_by' => $sp_id
     		    );
     		    /*echo "<pre>";
     		    print_r($arr_booking_update);
@@ -1325,8 +1581,6 @@ class BookingController extends ResourceController
     		    exit;*/
     		    $common->update_records_dynamically('booking', $arr_booking_update, 'id', $validate_booking_id);
     		    
-    		    
-		        
 		        return $this->respond([
         		    "otp" => $otp,
     				"status" => 200,
@@ -1373,7 +1627,7 @@ class BookingController extends ResourceController
     		    $user_mobile = 0;
     		    
     		    //Get data from booking table
-                $arr_booking_details = $common->get_details_dynamically('booking', 'id', $json->booking_id);
+                $arr_booking_details = $common->get_details_dynamically('booking', 'id', $validate_booking_id);
                 if($arr_booking_details != 'failure') {
                     $users_id = $arr_booking_details[0]['users_id'];
                     $sp_id = $arr_booking_details[0]['sp_id'];
@@ -1998,6 +2252,7 @@ class BookingController extends ResourceController
         		$ar_sp_id = array();
         		$arr_slots_data = array();
         		$arr_temp = array();
+        		$arr_temp_blocked = array();
         		
         		$ar_sp_id[$sp_id] = $sp_id;
         		
@@ -2006,7 +2261,8 @@ class BookingController extends ResourceController
                 if($arr_preferred_time_slots_list != 'failure') {
                     foreach($arr_preferred_time_slots_list as $key => $slot_data) {
                         $arr_temp[$slot_data['users_id']][$key]['day_slot'] = $slot_data['day_slot'];
-                        $arr_temp[$slot_data['users_id']][$key]['time_slot_from'] = $slot_data['from'];
+                        $arr_temp[$slot_data['users_id']][$key]['time_slot_from'] = $slot_data['time_slot_from'];
+                        $arr_temp[$slot_data['users_id']][$key]['time_slot_to'] = $slot_data['time_slot_to'];
                     }
                 }
                 
@@ -2023,7 +2279,7 @@ class BookingController extends ResourceController
                     foreach($ar_sp_id as $sp_id) {
                         if(array_key_exists($sp_id,$arr_temp)) {
                             $arr_slots_data["preferred_time_slots"] = $arr_temp[$slot_data['users_id']];
-                            $arr_slots_data["blocked_time_slots"] = $arr_temp_blocked[$slot_data['users_id']];
+                            $arr_slots_data["blocked_time_slots"] = (array_key_exists($slot_data['users_id'],$arr_temp_blocked)) ? $arr_temp_blocked[$slot_data['users_id']] : array();
                             //array_push($arr_slots_data,array("preferred_time_slots" => $arr_temp[$slot_data['users_id']],
                             //                                    "blocked_time_slots" => $arr_temp_blocked[$slot_data['users_id']]));
                         }
@@ -2213,7 +2469,7 @@ class BookingController extends ResourceController
     		       }
     		       else {
             		    return $this->respond([
-            		        "booking_id" => $booking_id,
+            		        "job_post_id" => $validate_post_job_id,
         					"status" => 404,
         					"message" => "No Goals/Installments found"
         				]);

@@ -1,0 +1,3 @@
+INFO - 2021-12-18 03:07:08 --> Used the default controller.
+INFO - 2021-12-18 07:23:21 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+ERROR - 2021-12-18 21:51:30 --> Unknown column 'scheduled_at' in 'where clause'

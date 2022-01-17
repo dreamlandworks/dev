@@ -152,7 +152,7 @@ class SearchProvider extends ResourceController
                     $temp_address_id = $common->insert_records_dynamically('user_temp_address', $data);
                     
                     //Check whether any SP is available, if yes process the details
-                    $arr_search_result_list = $misc_model->get_search_results($keyword_id,$city,$json->user_lat,$json->user_long,$subcat_id);
+                    $arr_search_result_list = $misc_model->get_search_results($keyword_id,$city,$json->user_lat,$json->user_long,$subcat_id,$json->users_id);
                     $ar_sp_id = array();
                     $arr_preferred_time_slots = array();
                     $arr_temp = array();
@@ -163,8 +163,9 @@ class SearchProvider extends ResourceController
                     $CGST_amount = 0;
 					$SGST_amount = 0;
 					$arr_sp_key = array();
-                    
-                    if($arr_search_result_list != 'failure') {
+					$arr_sp_ranking_key = array();
+					
+					if($arr_search_result_list != 'failure') {
                         foreach($arr_search_result_list as $key => $search_data) {
                             $arr_search_result[$key]["id"] =  $search_data['id'];
                             $arr_search_result[$key]["users_id"] =  $search_data['users_id'];
@@ -202,6 +203,9 @@ class SearchProvider extends ResourceController
                             $arr_search_result[$key]["distance_kms"] =  round($search_data['distance_miles'] * 1.60934,2);
                             $arr_search_result[$key]["SGST_percentage"] = $SGST;
                             $arr_search_result[$key]["CGST_percentage"] = $CGST;
+                            
+                            $arr_search_result[$key]["rank"] = 0;
+    		                $arr_search_result[$key]["rating"] = 0;
                             
                             $minimum_charges = round($arr_search_result[$key]["min_charges"],2);
                             $amount = 0;
@@ -252,7 +256,51 @@ class SearchProvider extends ResourceController
                             $arr_sp_key[$search_data['users_id']] = $key;
 
                             $ar_sp_id[$search_data['users_id']] = $search_data['users_id'];
+                            
+                            $arr_sp_ranking_key[$search_data['users_id']] = $search_data['users_id'];
                         }
+                        
+                        $rank_key = 0;
+                        
+                        $res = $misc_model->get_sp_search_ranking_details($city_id,$keyword_id,$subcat_id);
+                		if($res != 'failure') {
+                		    foreach($res as $key => $rdata) {
+                		        if(array_key_exists($rdata['users_id'],$arr_sp_key)) {
+                		            $sp_key = $arr_sp_key[$rdata['users_id']];
+                		            
+                		            $arr_search_result[$sp_key]["points_count"] = $rdata["points_count"];
+                		            $arr_search_result[$sp_key]["rank"] = ($key + 1);
+                		            $rank_key++;
+                		            
+                		            unset($arr_sp_ranking_key[$rdata['users_id']]);
+                		        }
+                		    }
+                		}
+                		
+                		//Assign ranks even though points is 0
+                		if(count($arr_sp_ranking_key) > 0) {
+                		    foreach($arr_sp_ranking_key as $ruser_id) {
+                		        $sp_key = $arr_sp_key[$ruser_id];
+                		        
+                		        $arr_search_result[$sp_key]["rank"] = ($rank_key + 1);
+                		        unset($arr_sp_ranking_key[$ruser_id]);
+                		    }
+                		}
+                        
+                        //Get reviews
+                		$arr_reviews = $misc_model->get_sp_review_data($ar_sp_id);
+                		if($arr_reviews != 'failure') {
+                		    foreach($arr_reviews as $rev_data) {
+                		        $rating = $rev_data['sum_average_review']/$rev_data['total_people'];
+                		        
+                		        if(array_key_exists($rev_data['sp_id'],$arr_sp_key)) {
+                		            $sp_key = $arr_sp_key[$rev_data['sp_id']];
+                		            
+                		            $arr_search_result[$sp_key]["rating"] = $rating;
+                		            $arr_search_result[$sp_key]["total_people"] = $rev_data['total_people'];
+                		        }
+                		    }
+                		}
                         
                         //Get Sp's keywords
                         $arr_keywords_list = $misc_model->get_sp_keywords($ar_sp_id);

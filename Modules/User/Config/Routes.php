@@ -31,6 +31,7 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     $routes->get("phrase", "MiscController::get_search_phrase"); //Get Search Phrases to use for user search queries
     $routes->get("autocomplete_address", "MiscController::autocomplete_address"); //Get keyword and Sub-Categories
     $routes->post("offers_list", "MiscController::offers_list"); //Get keyword and Sub-Categories 
+    $routes->get("autocomplete_by_category", "MiscController::get_keywords_autocomplete_by_category"); //Get keyword and Sub-Categories
     
 
     //Routes pertaining to Alerts
@@ -119,8 +120,7 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     //Routes pertaining to User Account
     $routes->get("get_account_details", "MyAccount::get_account_details"); //Get User account details
     
-    
-	
+  
 	
 });
 

@@ -37,6 +37,7 @@ $routes->group("ct",["namespace" => "\Modules\Admin\Controllers\web"],function($
 	$routes->add("createNewUser", "Users::create_user"); // createNewUser Functionality
 	$routes->add("listUsers", "Users::list_users"); 
 	$routes->add("editUsers", "Users::edit_users"); 
+	$routes->add("create_user_submit", "Users::create_user_submit"); 
 	
 	$routes->add("activateProvider", "Serviceproviders::activate_provider"); 
 	$routes->add("list_providers", "Serviceproviders::list_providers");

@@ -116,6 +116,7 @@
                                         </button>
                                     </a>
                                 </div> -->
+                                <form method="POST" id="userDetails" role="form" action="<?php echo ADMINBASEURL; ?>create_user_submit">
                                 <div class="card ">
                                     <div class="card-header card-header-rose card-header-icon">
                                         <div class="card-icon">
@@ -126,104 +127,85 @@
                                         <h4 class="card-title">New User</h4>
                                     </div>
                                     <div class="card-body ">
-                                        <form method="#" action="#">
-                                            <div class="row">
-                                                <div class="col-lg-5 col-md-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="exampleName" class="bmd-label-floating">
-                                                            First Name </label>
-                                                        <input type="text" class="form-control" id="name">
-                                                    </div>
+                                        <div class="row">
+                                            <div class="col-lg-5 col-md-6 col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="exampleName" class="bmd-label-floating">
+                                                        First Name </label>
+                                                    <input type="text" class="form-control" name="fname" id="fname">
+                                                </div>
 
-                                                    <div class="form-group">
-                                                        <label for="exampleName" class="bmd-label-floating">Last Name
-                                                        </label>
-                                                        <input type="text" class="form-control" id="name">
-                                                    </div>
+                                                <div class="form-group">
+                                                    <label for="exampleName" class="bmd-label-floating">Last Name
+                                                    </label>
+                                                    <input type="text" class="form-control" name="lname" id="lname">
+                                                </div>
 
-                                                    <div class="form-group">
-                                                        <label for="exampleDesignation"
-                                                            class="bmd-label-floating">Mobile</label>
-                                                        <input type="text" class="form-control" id="designation">
-                                                    </div>
+                                                <div class="form-group">
+                                                    <label for="exampleDesignation"
+                                                        class="bmd-label-floating">Mobile</label>
+                                                    <input type="text" class="form-control" name="mobile" id="mobile">
+                                                </div>
 
-                                                    <div class="form-group">
-                                                        <label for="examplePass" class="bmd-label-floating">Email
-                                                            <span style="color:red">*</span></label>
-                                                        <input type="email" class="form-control" id="examplePass">
-                                                    </div>
+                                                <div class="form-group">
+                                                    <label for="examplePass" class="bmd-label-floating">Email
+                                                        <span style="color:red">*</span></label>
+                                                    <input type="email" class="form-control" name="email" id="email">
+                                                </div>
 
-                                                
-                                                    <select class="selectpicker" data-style="select-with-transition"
-                                                    title="Select Gender" data-size="7">
-                                                    <option value="2">Male </option>
-                                                    <option value="3">Female </option>
+                                                <select class="selectpicker" data-style="select-with-transition" title="Select Gender" data-size="7" name="gender" id="gender">
+                                                    <option value="">Select</option>
+                                                    <option value="male">Male </option>
+                                                    <option value="female">Female </option>
                                                 </select>
 
+                                            <div class="form-group">
+                                                <label for="examplePass" class="bmd-label-floating">Password
+                                                </label>
+                                                <input type="password" class="form-control" id="password" name="password">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="exampleName" class="bmd-label-floating">Confirm Password
+                                                </label>
+                                                <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                                            </div>
+
+                                            </div>
+                                            <div class="col-lg-5 col-md-6 col-sm-12" style="margin:0.4rem 2rem">
                                                 <div class="form-group">
-                                                    <label for="examplePass" class="bmd-label-floating">Password
+                                                    <label for="exampleName" class="bmd-label-floating">Referred By
                                                     </label>
-                                                    <input type="password" class="form-control" id="examplePass">
+                                                    <input type="text" class="form-control" id="referral_id" name="referral_id">
                                                 </div>
+                                                <br />
 
-                                                <div class="form-group">
-                                                    <label for="exampleName" class="bmd-label-floating">Confirm Password
-                                                    </label>
-                                                    <input type="password" class="form-control" id="name">
-                                                </div>
-
-                                                </div>
-                                                <div class="col-lg-5 col-md-6 col-sm-12" style="margin:0.4rem 2rem">
-                                    
-                                                    <div class="form-group">
-                                                        <label for="Publishing_year">Publishing Year <span
-                                                                style="color:red">*</span></label>
-                                                        <input type="date" class="form-control datepicker" value=""
-                                                            id="exampleJoining_date">
+                                                <div class="fileinput fileinput-new text-center"
+                                                    data-provides="fileinput">
+                                                    <div class="fileinput-new thumbnail">
+                                                        <img src="<?php echo base_url(); ?>/assets/img/image_placeholder.jpg" alt="...">
                                                     </div>
-                                                    <div class="form-group">
-                                                        <label for="exampleName" class="bmd-label-floating">Referred By
-                                                        </label>
-                                                        <input type="text" class="form-control" id="name">
-                                                    </div>
-                                                    <br />
-
-                                                    <div class="fileinput fileinput-new text-center"
-                                                        data-provides="fileinput">
-                                                        <div class="fileinput-new thumbnail">
-                                                            <img src="../../assets/img/image_placeholder.jpg" alt="...">
-                                                        </div>
-                                                        <div class="fileinput-preview fileinput-exists thumbnail"></div>
-                                                        <div>
-                                                            <span class="btn btn-teal btn-round btn-file">
-                                                                <span class="fileinput-new">Select image</span>
-                                                                <span class="fileinput-exists">Change</span>
-                                                                <input type="file" id="filess" name="..." />
-                                                            </span>
-                                                            <a href="#pablo"
-                                                                class="btn btn-danger btn-round fileinput-exists"
-                                                                data-dismiss="fileinput"><i class="fa fa-times"></i>
-                                                                Remove</a>
-                                                        </div>
+                                                    <div class="fileinput-preview fileinput-exists thumbnail"></div>
+                                                    <div>
+                                                        <span class="btn btn-teal btn-round btn-file">
+                                                            <span class="fileinput-new">Select image</span>
+                                                            <span class="fileinput-exists">Change</span>
+                                                            <input type="file" id="profile_pic" name="profile_pic" />
+                                                        </span>
+                                                        <a href="#pablo"
+                                                            class="btn btn-danger btn-round fileinput-exists"
+                                                            data-dismiss="fileinput"><i class="fa fa-times"></i>
+                                                            Remove</a>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="row">
-                                                <label class="col-md-2 col-form-label"> Description : </label>
-                                                <div class="col-md-8">
-                                                    <div class="form-group">
-                                                        <div id="editor">
-                                                            <p>This is some sample content.</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
+                                        </div>
                                     </div>
                                     <div class="card-footer ">
                                         <button type="submit" class="btn btn-fill btn-teal">Submit</button>
                                     </div>
                                 </div>
+                                </form>  
                             </div>
                         </div>
 
@@ -236,19 +218,42 @@
     <!--   Core JS Files   -->
     <script src="https://cdn.ckeditor.com/ckeditor5/22.0.0/classic/ckeditor.js"></script>
 
-        <script>
+<script>
 
-            ClassicEditor
-                .create(document.querySelector('#editor'))
-                .catch(error => {
-                    console.error(error);
-                });
-    
-        </script>
+    ClassicEditor
+        .create(document.querySelector('#editor'))
+        .catch(error => {
+            console.error(error);
+        });
 
-</body>
-
-
-
-
-</html>
+</script>
+<script>
+    $(document).ready(function(){
+	var userDetailsForm = $("#userDetails");	
+    	var validator = userDetailsForm.validate({		
+    		
+    		rules:{
+    			fname :{ required : true},
+    			lname :{ required: true},
+    			/*day :{ required: true},
+    			month :{ required: true},
+    			year :{ required: true},
+    			country_code :{ required: true},
+    			mobile_no :{ required: true},
+    			emailId :{ required: true},*/
+    		},
+    		messages:{
+    		    fname :{ required : "First Name  is Required"},
+    		    lname :{ required : "Last Name  is Required"},
+    			/*day :{ required : "*"},
+    		    month :{ required : "*"},
+    			year :{ required: "*"},
+    			country_code :{ required: "*"},
+    			mobile_no :{ required: "*"},
+    			emailId :{ required: "Email is Required"},*/
+    			
+    		}
+    	});
+    });
+   
+</script>

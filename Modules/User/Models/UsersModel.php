@@ -204,5 +204,25 @@ class UsersModel extends Model
 	        return 'failure'; 
 	    }
     }
+    
+    public function create_user_default($array){
+
+		$data=[
+			'userid'=> $array['mobile'],
+			'password'=> $array['password'], 
+			'email'=> $array['email'], 
+			'users_id' => $array['users_id']
+			];
+		
+		$res = $this->insert($data);
+		$insertID = $this->getInsertID();
+
+		if ($res!=null) {
+			return $insertID;
+		} else {
+			return 0;
+		}
+
+	}
 		
 }

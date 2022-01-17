@@ -134,7 +134,26 @@ class AddressModel extends Model
 		}else{
 			return 0;
 		}
+    }
+    
+    public function create_address_default($array)
+	{
+		$data = [
+			'name' => $array['name'],
+			'flat_no' => $array['flat'],
+			'apartment_name' => $array['apartment'],
+			'landmark' => $array['landmark'],
+			'locality' => $array['locality'],
+			'zipcode_id' => $array['zipcode_id']
+		];
 
+		$res = $this->insert($data);
+		$insertID = $this->getInsertID();
 
+		if ($res) {
+			return $insertID;
+		} else {
+			return 0;
+		}
 	}
 }
