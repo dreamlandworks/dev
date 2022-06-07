@@ -164,14 +164,14 @@ select.selectpicker {
 
     &:focus,
     &:hover{
-        @include shadow-big-color($brand-primary);
+        @include shadow-big-color($primary);
     }
 }
 
 .bootstrap-select {
   .dropdown-item.active {
-    background: $brand-primary;
-    color: $white-color;
+    background: $primary;
+    color: $white;
   }
 }
 

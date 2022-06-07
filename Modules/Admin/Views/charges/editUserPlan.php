@@ -126,33 +126,34 @@
                                         <h4 class="card-title">Edit User Plan</h4>
                                     </div>
                                     <div class="card-body ">
-                                        <form method="#" action="#">
+                                        <form enctype="multipart/form-data" method="POST" id="edituserplans" role="form" action="<?php echo ADMINBASEURL; ?>edit_userplan_submit">
+                                        <input type="hidden" class="form-control" name="userplan_id" id="userplan" value="<?php echo $userplan->id; ?>">
                                             <div class="row">
                                                 <div class="col-lg-5 col-md-6 col-sm-12">
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating">
                                                             Name</label>
-                                                        <input type="text" class="form-control" id="name" value ="name">
+                                                        <input type="text" class="form-control" id="name" name="name" value ="<?php echo $userplan->name; ?>">
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating">
                                                             Amount </label>
-                                                        <input type="text" class="form-control" id="name" value="1000">
+                                                        <input type="text" class="form-control" id="amount" name="amount" value="<?php echo $userplan->amount; ?>">
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating">Period in
                                                             Days
                                                         </label>
-                                                        <input type="text" class="form-control" id="name" value="4">
+                                                        <input type="text" class="form-control" id="period" value="<?php echo $userplan->period; ?>" name="period">
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating"> No. Posts
                                                             per month
                                                         </label>
-                                                        <input type="text" class="form-control" id="name" value="6">
+                                                        <input type="text" class="form-control" id="posts_per_month" value="<?php echo $userplan->posts_per_month; ?>" name="posts_per_month">
                                                     </div>
 
 
@@ -162,25 +163,25 @@
                                                         <label for="exampleName" class="bmd-label-floating"> No.
                                                             Proposals per post
                                                         </label>
-                                                        <input type="text" class="form-control" id="name" value="3">
+                                                        <input type="text" class="form-control" id="proposals_per_post" value="<?php echo $userplan->proposals_per_post; ?>" name="proposals_per_post">
                                                     </div>
                                                     <select class="selectpicker" data-style="select-with-transition"
-                                                        title="Premium Tag" data-size="7">
-                                                        <option value="2" selected>Yes </option>
-                                                        <option value="3">No </option>
+                                                        title="Premium Tag" data-size="7" name="premium_tag" id="premium_tag">
+                                                        <option value="Yes" <?=($userplan->premium_tag=='Yes')?'selected':''; ?>>Yes </option>
+                                                        <option value="No" <?=($userplan->premium_tag=='No')?'selected':''; ?>>No </option>
                                                     </select>
 
                                                     <select class="selectpicker" data-style="select-with-transition"
-                                                        title="Customer Support" data-size="7">
-                                                        <option value="2">Yes </option>
-                                                        <option value="3" selected>No </option>
+                                                        title="Customer Support" data-size="7" id="customer_support" name="customer_support">
+                                                        <option value="Yes" <?=($userplan->customer_support=='Yes')?'selected':''; ?>>Yes </option>
+                                                        <option value="No" <?=($userplan->customer_support=='No')?'selected':''; ?>>No </option>
                                                     </select>
 
-                                                    <select class="selectpicker" data-style="select-with-transition"
-                                                        title="Select Status" data-size="7">
-                                                        <option value="2" selected>Yes </option>
-                                                        <option value="3">No </option>
-                                                    </select>
+                                                    <!--<select class="selectpicker" data-style="select-with-transition"-->
+                                                    <!--    title="Select Status" data-size="7">-->
+                                                    <!--    <option value="2" selected>Yes </option>-->
+                                                    <!--    <option value="3">No </option>-->
+                                                    <!--</select>-->
 
                                                 </div>
                                             </div>
@@ -194,10 +195,11 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </form>
-                                    </div>
+                                       
                                     <div class="card-footer ">
                                         <button type="submit" class="btn btn-fill btn-teal">Submit</button>
+                                    </div>
+                                     </form>
                                     </div>
                                 </div>
                             </div>
@@ -476,6 +478,38 @@
             });
 
     </script>
+    
+        <script>
+    $(document).ready(function(){
+	var userplansForm = $("#edituserplans");	
+    	var validator = userplansForm.validate({		
+    		
+    		rules:{
+    			name :{ required : true},
+    			description :{ required : true},
+    			amount :{ required : true},
+    			period :{ required : true},
+    			posts_per_month :{ required : true},
+    			proposals_per_post :{ required : true},
+    			premium_tag:{required : true},
+    			customer_support:{required : true}
+    			
+    		},
+    		messages:{
+    		    name :{ required : "Name  is Required"},
+    		    description : {required : "Description is required"},
+    		    amount : {required : "Amount is required"},
+    		    period : {required : "Period is required"},
+    		    posts_per_month : {required : "Post per month is required"},
+    		    proposals_per_post : {required : "Proposal per month is required"},
+    		    premium_tag:{required : "Select Any one option"},
+    		    customer_support:{required : "Select Any one option"}
+    			
+    		}
+    	});
+    });
+   
+</script>
 
 </body>
 

@@ -110,7 +110,7 @@
                     <div class="row">
                       <div class="col-md-12">
                         <div>
-                          <a href="addUserPlan">
+                          <a href="<?php echo ADMINBASEURL;?>addUserPlan">
                             <button class="btn btn-primary" style="background-color:#8f6bf4">
                               <b> <i class="material-icons"><img src="../../assets/img/icons/add-white-24dp.svg" /></i> Add User Plan
                               </b>
@@ -142,7 +142,7 @@
                                     <th>No.of Posts/Month</th>
                                     <th>No.Proposals/post</th>
                                     <th>Customer Support</th>
-                                    <th>Status</th>
+                                    <!--<th>Status</th>-->
                                     <th>Actions</th>
                                   </tr>
                                 </thead>
@@ -156,391 +156,54 @@
                                         <th>No.of Posts/Month</th>
                                         <th>No.Proposals/post</th>
                                         <th>Customer Support</th>
-                                        <th>Status</th>
+                                        <!--<th>Status</th>-->
                                         <th>Actions</th>
                                       </tr>
                                 </tfoot>
                                 <tbody>
-        
-                                  <tr>
-                                    <td class="text-center">1</td>
-                                    <td>User Plan</td>
-                                    <td>Rs.200/-</td>
-                                    <td>20 Days</td>
-                                    <td>Yes</td>
-                                    <td>30</td>
-                                    <td>10</td>
-                                    <td>Yes</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
+                                <?php
+                                  if($arr_userplans != 'failure') {
+                                      foreach($arr_userplans as $key => $userplans) {
+                                      ?>
+                                      <tr>
+                                        <td class="text-center"><?php echo ($key+1); ?></td>
+                                        <td><?php echo $userplans['name']; ?> </td>
+                                        <td> <?php echo $userplans['amount']; ?></td>
+                                        <td> <?php echo $userplans['period']; ?></td>
+                                        <td> <?php echo $userplans['premium_tag']; ?></td>
+                                        <td> <?php echo $userplans['posts_per_month']; ?></td>
+                                        <td> <?php echo $userplans['proposals_per_post']; ?></td>
+                                        <td> <?php echo $userplans['customer_support']; ?></td>
+                                    <!--    <td>-->
+                                    <!--  <div class="togglebutton">-->
+                                    <!--    <label>-->
+                                    <!--      <input class ="chkstatus" data-id="<?php //echo $userplans['id']; ?>"  type="checkbox"  >-->
+                                    <!--      <span class="toggle"></span>-->
+                                    <!--    </label>-->
+                                    <!--  </div>-->
+                                    <!--</td>-->
                                     <td class="td-actions">
-                                      <a href="editUserPlan">
+                                      <a href="<?php echo ADMINBASEURL;?>editUserplan/<?php echo $userplans['id'];?>">
 									  <button type="button" rel="tooltip" class="btn btn-success btn-round">
                                         <i class="material-icons">
                                           <img src="../../assets/img/create-white-18dp (1).svg" />
                                         </i>
                                       </button>
 									  </a>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
+                                      <button type="button" rel="tooltip" data-id="<?php echo $userplans['id']; ?>" class="btn btn-danger btn-round btndelete">
+                                    <!--<button class="btn btn-danger" onclick="delete_book(<?php //echo $userplans['id']; ?>)">Delete</button>-->
+
                                         <i class="material-icons">
                                           <img src="../../assets/img/close-white-18dp.svg" />
                                         </i>
                                       </button>
                                     </td>
-                                  </tr>
-                                  <tr>
-                                    <td class="text-center">2</td>
-                                    <td>User Plan</td>
-                                    <td>Rs.200/-</td>
-                                    <td>20 Days</td>
-                                    <td>Yes</td>
-                                    <td>30</td>
-                                    <td>10</td>
-                                    <td>Yes</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td class="text-center">3</td>
-                                    <td>User Plan</td>
-                                    <td>Rs.200/-</td>
-                                    <td>20 Days</td>
-                                    <td>Yes</td>
-                                    <td>30</td>
-                                    <td>10</td>
-                                    <td>Yes</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-                                  <tr>
-                                                         <td class="text-center">4</td>      <td>User Plan</td>
-                                    <td>Rs.200/-</td>
-                                    <td>20 Days</td>
-                                    <td>Yes</td>
-                                    <td>30</td>
-                                    <td>10</td>
-                                    <td>Yes</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-                                  <tr>
-                                    <td class="text-center">5</td>
-                                    <td>User Plan</td>
-                                    <td>Rs.200/-</td>
-                                    <td>20 Days</td>
-                                    <td>Yes</td>
-                                    <td>30</td>
-                                    <td>10</td>
-                                    <td>Yes</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-        
-                                  <tr>
-                                    <td class="text-center">6</td>
-                                    <td>User Plan</td>
-                                    <td>Rs.200/-</td>
-                                    <td>20 Days</td>
-                                    <td>Yes</td>
-                                    <td>30</td>
-                                    <td>10</td>
-                                    <td>Yes</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-        
-                                  <tr>
-                                    <td class="text-center">7</td>
-                                    <td>User Plan</td>
-                                    <td>Rs.200/-</td>
-                                    <td>20 Days</td>
-                                    <td>Yes</td>
-                                    <td>30</td>
-                                    <td>10</td>
-                                    <td>Yes</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">8</td>
-                                    <td>User Plan</td>
-                                    <td>Rs.200/-</td>
-                                    <td>20 Days</td>
-                                    <td>Yes</td>
-                                    <td>30</td>
-                                    <td>10</td>
-                                    <td>Yes</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">9</td>
-                                    <td>User Plan</td>
-                                    <td>Rs.200/-</td>
-                                    <td>20 Days</td>
-                                    <td>Yes</td>
-                                    <td>30</td>
-                                    <td>10</td>
-                                    <td>Yes</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">10</td>
-                                    <td>User Plan</td>
-                                    <td>Rs.200/-</td>
-                                    <td>20 Days</td>
-                                    <td>Yes</td>
-                                    <td>30</td>
-                                    <td>10</td>
-                                    <td>Yes</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">11</td>
-                                    <td>User Plan</td>
-                                    <td>Rs.200/-</td>
-                                    <td>20 Days</td>
-                                    <td>Yes</td>
-                                    <td>30</td>
-                                    <td>10</td>
-                                    <td>Yes</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">12</td>
-                                    <td>User Plan</td>
-                                    <td>Rs.200/-</td>
-                                    <td>20 Days</td>
-                                    <td>Yes</td>
-                                    <td>30</td>
-                                    <td>10</td>
-                                    <td>Yes</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
+                                    </tr>
+                                      <?php
+                                      }
+                                  }
+                                  ?>
+                        
                                 </tbody>
                               </table>
                             </div>
@@ -817,6 +480,29 @@
         alert('You clicked on Like button');
       });
     });
+  </script>
+  <script>
+  $(document).ready(function(){
+     $('.btndelete').on('click', function() {
+       var userplan_id = $(this).data('id');
+       
+      $.ajax({
+            type: "POST",
+            url: '<?php echo "deleteUserplan";?>',
+            data: {userplan_id : userplan_id },
+            success: function(data){
+            console.log(data);
+            //$(this).closest('tr').remove();
+            location.reload();
+            },
+            error: function(xhr, status, error){
+            console.error(xhr);
+            }
+            });
+   
+     });
+    });
+
   </script>
 
 </body>

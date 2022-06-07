@@ -69,7 +69,7 @@ class AddressModel extends Model
 
 	//Function to search Address by user ID
 	//Returns address if available or else '0' if not available
-	public function get_by_user_id($id)
+	public function get_by_user_id($id,$city)
 	{
 
 		$res = $this->select('address.id,address.name,address.flat_no,address.apartment_name,
@@ -81,6 +81,7 @@ class AddressModel extends Model
 			->join('state', 'city.state_id=state.id')
 			->join('country', 'state.country_id=country.id')
 			->groupBy("address.locality,address.city_id,address.state_id,address.country_id,address.zipcode_id,address.latitude,address.longitude")
+			->where('city', $city)
 			->where('users_id', $id)->findAll();
 
 		if ($res) {

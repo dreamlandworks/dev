@@ -578,6 +578,7 @@
                                         </button>
                                     </a>
                                 </div> -->
+								<form enctype="multipart/form-data" method="POST" id="blueCollorFormDetails" role="form" action="<?php echo ADMINBASEURL; ?>create_blueCollorForm_submit">
                                 <div class="card ">
                                     <div class="card-header card-header-rose card-header-icon">
                                         <div class="card-icon">
@@ -588,31 +589,57 @@
                                         <h4 class="card-title">New Booking</h4>
                                     </div>
                                     <div class="card-body ">
-                                        <form method="#" action="#">
+                                        
                                             <div class="row">
                                                 <div class="col-lg-5 col-md-6 col-sm-12">
                                                     <div class="form-group">
-                                                        <label for="exampleName" class="bmd-label-floating">
-                                                            Date Time </label>
-                                                        <input type="text" class="form-control" id="name">
+                                                        <label for="blueCollorForm_date" class="bmd-label-floating">
+                                                            Date </label>
+                                                        <input type="date" class="form-control" id="blueCollorForm_date" name="blueCollorForm_date">
                                                     </div>
+													
+													<div class="form-group">
+														<select name="blueCollorForm_time" id="blueCollorForm_time" class="selectpicker" data-style="select-with-transition"
+															title="Select Time" data-size="7">
+															<?php
+															  if($arr_timeSlots != 'failure') {
+																  foreach($arr_timeSlots as $timeSlot) {
+															  ?>
+																<option value="<?php echo $timeSlot['from']; ?>" ><?php echo $timeSlot['from']; ?> </option>
+																<?php
+															  }}
+																?>
+														</select>
+													 </div>
 
-                                                    <div class="form-group">
-                                                        <label for="exampleName" class="bmd-label-floating">Work Description
+													<div class="form-group">
+                                                        <label for="blueCollorForm_jobDescription" class="bmd-label-floating">Work Description
                                                         </label>
-                                                        <input type="text" class="form-control" id="name">
+                                                        <input type="text" class="form-control" id="blueCollorForm_jobDescription" name="blueCollorForm_jobDescription">
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label for="exampleDesignation"
-                                                            class="bmd-label-floating">User Id</label>
-                                                        <input type="text" class="form-control" id="designation">
-                                                    </div>
+                                                       <!-- <label for="blueCollorForm_userID" class="bmd-label-floating">User Id
+                                                        </label>
+                                                        <input type="text" class="form-control" id="blueCollorForm_userID" name="blueCollorForm_userID">
+														-->     
+														<select name="blueCollorForm_userID" id="blueCollorForm_userID" class="selectpicker" data-style="select-with-transition"
+															title="Select User" data-size="7">
+															<?php
+															  if($arr_users != 'failure') {
+																  foreach($arr_users as $user) {
+															  ?>
+																<option value="<?php echo $user['user_id']; ?>" ><?php echo $user['fname'] . ' ' . $user['lname']; ?> </option>
+																<?php
+															  }}
+																?>
+														</select>														
+												   </div>
 
                                                     <div class="form-group">
-                                                        <label for="examplePass" class="bmd-label-floating">Assign to
+                                                        <label for="blueCollorForm_assignTo" class="bmd-label-floating">Assign to
                                                             <span style="color:red">*</span></label>
-                                                        <input type="text" class="form-control" id="examplePass">
+                                                        <input type="text" class="form-control" id="blueCollorForm_assignTo" name="blueCollorForm_assignTo">
                                                     </div>
                                                     
 
@@ -620,21 +647,44 @@
                                                 <div class="col-lg-5 col-md-6 col-sm-12" style="margin:0.4rem 2rem">
                                     
                                                     <div class="form-group">
-                                                        <label for="exampleName" class="bmd-label-floating">Referred By
+                                                        <label for="blueCollorForm_referredBy" class="bmd-label-floating">Referred By
                                                         </label>
-                                                        <input type="text" class="form-control" id="name">
+                                                        <input type="text" class="form-control" id="blueCollorForm_referredBy" name="blueCollorForm_referredBy">
                                                     </div>
+													
+													<div class="form-group">
+														<div class="fileinput fileinput-new text-center"
+															data-provides="fileinput">
+															<div class="fileinput-new thumbnail">
+																<img src="../../assets/img/image_placeholder.jpg" alt="...">
+															</div>
+															<div class="fileinput-preview fileinput-exists thumbnail"></div>
+														<div>
+															<span class="btn btn-teal btn-round btn-file">
+																<span class="fileinput-new">Select image</span>
+																<span class="fileinput-exists">Change</span>
+																<input type="file" id="blueCollorForm_attachments" name="blueCollorForm_attachments" />
+															</span>
+															<a href="#pablo"
+																class="btn btn-danger btn-round fileinput-exists"
+																data-dismiss="fileinput"><i class="fa fa-times"></i>
+																Remove</a>
+														</div>
+													</div>
+												</div>	
+													
                                                 </div>
                                             </div>
-                                        </form>
+                                        
                                     </div>
                                     <div class="card-footer ">
                                         <button type="submit" class="btn btn-fill btn-teal">Submit</button>
                                     </div>
                                 </div>
+								</form>
                             </div>
                         </div>
-
+						
                         <!-- MyCode ends here-->
 
                     </div>
@@ -931,6 +981,28 @@
                 .catch(error => {
                     console.error(error);
                 });
+				
+				
+			$(document).ready(function(){
+				var blueCollorDetailsForm = $("#blueCollorFormDetails");	
+					var validator = blueCollorDetailsForm.validate({		
+						
+						rules:{
+							blueCollorForm_date :{ required : true},
+							blueCollorForm_time :{ required : true},
+							blueCollorForm_jobDescription :{ required : true},
+							blueCollorForm_userID :{ required : true},
+							//blueCollorForm_assignTo :{ required : true},
+						},
+						messages:{
+							blueCollorForm_date :{ required : "Date is Required"},
+							blueCollorForm_time :{ required : "Time is Required"},
+							blueCollorForm_jobDescription :{ required : "Work Description is Required"},
+							blueCollorForm_userID :{ required : "User Id is Required"},
+							//blueCollorForm_assignTo :{ required : "Assign To is Required"},
+						}			
+					});
+				});
     
         </script>
 

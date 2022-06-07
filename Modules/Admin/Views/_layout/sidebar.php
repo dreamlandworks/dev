@@ -126,18 +126,18 @@ Tip 2: you can also add an image using data-image tag
                                 <span class="sidebar-mini"> <i class="material-icons">
                                         <img src="../../assets/img/icons/add-white-24dp.svg" />
                                     </i> </span>
-                                <span class="sidebar-normal"> Receipts </span>
+                                <span class="sidebar-normal"> Receipts 1</span>
                             </a>
                         </li>
 
-                        <li class="nav-item ">
+                        <!--<li class="nav-item ">
                             <a class="nav-link" href="receiptsDue">
                                 <span class="sidebar-mini"> <i class="material-icons">
                                         <img src="../../assets/img/icons/add-white-24dp.svg" />
                                     </i> </span>
                                 <span class="sidebar-normal"> Receipts Due </span>
                             </a>
-                        </li>
+                        </li>-->
 
                         <li class="nav-item ">
                             <a class="nav-link" href="paymentRequests">

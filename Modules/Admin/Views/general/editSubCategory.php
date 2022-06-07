@@ -126,26 +126,30 @@
                                         <h4 class="card-title">Edit SubCategory</h4>
                                     </div>
                                     <div class="card-body ">
-                                        <form method="#" action="#">
+                                        <form enctype="multipart/form-data" method="POST" id="subcategoryDetails" role="form" action="<?php echo ADMINBASEURL; ?>edit_subcategory_submit">
                                             <div class="row">
                                                 <div class="col-lg-5 col-md-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="exampleName" class="bmd-label-floating">
-                                                            Categoty Id </label>
-                                                        <input type="text" class="form-control" id="name" value="32476">
-                                                    </div>
+                                                    
+                                                        <input type="hidden" class="form-control" name="subcategory_id" id="subcategory_id" value="<?php echo $subcategory->id; ?>">
+                                                    
 
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating">Category Name
                                                         </label>
-                                                        <input type="text" class="form-control" id="name" value="category name">
+                                                        <input type="text" class="form-control" name="subcategory_name" id="subcategory_name" value="<?php echo $subcategory->sub_name; ?>">
                                                     </div>
 
-                                                
-                                                    <select class="selectpicker" data-style="select-with-transition"
+                                                <select name="category_id" id="category_id" class="selectpicker" data-style="select-with-transition"
+                                                    title="Select Category" data-size="7">
+                                                        <?php foreach($categories as $category){ ?>
+                                                        <option <?=($subcategory->category_id==$category['id'])?'selected':''; ?> value="<?php echo $category['id']; ?>"><?php echo $category['category']; ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                    
+                                                    <select name="subcategory_status" id="subcategory_status"class="selectpicker" data-style="select-with-transition"
                                                     title="Select Status" data-size="7">
-                                                    <option value="2" selected>Active </option>
-                                                    <option value="3">Inactive </option>
+                                                    <option <?=($subcategory->status=='Active')?'selected':''; ?> value="Active" >Active </option>
+                                                    <option <?=($subcategory->status=='Inactive')?'selected':''; ?> value="Inactive" >Inactive </option>
                                                 </select>
 
                                               
@@ -158,14 +162,14 @@
                                                     <div class="fileinput fileinput-new text-center"
                                                         data-provides="fileinput">
                                                         <div class="fileinput-new thumbnail">
-                                                            <img src="../../assets/img/image_placeholder.jpg" alt="...">
+                                                            <img src="<?= ($subcategory->image)? $subcategory->image: '../../assets/img/image_placeholder.jpg'; ?>" alt="...">
                                                         </div>
                                                         <div class="fileinput-preview fileinput-exists thumbnail"></div>
                                                         <div>
                                                             <span class="btn btn-teal btn-round btn-file">
                                                                 <span class="fileinput-new">Select image</span>
                                                                 <span class="fileinput-exists">Change</span>
-                                                                <input type="file" id="filess" name="..." />
+                                                                <input type="file" id="subcategory_image" name="subcategory_image" />
                                                             </span>
                                                             <a href="#pablo"
                                                                 class="btn btn-danger btn-round fileinput-exists"
@@ -175,12 +179,12 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                           
+                                           <div class="card-footer ">
+                                                <button type="submit" class="btn btn-fill btn-teal">Submit</button>
+                                            </div>
                                         </form>
                                     </div>
-                                    <div class="card-footer ">
-                                        <button type="submit" class="btn btn-fill btn-teal">Submit</button>
-                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>

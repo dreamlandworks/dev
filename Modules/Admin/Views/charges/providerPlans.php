@@ -110,7 +110,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div>
-                                    <a href="addProviderPlan">
+                                    <a href="<?php echo ADMINBASEURL;?>addProviderPlan">
                                         <button class="btn btn-primary" style="background-color:#8f6bf4">
                                             <b> <i class="material-icons"><img
                                                         src="../../assets/img/icons/add-white-24dp.svg" /></i> Add
@@ -147,7 +147,7 @@
                                                         <th>Bids/Month</th>
                                                         <th>Sealed Bids/Month</th>
                                                         <th>CustomerSupport</th>
-                                                        <th>Status</th>
+                                                        
                                                         <th>Actions</th>
                                                     </tr>
                                                 </thead>
@@ -162,441 +162,57 @@
                                                         <th>Bids/Month</th>
                                                         <th>Sealed Bids/Month</th>
                                                         <th>CustomerSupport</th>
-                                                        <th>Status</th>
+                                                        
                                                         <th>Actions</th>
                                                     </tr>
                                                 </tfoot>
                                                 <tbody>
+                                <?php
+                                  if($arr_providerplan != 'failure') {
+                                      foreach($arr_providerplan as $key => $providerplan) {
+                                      ?>
+                                      <tr>
+                                        <td class="text-center"><?php echo ($key+1); ?></td>
+                                        <td><?php echo $providerplan['name']; ?> </td>
+                                        <td> <?php echo $providerplan['amount']; ?></td>
+                                        <td> <?php echo $providerplan['period']; ?></td>
+                                        <td> <?php echo $providerplan['platform_fee_per_booking']; ?></td>
+                                        <td> <?php echo $providerplan['premium_tag']; ?></td>
+                                        <td> <?php echo $providerplan['bids_per_month']; ?></td>
+                                        <td> <?php echo $providerplan['sealed_bids_per_month']; ?></td>
+                                        <td> <?php echo $providerplan['customer_support']; ?></td>
+                                    <!--    <td>-->
+                                    <!--  <div class="togglebutton">-->
+                                    <!--    <label>-->
+                                    <!--      <input class ="chkstatus" data-id="<?php //echo $userplans['id']; ?>"  type="checkbox"  >-->
+                                    <!--      <span class="toggle"></span>-->
+                                    <!--    </label>-->
+                                    <!--  </div>-->
+                                    <!--</td>-->
+                                    <td class="td-actions">
+                                      
+                                          <a href="<?php echo ADMINBASEURL;?>editProviderplan/<?php echo $providerplan['id'];?>">
+									  <button type="button" rel="tooltip" class="btn btn-success btn-round">
+                                        <i class="material-icons">
+                                          <img src="../../assets/img/create-white-18dp (1).svg" />
+                                        </i>
+                                      </button>
+									  </a>
+                                      <button type="button" rel="tooltip" data-id="<?php echo $providerplan['id']; ?>" class="btn btn-danger btn-round btndelete">
+                                    <!--<button class="btn btn-danger" onclick="delete_book(<?php //echo $userplans['id']; ?>)">Delete</button>-->
 
-                                                    <tr>
-                                                        <td class="text-center">1</td>
-                                                        <td>Provider Plan</td>
-                                                        <td>Rs.200/-</td>
-                                                        <td>Rs.100/-</td>
-                                                        <td>20 days</td>
-                                                        <td>Yes</td>
-                                                        <td>30</td>
-                                                        <td>10</td>
-                                                        <td>Yes</td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                                <label>
-                                                                    <input type="checkbox" checked="">
-                                                                    <span class="toggle"></span>
-                                                                </label>
-                                                            </div>
-                                                        </td>
-                                                        <td class="td-actions">
-                                                           <a href="editProviderPlan">
-															   <button type="button" rel="tooltip"
-																	class="btn btn-success btn-round">
-																	<i class="material-icons">
-																		<img
-																			src="../../assets/img/create-white-18dp (1).svg" />
-																	</i>
-																</button>
-															</a>	
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-danger btn-round">
-                                                                <i class="material-icons">
-                                                                    <img src="../../assets/img/close-white-18dp.svg" />
-                                                                </i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-center">2</td>
-                                                        <td>Provider Plan</td>
-                                                        <td>Rs.200/-</td>
-                                                        <td>Rs.100/-</td>
-                                                        <td>20 days</td>
-                                                        <td>Yes</td>
-                                                        <td>30</td>
-                                                        <td>10</td>
-                                                        <td>Yes</td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                                <label>
-                                                                    <input type="checkbox" checked="">
-                                                                    <span class="toggle"></span>
-                                                                </label>
-                                                            </div>
-                                                        </td>
-                                                        <td class="td-actions">
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-success btn-round">
-                                                                <i class="material-icons">
-                                                                    <img
-                                                                        src="../../assets/img/create-white-18dp (1).svg" />
-                                                                </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-danger btn-round">
-                                                                <i class="material-icons">
-                                                                    <img src="../../assets/img/close-white-18dp.svg" />
-                                                                </i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-center">3</td>
-                                                        <td>Provider Plan</td>
-                                                        <td>Rs.200/-</td>
-                                                        <td>Rs.100/-</td>
-                                                        <td>20 days</td>
-                                                        <td>Yes</td>
-                                                        <td>30</td>
-                                                        <td>10</td>
-                                                        <td>Yes</td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                                <label>
-                                                                    <input type="checkbox" checked="">
-                                                                    <span class="toggle"></span>
-                                                                </label>
-                                                            </div>
-                                                        </td>
-                                                        <td class="td-actions">
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-success btn-round">
-                                                                <i class="material-icons">
-                                                                    <img
-                                                                        src="../../assets/img/create-white-18dp (1).svg" />
-                                                                </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-danger btn-round">
-                                                                <i class="material-icons">
-                                                                    <img src="../../assets/img/close-white-18dp.svg" />
-                                                                </i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td class="text-center">4</td>
-                                                        <td>Provider Plan</td>
-                                                        <td>Rs.200/-</td>
-                                                        <td>Rs.100/-</td>
-                                                        <td>20 days</td>
-                                                        <td>Yes</td>
-                                                        <td>30</td>
-                                                        <td>10</td>
-                                                        <td>Yes</td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                                <label>
-                                                                    <input type="checkbox" checked="">
-                                                                    <span class="toggle"></span>
-                                                                </label>
-                                                            </div>
-                                                        </td>
-                                                        <td class="td-actions">
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-success btn-round">
-                                                                <i class="material-icons">
-                                                                    <img
-                                                                        src="../../assets/img/create-white-18dp (1).svg" />
-                                                                </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-danger btn-round">
-                                                                <i class="material-icons">
-                                                                    <img src="../../assets/img/close-white-18dp.svg" />
-                                                                </i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td class="text-center">5</td>
-                                                        <td>Provider Plan</td>
-                                                        <td>Rs.200/-</td>
-                                                        <td>Rs.100/-</td>
-                                                        <td>20 days</td>
-                                                        <td>Yes</td>
-                                                        <td>30</td>
-                                                        <td>10</td>
-                                                        <td>Yes</td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                                <label>
-                                                                    <input type="checkbox" checked="">
-                                                                    <span class="toggle"></span>
-                                                                </label>
-                                                            </div>
-                                                        </td>
-                                                        <td class="td-actions">
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-success btn-round">
-                                                                <i class="material-icons">
-                                                                    <img
-                                                                        src="../../assets/img/create-white-18dp (1).svg" />
-                                                                </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-danger btn-round">
-                                                                <i class="material-icons">
-                                                                    <img src="../../assets/img/close-white-18dp.svg" />
-                                                                </i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-
-
-
-                                                    <tr>
-                                                        <td class="text-center">6</td>
-                                                        <td>Provider Plan</td>
-                                                        <td>Rs.200/-</td>
-                                                        <td>Rs.100/-</td>
-                                                        <td>20 days</td>
-                                                        <td>Yes</td>
-                                                        <td>30</td>
-                                                        <td>10</td>
-                                                        <td>Yes</td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                                <label>
-                                                                    <input type="checkbox" checked="">
-                                                                    <span class="toggle"></span>
-                                                                </label>
-                                                            </div>
-                                                        </td>
-                                                        <td class="td-actions">
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-success btn-round">
-                                                                <i class="material-icons">
-                                                                    <img
-                                                                        src="../../assets/img/create-white-18dp (1).svg" />
-                                                                </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-danger btn-round">
-                                                                <i class="material-icons">
-                                                                    <img src="../../assets/img/close-white-18dp.svg" />
-                                                                </i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-
-
-
-                                                    <tr>
-                                                        <td class="text-center">7</td>
-                                                        <td>Provider Plan</td>
-                                                        <td>Rs.200/-</td>
-                                                        <td>Rs.100/-</td>
-                                                        <td>20 days</td>
-                                                        <td>Yes</td>
-                                                        <td>30</td>
-                                                        <td>10</td>
-                                                        <td>Yes</td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                                <label>
-                                                                    <input type="checkbox" checked="">
-                                                                    <span class="toggle"></span>
-                                                                </label>
-                                                            </div>
-                                                        </td>
-                                                        <td class="td-actions">
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-success btn-round">
-                                                                <i class="material-icons">
-                                                                    <img
-                                                                        src="../../assets/img/create-white-18dp (1).svg" />
-                                                                </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-danger btn-round">
-                                                                <i class="material-icons">
-                                                                    <img src="../../assets/img/close-white-18dp.svg" />
-                                                                </i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td class="text-center">8</td>
-                                                        <td>Provider Plan</td>
-                                                        <td>Rs.200/-</td>
-                                                        <td>Rs.100/-</td>
-                                                        <td>20 days</td>
-                                                        <td>Yes</td>
-                                                        <td>30</td>
-                                                        <td>10</td>
-                                                        <td>Yes</td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                                <label>
-                                                                    <input type="checkbox" checked="">
-                                                                    <span class="toggle"></span>
-                                                                </label>
-                                                            </div>
-                                                        </td>
-                                                        <td class="td-actions">
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-success btn-round">
-                                                                <i class="material-icons">
-                                                                    <img
-                                                                        src="../../assets/img/create-white-18dp (1).svg" />
-                                                                </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-danger btn-round">
-                                                                <i class="material-icons">
-                                                                    <img src="../../assets/img/close-white-18dp.svg" />
-                                                                </i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td class="text-center">9</td>
-                                                        <td>Provider Plan</td>
-                                                        <td>Rs.200/-</td>
-                                                        <td>Rs.100/-</td>
-                                                        <td>20 days</td>
-                                                        <td>Yes</td>
-                                                        <td>30</td>
-                                                        <td>10</td>
-                                                        <td>Yes</td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                                <label>
-                                                                    <input type="checkbox" checked="">
-                                                                    <span class="toggle"></span>
-                                                                </label>
-                                                            </div>
-                                                        </td>
-                                                        <td class="td-actions">
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-success btn-round">
-                                                                <i class="material-icons">
-                                                                    <img
-                                                                        src="../../assets/img/create-white-18dp (1).svg" />
-                                                                </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-danger btn-round">
-                                                                <i class="material-icons">
-                                                                    <img src="../../assets/img/close-white-18dp.svg" />
-                                                                </i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td class="text-center">10</td>
-                                                        <td>Provider Plan</td>
-                                                        <td>Rs.200/-</td>
-                                                        <td>Rs.100/-</td>
-                                                        <td>20 days</td>
-                                                        <td>Yes</td>
-                                                        <td>30</td>
-                                                        <td>10</td>
-                                                        <td>Yes</td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                                <label>
-                                                                    <input type="checkbox" checked="">
-                                                                    <span class="toggle"></span>
-                                                                </label>
-                                                            </div>
-                                                        </td>
-                                                        <td class="td-actions">
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-success btn-round">
-                                                                <i class="material-icons">
-                                                                    <img
-                                                                        src="../../assets/img/create-white-18dp (1).svg" />
-                                                                </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-danger btn-round">
-                                                                <i class="material-icons">
-                                                                    <img src="../../assets/img/close-white-18dp.svg" />
-                                                                </i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td class="text-center">11</td>
-                                                        <td>Provider Plan</td>
-                                                        <td>Rs.200/-</td>
-                                                        <td>Rs.100/-</td>
-                                                        <td>20 days</td>
-                                                        <td>Yes</td>
-                                                        <td>30</td>
-                                                        <td>10</td>
-                                                        <td>Yes</td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                                <label>
-                                                                    <input type="checkbox" checked="">
-                                                                    <span class="toggle"></span>
-                                                                </label>
-                                                            </div>
-                                                        </td>
-                                                        <td class="td-actions">
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-success btn-round">
-                                                                <i class="material-icons">
-                                                                    <img
-                                                                        src="../../assets/img/create-white-18dp (1).svg" />
-                                                                </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-danger btn-round">
-                                                                <i class="material-icons">
-                                                                    <img src="../../assets/img/close-white-18dp.svg" />
-                                                                </i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td class="text-center">12</td>
-                                                        <td>Provider Plan</td>
-                                                        <td>Rs.200/-</td>
-                                                        <td>Rs.100/-</td>
-                                                        <td>20 days</td>
-                                                        <td>Yes</td>
-                                                        <td>30</td>
-                                                        <td>10</td>
-                                                        <td>Yes</td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                                <label>
-                                                                    <input type="checkbox" checked="">
-                                                                    <span class="toggle"></span>
-                                                                </label>
-                                                            </div>
-                                                        </td>
-                                                        <td class="td-actions">
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-success btn-round">
-                                                                <i class="material-icons">
-                                                                    <img
-                                                                        src="../../assets/img/create-white-18dp (1).svg" />
-                                                                </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip"
-                                                                class="btn btn-danger btn-round">
-                                                                <i class="material-icons">
-                                                                    <img src="../../assets/img/close-white-18dp.svg" />
-                                                                </i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
+                                        <i class="material-icons">
+                                          <img src="../../assets/img/close-white-18dp.svg" />
+                                        </i>
+                                      </button>
+                                    </td>
+                                    </tr>
+                                      <?php
+                                      }
+                                  }
+                                  ?>
+                        
+                                </tbody>
                                             </table>
                                         </div>
                                     </div>
@@ -873,6 +489,29 @@
             });
         });
     </script>
+<script>
+  $(document).ready(function(){
+     $('.btndelete').on('click', function() {
+       var providerplan_id = $(this).data('id');
+       
+      $.ajax({
+            type: "POST",
+            url: '<?php echo "deleteProviderplan";?>',
+            data: {providerplan_id : providerplan_id },
+            success: function(data){
+            console.log(data);
+            //$(this).closest('tr').remove();
+            location.reload();
+            },
+            error: function(xhr, status, error){
+            console.error(xhr);
+            }
+            });
+   
+     });
+    });
+
+  </script>
 
 </body>
 

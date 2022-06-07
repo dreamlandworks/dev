@@ -123,7 +123,7 @@
                             <div class="card-icon">
                               <i class="material-icons"><img src="../../assets/img/list-white-24dp.svg" /></i>
                             </div>
-                            <h4 class="card-title">Cancellation Changes</h4>
+                            <h4 class="card-title">Cancellation Charges</h4>
                           </div>
                           <div class="card-body">
                             <div class="toolbar">
@@ -139,7 +139,6 @@
                                     <th>Percentage</th>
                                     <th>Amount</th>
                                     <th>Description</th>
-                                    <th>Status</th>
                                     <th>Actions</th>
                                   </tr>
                                 </thead>
@@ -150,366 +149,43 @@
                                         <th>Percentage</th>
                                         <th>Amount</th>
                                         <th>Description</th>
-                                        <th>Status</th>
                                         <th>Actions</th>
                                       </tr>
                                 </tfoot>
                                 <tbody>
-        
+								
+								 <?php
+                                  if($arr_cancellationCharges != 'failure') {
+                                      foreach($arr_cancellationCharges as $key => $cancellationCharges) {
+								  ?>
                                   <tr>
-                                    <td class="text-center">1</td>
-                                    <td>Charge name</td>
-                                    <td>2 % </td>
-                                    <td>Rs.200/-</td>
-                                    <td>Description...</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
+                                    <td class="text-center"><?php echo ($key+1); ?></td>
+                                    <td><?php echo $cancellationCharges['name']; ?></td>
+                                    <td><?php echo $cancellationCharges['percentage']; ?> % </td>
+                                    <td>Rs.<?php echo $cancellationCharges['amount']; ?></td>
+                                    <td><?php echo $cancellationCharges['description']; ?></td>
+                                    
                                     <td class="td-actions">
-                                      <a href="cancellationCharges">
+                                      <a href="<?php echo 'editCancellationCharge/'.$cancellationCharges['id'];?>">
 									  <button type="button" rel="tooltip" class="btn btn-success btn-round">
                                         <i class="material-icons">
                                           <img src="../../assets/img/create-white-18dp (1).svg" />
                                         </i>
                                       </button>
 									  </a>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
+                                      <button type="button" rel="tooltip" data-id="<?php echo $cancellationCharges['id']; ?>" class="btn btn-danger btn-round btndelete">
                                         <i class="material-icons">
                                           <img src="../../assets/img/close-white-18dp.svg" />
                                         </i>
                                       </button>
                                     </td>
                                   </tr>
-                                  <tr>
-                                    <td class="text-center">2</td>
-        
-                                    <td>Charge name</td>
-                                    <td>2 % </td>
-                                    <td>Rs.200/-</td>
-                                    <td>Description...</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td class="text-center">3</td>
-        
-                                    <td>Charge name</td>
-                                    <td>2 % </td>
-                                    <td>Rs.200/-</td>
-                                    <td>Description...</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-                                  <tr>
-                                    <td class="text-center">4</td>
-                                    <td>Charge name</td>
-                                    <td>2 % </td>
-                                    <td>Rs.200/-</td>
-                                    <td>Description...</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-                                  <tr>
-                                    <td class="text-center">5</td>
-        
-                                    <td>Charge name</td>
-                                    <td>2 % </td>
-                                    <td>Rs.200/-</td>
-                                    <td>Description...</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-        
-                                  <tr>
-                                    <td class="text-center">6</td>
-        
-                                    <td>Charge name</td>
-                                    <td>2 % </td>
-                                    <td>Rs.200/-</td>
-                                    <td>Description...</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-        
-                                  <tr>
-                                    <td class="text-center">7</td>
-        
-                                    <td>Charge name</td>
-                                    <td>2 % </td>
-                                    <td>Rs.200/-</td>
-                                    <td>Description...</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">8</td>
-        
-                                    <td>Charge name</td>
-                                    <td>2 % </td>
-                                    <td>Rs.200/-</td>
-                                    <td>Description...</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">9</td>
-        
-                                    <td>Charge name</td>
-                                    <td>2 % </td>
-                                    <td>Rs.200/-</td>
-                                    <td>Description...</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">10</td>
-        
-                                    <td>Charge name</td>
-                                    <td>2 % </td>
-                                    <td>Rs.200/-</td>
-                                    <td>Description...</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">11</td>
-        
-                                    <td>Charge name</td>
-                                    <td>2 % </td>
-                                    <td>Rs.200/-</td>
-                                    <td>Description...</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">12</td>
-        
-                                    <td>Charge name</td>
-                                    <td>2 % </td>
-                                    <td>Rs.200/-</td>
-                                    <td>Description...</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
+								  
+								  <?php
+                                      }
+                                  }
+                                  ?>
+                                 
                                 </tbody>
                               </table>
                             </div>
@@ -785,6 +461,26 @@
       table.on('click', '.like', function () {
         alert('You clicked on Like button');
       });
+	  
+	  
+	  $('.btndelete').on('click', function() {
+       var cancellationCharges_id = $(this).data('id');
+      $.ajax({
+            type: "POST",
+            url: '<?php echo "deleteCancellationCharges";?>',
+            data: {cancellationCharges_id : cancellationCharges_id },
+            success: function(data){
+            console.log(data);
+            location.reload(true); 
+            
+            },
+            error: function(xhr, status, error){
+            console.error(xhr);
+            }
+            });
+   });
+   
+   
     });
   </script>
 

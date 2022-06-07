@@ -92,19 +92,19 @@ class SmsTemplateModel extends Model
 			}
 			elseif($count == 2){
 			    $search = ['{#var#}','{#var1#}'];
-				$replace = [$array['var1'],$array['var2']];
+				$replace = [$array['var'],$array['var1']];
 			}
 			elseif($count == 3){
 				$search = ['{#var#}','{#var1#}','{#var2#}'];
-				$replace = [$array['var1'],$array['var2'],$array['var3']];
+				$replace = [$array['var'],$array['var1'],$array['var2']];
 			}
 			elseif($count == 4){
 				$search = ['{#var#}','{#var1#}','{#var2#}','{#var3#}'];
-				$replace = [$array['var1'],$array['var2'],$array['var3'],$array['var4']];
+				$replace = [$array['var'],$array['var1'],$array['var2'],$array['var3']];
 			}
 			elseif($count == 5){
 				$search = ['{#var#}','{#var1#}','{#var2#}','{#var3#}','{#var4#}'];
-				$replace = [$array['var1'],$array['var2'],$array['var3'],$array['var4'],$array['var5']];
+				$replace = [$array['var'],$array['var1'],$array['var2'],$array['var3'],$array['var4']];
 			}
 
 				$message = str_replace($search,$replace,$res['content']);
@@ -128,7 +128,20 @@ class SmsTemplateModel extends Model
 				//echo "<br> data ".$data;exit;
 
 			$url = "http://sms.prowtext.com/sendsms/sendsms.php?".$data;
-			//echo $url;exit;
+			// echo $url;exit;
+
+			// $ch = curl_init( );
+			// curl_setopt ( $ch, CURLOPT_URL, $url);
+			// // curl_setopt ( $ch, CURLOPT_PORT, $port );
+			// curl_setopt ( $ch, CURLOPT_POST, 1 );
+			// curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, 1 );
+			// // Allowing cUrl funtions 20 second to execute
+			// curl_setopt ( $ch, CURLOPT_TIMEOUT, 5 );
+			// // Waiting 20 seconds while trying to connect
+			// curl_setopt ( $ch, CURLOPT_CONNECTTIMEOUT, 5 );                                 
+			// $resp = curl_exec( $ch );
+			// // echo $resp;exit;
+
 			$resp = file_get_contents($url);
 			$result = explode("|",$resp);
 			

@@ -1,7 +1,7 @@
 <?php
 
 $routes->group("provider", ["namespace" => "\Modules\Provider\Controllers\api"], function ($routes) {
-
+    
     $routes->get("get_profession_list", "MiscController::get_profession_list"); //Get Professionals List
     $routes->get("get_qualification_list", "MiscController::get_qualification_list"); //Get Qualification List
     $routes->get("get_experience_list", "MiscController::get_experience_list"); //Get Experience List
@@ -38,6 +38,7 @@ $routes->group("provider", ["namespace" => "\Modules\Provider\Controllers\api"],
     $routes->post("job_post_request_installment", "SPBookingController::job_post_request_installment");  //Request Installment 
     $routes->post("pause_booking", "SPBookingController::pause_booking");  //Pause Booking 
     $routes->post("resume_booking", "SPBookingController::resume_booking");  //Resume Booking 
+    $routes->post("booking_status_change", "SPBookingController::booking_status_change");  //Booking Status Change to Complete
     $routes->post("sp_job_post_bids_list", "SPBookingController::get_sp_job_post_bids_list"); //Get SP Job Post Bids List 
     $routes->post("sp_job_post_list", "SPBookingController::get_sp_job_post_list"); //Get SP Job Post Bids List 
     $routes->post("sp_post_bid", "SPBookingController::sp_post_bid"); //SP Post Bids 
@@ -55,6 +56,7 @@ $routes->group("provider", ["namespace" => "\Modules\Provider\Controllers\api"],
     $routes->get("get_sp_account_details", "MyAccount::get_sp_account_details"); //Get SP account details
     $routes->get("get_sp_review_details", "MyAccount::get_sp_review_details"); //Get SP account details 
     
+    $routes->post("membership_payments_txn_sp", "MembershipController::membership_payments_txn_sp"); //Get TXN for Payments
     $routes->post("membership_payments", "MembershipController::membership_payments"); //Membership payments
     
     $routes->get("get_leaderboard_list", "LeaderboardController::get_leaderboard_list"); //Get Leaderboard List

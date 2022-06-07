@@ -46,7 +46,10 @@ class Autoload extends AutoloadConfig
 		'Modules\User\api' => ROOTPATH. 'Modules/User/Controllers/api', //Autoload path API Controller of User
 		'Modules\User\web' => ROOTPATH. 'Modules/User/Controllers/web', //Autoload path Controller of User
 		'Modules\Provider' => ROOTPATH. 'Modules/Provider', //Autoload path for User Module
-		'Modules\Admin' => ROOTPATH. 'Modules/Admin' //Autoload path for User Module
+		'Modules\Admin' => ROOTPATH. 'Modules/Admin', //Autoload path for User Module
+        
+        'Modules\Marketing' => ROOTPATH. 'Modules/Marketing' //Autoload path for Marketing Module
+        
 
 	];
 
@@ -88,7 +91,7 @@ class Autoload extends AutoloadConfig
 	 */
 	public $files = [];
 	protected $helpers = ["html",'url','file','date','security'];
-	protected $libraries = ['database','session'];
-	
+	protected $libraries = ['database'];
+    	
 }
 

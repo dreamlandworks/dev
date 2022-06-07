@@ -1,0 +1,24 @@
+INFO - 2022-04-15 00:11:15 --> Used the default controller.
+INFO - 2022-04-15 11:06:08 --> Used the default controller.
+INFO - 2022-04-15 12:10:37 --> Used the default controller.
+INFO - 2022-04-15 12:18:49 --> Used the default controller.
+INFO - 2022-04-15 12:37:05 --> Used the default controller.
+INFO - 2022-04-15 12:51:25 --> Used the default controller.
+INFO - 2022-04-15 14:06:22 --> Used the default controller.
+INFO - 2022-04-15 15:12:21 --> Used the default controller.
+INFO - 2022-04-15 15:35:22 --> Used the default controller.
+ERROR - 2022-04-15 16:01:02 --> Unknown column 'installment_det.inst_paid_status' in 'where clause'
+ERROR - 2022-04-15 16:03:02 --> Unknown column 'installment_det.inst_request_status_id' in 'where clause'
+INFO - 2022-04-15 16:49:10 --> Used the default controller.
+INFO - 2022-04-15 17:05:57 --> Used the default controller.
+INFO - 2022-04-15 18:11:57 --> Used the default controller.
+INFO - 2022-04-15 18:24:32 --> Used the default controller.
+INFO - 2022-04-15 18:37:07 --> Used the default controller.
+INFO - 2022-04-15 19:57:13 --> Used the default controller.
+INFO - 2022-04-15 20:07:11 --> Used the default controller.
+INFO - 2022-04-15 20:40:39 --> Used the default controller.
+INFO - 2022-04-15 20:40:41 --> Used the default controller.
+INFO - 2022-04-15 23:05:55 --> Used the default controller.
+ERROR - 2022-04-15 23:13:07 --> Unknown column 'profile_pic' in 'field list'
+ERROR - 2022-04-15 23:13:20 --> Unknown column 'profile_pic' in 'field list'
+ERROR - 2022-04-15 23:15:20 --> Unknown column 'inst_request_status_id' in 'field list'

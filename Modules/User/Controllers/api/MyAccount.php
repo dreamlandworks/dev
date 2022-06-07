@@ -51,7 +51,7 @@ class MyAccount extends ResourceController
 		       $arr_wallet_details = $common->get_details_dynamically('wallet_balance', 'users_id', $users_id);
 		       if($arr_wallet_details != 'failure') {
     	            //Get total amount 
-    	            $total_wallet_balance = $arr_wallet_details[0]['amount'] - $arr_wallet_details[0]['amount_blocked'];
+    	            $total_wallet_balance = $arr_wallet_details[0]['amount'];
     	            $total_wallet_blocked = $arr_wallet_details[0]['amount_blocked'];
 		       }     
 		       

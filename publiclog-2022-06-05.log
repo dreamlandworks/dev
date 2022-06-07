@@ -1,0 +1,99 @@
+INFO - 2022-06-05 00:05:24 --> Used the default controller.
+INFO - 2022-06-05 01:09:54 --> Used the default controller.
+INFO - 2022-06-05 01:37:34 --> Used the default controller.
+INFO - 2022-06-05 01:43:42 --> Used the default controller.
+INFO - 2022-06-05 01:46:30 --> Used the default controller.
+INFO - 2022-06-05 02:42:11 --> Used the default controller.
+INFO - 2022-06-05 03:09:21 --> Used the default controller.
+INFO - 2022-06-05 04:11:21 --> Used the default controller.
+INFO - 2022-06-05 04:40:56 --> Used the default controller.
+INFO - 2022-06-05 05:40:21 --> Used the default controller.
+INFO - 2022-06-05 05:43:02 --> Used the default controller.
+INFO - 2022-06-05 06:12:36 --> Used the default controller.
+INFO - 2022-06-05 07:10:49 --> Used the default controller.
+INFO - 2022-06-05 07:43:25 --> Used the default controller.
+INFO - 2022-06-05 08:21:50 --> Used the default controller.
+INFO - 2022-06-05 08:40:33 --> Used the default controller.
+INFO - 2022-06-05 09:09:36 --> Used the default controller.
+INFO - 2022-06-05 09:14:41 --> Used the default controller.
+INFO - 2022-06-05 10:10:30 --> Used the default controller.
+INFO - 2022-06-05 10:46:34 --> Used the default controller.
+INFO - 2022-06-05 11:18:35 --> Used the default controller.
+INFO - 2022-06-05 11:34:34 --> Used the default controller.
+INFO - 2022-06-05 11:34:35 --> Used the default controller.
+INFO - 2022-06-05 11:40:48 --> Used the default controller.
+INFO - 2022-06-05 12:23:44 --> Used the default controller.
+INFO - 2022-06-05 13:09:52 --> Used the default controller.
+INFO - 2022-06-05 13:10:35 --> Used the default controller.
+INFO - 2022-06-05 14:04:16 --> Used the default controller.
+INFO - 2022-06-05 14:39:52 --> Used the default controller.
+INFO - 2022-06-05 14:54:58 --> Used the default controller.
+ERROR - 2022-06-05 15:36:30 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'BETWEEN '16.3186983' AND '16.7186983'
+AND BETWEEN '80.42' AND '80.82'
+AND `sp_ac' at line 19
+ERROR - 2022-06-05 15:37:11 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'BETWEEN '16.3186983' AND '16.7186983'
+AND BETWEEN '80.42' AND '80.82'
+AND `sp_ac' at line 19
+ERROR - 2022-06-05 15:37:16 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'BETWEEN '16.3186983' AND '16.7186983'
+AND BETWEEN '80.42' AND '80.82'
+AND `sp_ac' at line 19
+ERROR - 2022-06-05 15:40:28 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'BETWEEN ($current_lat-0.2) AND ($current_lat+0.2)
+AND BETWEEN ($current_lng-0.2)' at line 19
+ERROR - 2022-06-05 15:41:42 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'BETWEEN 16.3186983 AND 16.7186983
+AND BETWEEN 80.42 AND 80.82
+AND `sp_activated`' at line 19
+ERROR - 2022-06-05 15:42:43 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'BETWEEN '16.3186983" AND "16.7186983'
+AND BETWEEN '80.42" AND "80.82'
+AND `sp_ac' at line 19
+ERROR - 2022-06-05 15:44:05 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'BETWEEN '16.3186983' AND '16.7186983'
+AND BETWEEN '80.42' AND '80.82'
+AND `sp_ac' at line 19
+ERROR - 2022-06-05 15:46:37 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')
+GROUP BY `sp_id`' at line 3
+ERROR - 2022-06-05 15:49:41 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')
+GROUP BY `sp_id`' at line 3
+ERROR - 2022-06-05 15:50:05 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')' at line 3
+INFO - 2022-06-05 16:11:40 --> Used the default controller.
+INFO - 2022-06-05 16:38:41 --> Used the default controller.
+INFO - 2022-06-05 17:40:41 --> Used the default controller.
+INFO - 2022-06-05 18:21:58 --> Used the default controller.
+INFO - 2022-06-05 19:10:47 --> Used the default controller.
+INFO - 2022-06-05 19:26:56 --> Used the default controller.
+INFO - 2022-06-05 19:26:57 --> Used the default controller.
+INFO - 2022-06-05 20:05:22 --> Used the default controller.
+ERROR - 2022-06-05 20:16:54 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')
+GROUP BY `sp_location`.`users_id`
+ORDER BY `points_count` DESC' at line 13
+ERROR - 2022-06-05 20:16:59 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')
+GROUP BY `sp_location`.`users_id`
+ORDER BY `points_count` DESC' at line 13
+ERROR - 2022-06-05 20:17:17 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')
+GROUP BY `sp_location`.`users_id`
+ORDER BY `points_count` DESC' at line 13
+INFO - 2022-06-05 20:40:40 --> Used the default controller.
+INFO - 2022-06-05 20:42:24 --> Used the default controller.
+INFO - 2022-06-05 20:42:25 --> Used the default controller.
+INFO - 2022-06-05 21:17:14 --> Used the default controller.
+INFO - 2022-06-05 21:46:32 --> Used the default controller.
+INFO - 2022-06-05 21:48:25 --> Used the default controller.
+INFO - 2022-06-05 21:48:49 --> Used the default controller.
+INFO - 2022-06-05 21:50:07 --> Used the default controller.
+INFO - 2022-06-05 21:50:09 --> Used the default controller.
+INFO - 2022-06-05 22:45:40 --> Used the default controller.
+ERROR - 2022-06-05 23:05:53 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')
+GROUP BY `sp_location`.`users_id`
+ORDER BY `points_count` DESC' at line 13
+ERROR - 2022-06-05 23:09:32 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')
+GROUP BY `sp_location`.`users_id`
+ORDER BY `points_count` DESC' at line 13
+ERROR - 2022-06-05 23:12:14 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')
+GROUP BY `sp_location`.`users_id`
+ORDER BY `points_count` DESC' at line 13
+ERROR - 2022-06-05 23:15:47 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')
+GROUP BY `sp_location`.`users_id`
+ORDER BY `points_count` DESC' at line 13
+ERROR - 2022-06-05 23:15:55 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')
+GROUP BY `sp_location`.`users_id`
+ORDER BY `points_count` DESC' at line 13
+INFO - 2022-06-05 23:32:00 --> Used the default controller.
+INFO - 2022-06-05 23:41:43 --> Used the default controller.

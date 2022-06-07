@@ -68,7 +68,8 @@ class UserDetailsModel extends Model
 			'mobile' => $array['mobile'],
 			'dob' => $array['dob'],
 			'gender' => $array['gender'],
-			'reg_status' => $array['reg_status']
+			'reg_status' => $array['reg_status'],
+			//'profile_pic' => $array['profile_pic']
 					];
 
 		$res = $this->insert($data);

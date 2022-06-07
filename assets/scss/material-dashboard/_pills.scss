@@ -32,9 +32,9 @@
             }
 
             &.active{
-                color: $white-color;
-                background-color: $brand-primary;
-                @include shadow-big-color($brand-primary);
+                color: $white;
+                background-color: $primary;
+                @include shadow-big-color($primary);
             }
         }
 
@@ -52,9 +52,9 @@
                 &,
                 &:focus,
                 &:hover{
-                    background-color: $brand-info;
-                    @include shadow-big-color($brand-info);
-                    color: $white-color;
+                    background-color: $info;
+                    @include shadow-big-color($info);
+                    color: $white;
                 }
             }
         }
@@ -66,9 +66,9 @@
                 &,
                 &:focus,
                 &:hover{
-                    background-color: $brand-rose;
-                    @include shadow-big-color($brand-rose);
-                    color: $white-color;
+                    background-color: $rose;
+                    @include shadow-big-color($rose);
+                    color: $white;
                 }
             }
         }
@@ -80,9 +80,9 @@
                 &,
                 &:focus,
                 &:hover{
-                    background-color: $brand-success;
-                    @include shadow-big-color($brand-success);
-                    color: $white-color;
+                    background-color: $success;
+                    @include shadow-big-color($success);
+                    color: $white;
                 }
             }
         }
@@ -94,9 +94,9 @@
                 &,
                 &:focus,
                 &:hover{
-                    background-color: $brand-warning;
-                    @include shadow-big-color($brand-warning);
-                    color: $white-color;
+                    background-color: $warning;
+                    @include shadow-big-color($warning);
+                    color: $white;
                 }
             }
         }
@@ -108,9 +108,9 @@
                 &,
                 &:focus,
                 &:hover{
-                    background-color: $brand-danger;
-                    @include shadow-big-color($brand-danger);
-                    color: $white-color;
+                    background-color: $danger;
+                    @include shadow-big-color($danger);
+                    color: $white;
                 }
             }
         }

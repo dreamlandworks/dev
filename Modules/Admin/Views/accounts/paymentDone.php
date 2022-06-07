@@ -13,7 +13,7 @@
                                 </i>
                             </button>
                         </div>
-                        <a class="navbar-brand" href="#pablo">Receipts Requests</a>
+                        <a class="navbar-brand" href="#pablo">Payment Done</a>
                     </div>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -123,7 +123,7 @@
                                             <i class="material-icons"><img
                                                     src="../../assets/img/list-white-24dp.svg" /></i>
                                         </div>
-                                        <h4 class="card-title">Receipts Requests</h4>
+                                        <h4 class="card-title">Payment Done</h4>
                                     </div>
                                     <div class="card-body">
                                         <div class="toolbar">
@@ -146,7 +146,7 @@
                                                         <th>Payment Completed On</th>
                                                         <th>Method</th>
                                                         <th>Status</th>
-                                                        <th>Actions</th>
+                                                        <!--<th>Actions</th>-->
                                                     </tr>
                                                 </thead>
                                                 <tfoot>
@@ -162,413 +162,42 @@
                                                         <th>Payment Completed On</th>
                                                         <th>Method</th>
                                                         <th>Status</th>
-                                                        <th>Actions</th>
+                                                        <!--<th>Actions</th>-->
                                                     </tr>
                                                 </tfoot>
                                                 <tbody>
-                                                    <tr>
-                                                        <td class="text-center">1</td>
-                                                        <td>14045686</td>
-                                                        <td>Description Text</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>1234098765</td>
-                                                        <td>3245678943</td>
-                                                        <td>3975949694</td>
-                                                        <td>Rs.500000</td>
-                                                        <td>31st Aug 2021</td>
-                                                        <td>Method </td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                              <label>
-                                                                <input type="checkbox" checked="">
-                                                                <span class="toggle"></span>
-                                                              </label>
-                                                            </div>
-                                                          </td>
-                                                          <td class="td-actions">
-                                                            <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/create-white-18dp (1).svg" />
-                                                              </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/close-white-18dp.svg" />
-                                                              </i>
-                                                            </button>
-                                                          </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-center">2</td>
-                                                        <td>14045686</td>
-                                                        <td>Description Text</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>1234098765</td>
-                                                        <td>3245678943</td>
-                                                        <td>3975949694</td>
-                                                        <td>Rs.500000</td>
-                                                        <td>31st Aug 2021</td>
-                                                              <td>Method </td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                              <label>
-                                                                <input type="checkbox" checked="">
-                                                                <span class="toggle"></span>
-                                                              </label>
-                                                            </div>
-                                                          </td>
-                                                          <td class="td-actions">
-                                                            <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/create-white-18dp (1).svg" />
-                                                              </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/close-white-18dp.svg" />
-                                                              </i>
-                                                            </button>
-                                                          </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-center">3</td>
-                                                        <td>14045686</td>
-                                                        <td>Description Text</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>1234098765</td>
-                                                        <td>3245678943</td>
-                                                        <td>3975949694</td>
-                                                        <td>Rs.500000</td>
-                                                        <td>31st Aug 2021</td>
-                                                              <td>Method </td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                              <label>
-                                                                <input type="checkbox" checked="">
-                                                                <span class="toggle"></span>
-                                                              </label>
-                                                            </div>
-                                                          </td>
-                                                          <td class="td-actions">
-                                                            <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/create-white-18dp (1).svg" />
-                                                              </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/close-white-18dp.svg" />
-                                                              </i>
-                                                            </button>
-                                                          </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td class="text-center">4</td>
-                                                        <td>14045686</td>
-                                                        <td>Description Text</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>1234098765</td>
-                                                        <td>3245678943</td>
-                                                        <td>3975949694</td>
-                                                        <td>Rs.500000</td>
-                                                        <td>31st Aug 2021</td>
-                                                              <td>Method </td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                              <label>
-                                                                <input type="checkbox" checked="">
-                                                                <span class="toggle"></span>
-                                                              </label>
-                                                            </div>
-                                                          </td>
-                                                          <td class="td-actions">
-                                                            <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/create-white-18dp (1).svg" />
-                                                              </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/close-white-18dp.svg" />
-                                                              </i>
-                                                            </button>
-                                                          </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td class="text-center">5</td>
-                                                        <td>14045686</td>
-                                                        <td>Description Text</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>1234098765</td>
-                                                        <td>3245678943</td>
-                                                        <td>3975949694</td>
-                                                        <td>Rs.500000</td>
-                                                        <td>31st Aug 2021</td>
-                                                              <td>Method </td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                              <label>
-                                                                <input type="checkbox" checked="">
-                                                                <span class="toggle"></span>
-                                                              </label>
-                                                            </div>
-                                                          </td>
-                                                          <td class="td-actions">
-                                                            <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/create-white-18dp (1).svg" />
-                                                              </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/close-white-18dp.svg" />
-                                                              </i>
-                                                            </button>
-                                                          </td>
-                                                    </tr>
-
-
-
-                                                    <tr>
-                                                        <td class="text-center">6</td>
-                                                        <td>14045686</td>
-                                                        <td>Description Text</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>1234098765</td>
-                                                        <td>3245678943</td>
-                                                        <td>3975949694</td>
-                                                        <td>Rs.500000</td>
-                                                        <td>31st Aug 2021</td>
-                                                              <td>Method </td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                              <label>
-                                                                <input type="checkbox" checked="">
-                                                                <span class="toggle"></span>
-                                                              </label>
-                                                            </div>
-                                                          </td>
-                                                          <td class="td-actions">
-                                                            <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/create-white-18dp (1).svg" />
-                                                              </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/close-white-18dp.svg" />
-                                                              </i>
-                                                            </button>
-                                                          </td>
-                                                    </tr>
-
-
-
-                                                    <tr>
-                                                        <td class="text-center">7</td>
-                                                        <td>14045686</td>
-                                                        <td>Description Text</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>1234098765</td>
-                                                        <td>3245678943</td>
-                                                        <td>3975949694</td>
-                                                        <td>Rs.500000</td>
-                                                        <td>31st Aug 2021</td>
-                                                              <td>Method </td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                              <label>
-                                                                <input type="checkbox" checked="">
-                                                                <span class="toggle"></span>
-                                                              </label>
-                                                            </div>
-                                                          </td>
-                                                          <td class="td-actions">
-                                                            <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/create-white-18dp (1).svg" />
-                                                              </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/close-white-18dp.svg" />
-                                                              </i>
-                                                            </button>
-                                                          </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td class="text-center">8</td>
-                                                        <td>14045686</td>
-                                                        <td>Description Text</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>1234098765</td>
-                                                        <td>3245678943</td>
-                                                        <td>3975949694</td>
-                                                        <td>Rs.500000</td>
-                                                        <td>31st Aug 2021</td>
-                                                              <td>Method </td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                              <label>
-                                                                <input type="checkbox" checked="">
-                                                                <span class="toggle"></span>
-                                                              </label>
-                                                            </div>
-                                                          </td>
-                                                          <td class="td-actions">
-                                                            <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/create-white-18dp (1).svg" />
-                                                              </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/close-white-18dp.svg" />
-                                                              </i>
-                                                            </button>
-                                                          </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td class="text-center">9</td>
-                                                        <td>14045686</td>
-                                                        <td>Description Text</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>1234098765</td>
-                                                        <td>3245678943</td>
-                                                        <td>3975949694</td>
-                                                        <td>Rs.500000</td>
-                                                        <td>31st Aug 2021</td>
-                                                              <td>Method </td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                              <label>
-                                                                <input type="checkbox" checked="">
-                                                                <span class="toggle"></span>
-                                                              </label>
-                                                            </div>
-                                                          </td>
-                                                          <td class="td-actions">
-                                                            <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/create-white-18dp (1).svg" />
-                                                              </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/close-white-18dp.svg" />
-                                                              </i>
-                                                            </button>
-                                                          </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td class="text-center">10</td>
-                                                        <td>14045686</td>
-                                                        <td>Description Text</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>1234098765</td>
-                                                        <td>3245678943</td>
-                                                        <td>3975949694</td>
-                                                        <td>Rs.500000</td>
-                                                        <td>31st Aug 2021</td>
-                                                              <td>Method </td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                              <label>
-                                                                <input type="checkbox" checked="">
-                                                                <span class="toggle"></span>
-                                                              </label>
-                                                            </div>
-                                                          </td>
-                                                          <td class="td-actions">
-                                                            <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/create-white-18dp (1).svg" />
-                                                              </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/close-white-18dp.svg" />
-                                                              </i>
-                                                            </button>
-                                                          </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td class="text-center">11</td>
-                                                        <td>14045686</td>
-                                                        <td>Description Text</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>1234098765</td>
-                                                        <td>3245678943</td>
-                                                        <td>3975949694</td>
-                                                        <td>Rs.500000</td>
-                                                        <td>31st Aug 2021</td>
-                                                              <td>Method </td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                              <label>
-                                                                <input type="checkbox" checked="">
-                                                                <span class="toggle"></span>
-                                                              </label>
-                                                            </div>
-                                                          </td>
-                                                          <td class="td-actions">
-                                                            <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/create-white-18dp (1).svg" />
-                                                              </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/close-white-18dp.svg" />
-                                                              </i>
-                                                            </button>
-                                                          </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td class="text-center">12</td>
-                                                        <td>14045686</td>
-                                                        <td>Description Text</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>1234098765</td>
-                                                        <td>3245678943</td>
-                                                        <td>3975949694</td>
-                                                        <td>Rs.500000</td>
-                                                        <td>31st Aug 2021</td>
-                                                              <td>Method </td>
-                                                        <td>
-                                                            <div class="togglebutton">
-                                                              <label>
-                                                                <input type="checkbox" checked="">
-                                                                <span class="toggle"></span>
-                                                              </label>
-                                                            </div>
-                                                          </td>
-                                                          <td class="td-actions">
-                                                            <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/create-white-18dp (1).svg" />
-                                                              </i>
-                                                            </button>
-                                                            <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                                              <i class="material-icons">
-                                                                <img src="../../assets/img/close-white-18dp.svg" />
-                                                              </i>
-                                                            </button>
-                                                          </td>
-                                                    </tr>
-                                                </tbody>
+                                <?php
+                                  if($arr_paymentdone != 'failure') {
+                                      foreach($arr_paymentdone as $key => $paymentdone) {
+                                      ?>
+                                      <tr>
+                                        <td class="text-center"><?php echo ($key+1); ?></td>
+                                        <td><?php echo $paymentdone['fname']; ?> </td>
+                                        <td> <?php echo $paymentdone['description']; ?></td>
+                                        <td> <?php echo $paymentdone['date']; ?></td>
+                                        <td> <?php echo $paymentdone['id']; ?></td>
+                                        <td> <?php echo $paymentdone['reference_id']; ?></td>
+                                        <td> <?php //echo $paymentdone['reference_id']; ?></td>
+                                        <td> <?php echo $paymentdone['Amount']; ?></td>
+                                        <td> <?php //echo $paymentdone['date']; ?></td>
+                                        <td> <?php echo $paymentdone['methodName']; ?></td>
+                                        <td> <?php echo $paymentdone['payment_status']; ?></td>
+                                    <!--    <td>-->
+                                    <!--  <div class="togglebutton">-->
+                                    <!--    <label>-->
+                                    <!--      <input class ="chkstatus" data-id="<?php //echo $userplans['id']; ?>"  type="checkbox"  >-->
+                                    <!--      <span class="toggle"></span>-->
+                                    <!--    </label>-->
+                                    <!--  </div>-->
+                                    <!--</td>-->
+                                    
+                                    </tr>
+                                      <?php
+                                      }
+                                  }
+                                  ?>
+                        
+                                </tbody>
                                             </table>
                                         </div>
                                     </div>

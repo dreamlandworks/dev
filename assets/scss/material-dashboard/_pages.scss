@@ -13,7 +13,7 @@
 
 .login-page .footer .copyright,
 .login-page .footer a{
-  color: $white-color;
+  color: $white;
 }
 
 
@@ -41,7 +41,7 @@
             @include linear-gradient(rgba($purple-100,.56), rgba($purple-300,.95));
 
         }
-        @include lock-page-input-color($brand-primary);
+        @include lock-page-input-color($primary);
 
     }
     &[filter-color="blue"],
@@ -49,21 +49,21 @@
         &:after{
             @include linear-gradient(rgba($cyan-100,.56), rgba($cyan-300,.95));
         }
-        @include lock-page-input-color($brand-info);
+        @include lock-page-input-color($info);
     }
     &[filter-color="green"],
     &[filter-color="success"]{
         &:after{
             @include linear-gradient(rgba($green-200,.56), rgba($green-400,.95));
         }
-        @include lock-page-input-color($brand-success);
+        @include lock-page-input-color($success);
     }
     &[filter-color="orange"],
     &[filter-color="warning"]{
         &:after{
             @include linear-gradient(rgba($orange-100,.56), rgba($orange-300,.95));
         }
-        @include lock-page-input-color($brand-warning);
+        @include lock-page-input-color($warning);
     }
 
     &[filter-color="red"],
@@ -71,13 +71,13 @@
         &:after{
             @include linear-gradient(rgba($red-200,.56), rgba($red-400,.95));
         }
-        @include lock-page-input-color($brand-danger);
+        @include lock-page-input-color($danger);
     }
     &[filter-color="rose"]{
         &:after{
             @include linear-gradient(rgba($pink-100,.56), rgba($pink-300,.95));
         }
-        @include lock-page-input-color($brand-rose);
+        @include lock-page-input-color($rose);
     }
 
     &[data-image]:after{
@@ -110,7 +110,7 @@
     .footer nav > ul a:not(.btn),
     .footer,
     .footer .copyright a{
-        color: $white-color;
+        color: $white;
     }
 
 }
@@ -222,7 +222,7 @@
           color: $white;
 
           &:hover {
-            color: $brand-primary;
+            color: $primary;
           }
         }
       }
@@ -266,7 +266,7 @@
               padding-right: 20px;
           }
           a {
-            color: $brand-primary;
+            color: $primary;
             }
         }
 
@@ -283,22 +283,22 @@
                 }
 
                 &.icon-primary{
-                    color: $brand-primary;
+                    color: $primary;
                 }
                 &.icon-info{
-                    color: $brand-info;
+                    color: $info;
                 }
                 &.icon-success{
-                    color: $brand-success;
+                    color: $success;
                 }
                 &.icon-warning{
-                    color: $brand-warning;
+                    color: $warning;
                 }
                 &.icon-danger{
-                    color: $brand-danger;
+                    color: $danger;
                 }
                 &.icon-rose{
-                    color: $brand-rose;
+                    color: $rose;
                 }
             }
 
@@ -319,7 +319,7 @@
     }
 
     .footer{
-      color: $white-color;
+      color: $white;
 
       .container{
           padding: 0;
@@ -329,7 +329,7 @@
           color: $white;
 
           &:hover {
-            color: $brand-primary;
+            color: $primary;
           }
         }
       }
@@ -351,7 +351,7 @@
   padding: 120px 0;
 
     .title{
-        color: $white-color;
+        color: $white;
         margin-top: 5vh;
     }
 
@@ -363,12 +363,12 @@
     .card-plain{
         .icon i,
         .card-title{
-            color: $white-color;
+            color: $white;
         }
     }
 
     .description{
-        color: $white-color;
+        color: $white;
     }
     &.full-page:before {
         background-color: rgba(0, 0, 0, 0.65);
@@ -376,7 +376,7 @@
 
     .footer{
       z-index: 2;
-      color: $white-color;
+      color: $white;
 
       .container{
           padding: 0;
@@ -386,7 +386,7 @@
           color: $white;
 
           &:hover {
-            color: $brand-primary;
+            color: $primary;
           }
         }
       }
@@ -395,14 +395,14 @@
 
 .off-canvas-sidebar {
   .navbar-toggler .navbar-toggler-icon{
-    background-color: $white-color !important;
+    background-color: $white !important;
   }
 
   .navbar-collapse {
     .nav {
         > li > a,
         > li > a:hover{
-            color: $white-color;
+            color: $white;
             margin: 0 15px;
         }
 
@@ -420,7 +420,7 @@
 .offline-doc {
   .navbar .navbar-nav {
     .nav-item .nav-link {
-      color: $white-color;
+      color: $white;
     }
   }
 }

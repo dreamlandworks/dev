@@ -15,72 +15,98 @@ use Modules\User\Models\AlertModel;
 use Modules\User\Models\ReferralModel;
 use Modules\User\Models\UserDetailsModel;
 use Modules\User\Models\UsersModel;
+use Modules\User\Models\TempUserModel;
 
 use Modules\User\Models\SmsTemplateModel;
 
 use App\Controllers\BaseController;
+use DateTime;
 
 class Users extends BaseController
 {
-    
-    
-    //---------------------------------------------------------Dashboard-------------------------------------------------
-	//-------------------------------------------------------------**************** -----------------------------------------------------
 
-	public function create_user()
-	{
-		echo view('\Modules\Admin\Views\_layout\header');
-		echo view('\Modules\Admin\Views\_layout\sidebar'); 
-		echo view('\Modules\Admin\Views\users\createNewUser');
-		echo view('\Modules\Admin\Views\_layout\footer');
-	}
-	
-	public function list_users()
-	{
-		$misc_model = new MiscModel();
-		
-		//Get users list
-		$arr_users =  $misc_model->get_users_list(); 
-		/*echo "<pre>";
-		print_r($arr_users);
-		echo "</pre>";
-		exit;*/
-		$data['arr_users'] = $arr_users;
-		
-		echo view('\Modules\Admin\Views\_layout\header');
-		echo view('\Modules\Admin\Views\_layout\sidebar'); 
-		echo view('\Modules\Admin\Views\users\listUsers',$data);
-		echo view('\Modules\Admin\Views\_layout\footer');
-	}
-	
-	public function edit_users()
-	{
-		echo view('\Modules\Admin\Views\_layout\header');
-		echo view('\Modules\Admin\Views\_layout\sidebar'); 
-		echo view('\Modules\Admin\Views\users\editUsers');
-		echo view('\Modules\Admin\Views\_layout\footer');
-	}
-	
-	public function create_user_submit()
-	{
-		$session = \Config\Services::session();
-		
-		/*echo "<pre>";
+
+    //---------------------------------------------------------Dashboard-------------------------------------------------
+    //-------------------------------------------------------------**************** -----------------------------------------------------
+
+    // Function to load create user form
+    public function create_user()
+    {
+        return view('Modules\Admin\Views\users\createNewUser');
+    }
+
+
+    //Function to get list of users
+    public function list_users()
+    {
+        $misc_model = new MiscModel();
+
+        //Get users list
+        $arr_users =  $misc_model->get_users_list();
+
+        foreach ($arr_users as $key => $val) {
+
+              $data[$key]['id'] = $val['id'];
+              $data[$key]['fname'] = $val['fname'];
+              $data[$key]['lname'] = $val['lname'];
+              $data[$key]['mobile'] = $val['mobile'];
+              $data[$key]['dob'] = $val['dob'];
+              $data[$key]['gender'] = $val['gender'];
+              $data[$key]['profile_pic'] = $val['profile_pic'];
+              $data[$key]['reg_status'] = $val['reg_status'];
+              $data[$key]['registered_on'] = $val['registered_on'];
+              $data[$key]['referral_id'] = $val['referral_id'];
+              $data[$key]['points_count'] = $val['points_count'];
+              $data[$key]['email'] = $val['email']; 
+              $data[$key]['status'] = $val['active']; 
+
+            $today = new DateTime('now');
+            $start = new DateTime($val['registered_on']);
+
+
+            $abs_diff = $today->diff($start)->format("%a");
+            $data[$key]['days'] = $abs_diff." days"; 
+
+        }
+
+        $dat['arr_users'] = $data;
+
+        // echo "<pre>";
+        // print_r($dat['arr_users']);
+        // echo "</pre>";
+        // exit;
+
+        return view('Modules\Admin\Views\users\listUsers', $dat);
+    }
+
+    
+    // Edit User Function 
+
+    public function edit_users($id)
+    {
+        $misc_model = new MiscModel();
+        $data['users'] = $misc_model->get_users($id);
+        return view('Modules\Admin\Views\users\editUsers', $data);
+    }
+
+    
+    // Function to submit data for user creation
+    
+    public function create_user_submit()
+    {
+        $session = \Config\Services::session();
+
+        /*echo "<pre>";
 		print_r($_POST);
 		echo "</pre>";
 		exit;*/
-		
+
         //creating New Models
-        $zip_model = new ZipcodeModel();
-        $city_model = new CityModel();
-        $state_model = new StateModel();
-        $country_model = new CountryModel();
-        $address_model = new AddressModel();
-        $userdetails_model = new UserDetailsModel();
+
         $users_model = new UsersModel();
-        $alert_model = new AlertModel();
         $common = new CommonModel();
-    
+        $userdetails_model = new UserDetailsModel();
+
         //JSON Objects declared into variables
         $fname = $this->request->getVar('fname');
         $lname = $this->request->getVar('lname');
@@ -88,141 +114,115 @@ class Users extends BaseController
         $email = $this->request->getVar('email');
         $dob = $this->request->getVar('dob');
         $gender = $this->request->getVar('gender');
-        $password = $this->request->getVar('password');
-        $city = $this->request->getVar('city');
-        $state = $this->request->getVar('state');
-        $country = $this->request->getVar('country');
-        $zip = $this->request->getVar('postal_code');
-        $address = $this->request->getVar('address');
+        $password = "password";
         $referral_id = $this->request->getVar('referral_id');
+
+        $image = '';
+
+        $img = $this->request->getFile('profile_pic');
+
+        //echo $img->getName();
+        if ($img->getName()) {
+            if (!$img->hasMoved()) {
+                $newName = $img->getRandomName();
+                $img->move('./images/user_profile', $newName);
+                $image = '/images/user_profile/' . $newName;
+            }
+        }
 
         if (empty($referral_id)) {
             $referral_id = "NoRef";
         }
-        
-        $validate_user_result = $users_model->search_by_email_mobile($email,$mobile);
-        //echo "<br> str ".$users_model->getLastQuery();exit;
-        
+
+        $validate_user_result = $users_model->search_by_email_mobile($email, $mobile);
+
         $existing_mobile = "";
         $existing_email = "";
-        
-        if($validate_user_result != 'failure') {
+
+        if ($validate_user_result != 'failure') {
             $existing_mobile = $validate_user_result->userid;
             $existing_email = $validate_user_result->email;
         }
-        
-        /*echo "<pre>";
-        print_r($validate_user_result);
-        echo "</pre>";*/
-        /*exit;*/
-        //$re = $users_model->search_mobile($mobile);
 
-        if ($existing_mobile != $mobile) {
 
-            if ($existing_email != $email) {
-                $country_id = $country_model->search_by_country($country);
-                if ($country_id == 0) {
-                    $country_id = $country_model->create_country($country);
-                }
-                $state_id = $state_model->search_by_state($state);
-                if ($state_id == 0) {
-                    $state_id = $state_model->create_state($state, $country_id);
-                }  
-                $city_id = $city_model->search_by_city($city);
-                if ($city_id == 0) {
-                    $city_id = $city_model->create_city($city, $state_id);
-                } 
-                $zip_id = $zip_model->search_by_zipcode($zip);
-                if ($zip_id == 0) {
-                    $zip_id = $zip_model->create_zip($zip, $city_id);
-                }    
-                
-                //name,flatno,apartment_name,landmark will be added later 
-                //after observing the realtime data from google api
+        if (($existing_email != $email) && ($existing_mobile != $mobile)) {
 
-                $data = [
-                    'name' => "",
-                    'flat' => "",
-                    'apartment' => "",
-                    'landmark' => "",
-                    'locality' => $address,
-                    'city_id' => $city_id,
-                    'state_id' => $state_id,
-                    'country_id' => $country_id,
-                    'zipcode_id' => $zip_id
-                    
-                ];
+            $reg_status = 1;
 
-                $address_id = $address_model->create_address_default($data);
-                $reg_status = 3;
+            $data1 = [
 
-                $data1 = [
+                'fname' => $fname,
+                'lname' => $lname,
+                'mobile' => $mobile,
+                'dob' => $dob,
+                'gender' => strtolower($gender),
+                'reg_status' => $reg_status,
+                'profile_pic' => $image
+            ];
 
-                    'fname' => $fname,
-                    'lname' => $lname,
-                    'mobile' => $mobile,
-                    'dob' => $dob,
-                    'gender'=>strtolower($gender),
-                    'reg_status' => $reg_status,
-                ];
+            $users_id = $common->insert_records_dynamically('user_details', $data1);
 
-                $users_id = $userdetails_model->create_user_details($data1);
+            $data2 = [
 
-                $data2 = [
-                    'mobile' => $mobile,
-                    'password' => $password,
-                    'email' => $email,
-                    'users_id' => $users_id
-                ];
+                'userid' => $mobile,
+                'password' => $password,
+                'email' => $email,
+                'sp_activated' => 1,
+                'users_id' => $users_id,
+                'activation_code' => 4
 
-                $user_id = $users_model->create_user_default($data2);
+            ];
 
-                if ($user_id) {
+            $user_id = $common->insert_records_dynamically('users', $data2);
 
-                    $aa = $address_model->update_address_by_id($address_id, ["users_id" => $user_id]);
-                    $bb = $this->create_ref($fname, $mobile, $referral_id, $user_id);
-                    $cc = $this->delete_temp($mobile);
-                    $dd = $userdetails_model->update_user_details($users_id, ['referral_id' => $bb['id']]);
-                    
-                    if ($aa != 0 && $bb != null && $cc != 0 && $dd != null && $ale > 0) {
-                        //Send SMS
-                        $sms_model = new SmsTemplateModel();
-                        
-                	 	$data = [
-            				"name" => "reg_thanks",
-            				"mobile" => $mobile,
-            				"dat" => [
-            					"var" => $fname,
-            				]
-            			];
-            			
-            			$sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
-            			
-            			echo "1";exit;
-            			
-            			$session->setFlashdata('success', 'User Successfully Created');
-            			
-            			return redirect('/listUsers');
-                    } else {
-                        echo "2";exit;
-                        $session->setFlashdata('error', 'There is problem with address or referral_id');
-                        return redirect('/createNewUser');
-                    }
+            if ($user_id) {
+
+                $bb = $this->create_ref($fname, $mobile, $referral_id, $user_id);
+                $dd = $userdetails_model->update_user_details($users_id, ['referral_id' => $bb['id']]);
+
+                //if ($aa != 0 && $bb != null && $cc != 0 && $dd != null && $ale > 0) {
+                if ($bb != null && $dd != null) {
+
+                    //Send SMS
+                    $sms_model = new SmsTemplateModel();
+
+                    $data = [
+                        "name" => "reg_thanks",
+                        "mobile" => $mobile,
+                        "dat" => [
+                            "var" => $fname,
+                        ]
+                    ];
+
+                    $sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
+
+                    //echo "1";exit;
+
+                    $session->setFlashData('success', 'User Successfully Created with User ID' . $user_id);
+
+                    return redirect('ct/listUsers');
+                } else {
+                    $session->setFlashData('error', 'There is problem with address or referral_id');
+                    return redirect('ct/createNewUser');
                 }
             } else {
-                echo "3";exit;
-                $session->setFlashdata('error', 'Email Address Already Exists');
-                return redirect('/createNewUser');
+                $session->setFlashData('error', 'Unable to Create User');
+                return redirect('ct/createNewUser');
             }
         } else {
-            echo "4";exit;
-            $session->setFlashdata('error', 'User Already Exists with this Mobile Number');
+
+            $session->setFlashData('error', 'User Already Exists with this Mobile Number or Email');
             //return redirect()->to(site_url('/ct/createNewUser'));
-            
-            return redirect('/createNewUser');
+
+            return redirect('ct/createNewUser');
         }
-	}
-	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+    }
+
+
+
+     //-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+
+    //-------------------------------------------------------------CREATE REF---------------------------------------------------------
     public function create_ref($fname, $mobile, $referred_by, $user_id)
     {
         //output -> referral_id (first four letters of fname + first four numbers of mobile) for uniqueness
@@ -243,7 +243,10 @@ class Users extends BaseController
             return null;
         }
     }
-    
+
+     //-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+
+    //-------------------------------------------------------------DELETE TEMP---------------------------------------------------------
     public function delete_temp($mobile = null)
     {
         $new = new TempUserModel();
@@ -254,4 +257,128 @@ class Users extends BaseController
             return 0;
         }
     }
+
+     //-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+
+    //-------------------------------------------------------------EDIT USER SUBMIT---------------------------------------------------------
+    public function edit_user_submit()
+    {
+        $session = \Config\Services::session();
+
+        $common = new CommonModel();
+        //Get Data
+        $id = $this->request->getVar('id');
+        $fname = $this->request->getVar('fname');
+        $lname = $this->request->getVar('lname');
+        $mobile = $this->request->getVar('mobile');
+        $email = $this->request->getVar('email');
+        $dob = $this->request->getVar('dob');
+        $gender = $this->request->getVar('gender');
+        $active = $this->request->getVar('active');
+        $reason = $this->request->getVar('reason');
+        
+        $img = $this->request->getFile('profile_pic');
+
+        //echo $img->getName();
+        if ($img->getName()) {
+            if (!$img->hasMoved()) {
+                $newName = $img->getRandomName();
+                $img->move('./images/user_profile', $newName);
+                $image = '/images/user_profile/' . $newName;
+
+                $data = [
+                    'fname' => $fname,
+                    'lname' => $lname,
+                    'mobile' => $mobile,
+                    'dob'  => $dob,
+                    'gender' => $gender,
+                    'profile_pic' => $image
+                ];
+            }
+        }else{
+            
+            $data = [
+                'fname' => $fname,
+                'lname' => $lname,
+                'mobile' => $mobile,
+                'dob'  => $dob,
+                'gender' => $gender                
+            ];
+            
+        }
+        
+
+        $data1 = [
+            'userid' => $mobile,
+            'email' => $email,
+            'active' => $active,
+            'reason_for_ban' => ($reason != "" ? $reason : Null),
+        ];
+
+        $common->update_records_dynamically('user_details', $data, 'id', $id);
+        $common->update_records_dynamically('users', $data1, 'id', $id);
+
+        $session->setFlashData('success', 'User Successfully Updated');
+        return redirect('ct/listUsers');
+    }
+    //-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+
+    //-------------------------------------------------------------DELETE USER---------------------------------------------------------
+    public function delete_user($id)
+    {
+
+        $model = new CommonModel;
+
+        $data = array(
+            ['login_activity', 'user_id'],
+            ['leader_board', 'sp_id'],
+            ['complaints', 'users_id'],
+            ['address', 'users_id'],
+            ['bid_det', 'users_id'],
+            ['alert_details', 'users_id'],
+            ['offer_used', 'users_id'],
+            ['referral', 'user_id'],
+            ['search_results', 'users_id'],
+            ['sp_det', 'users_id'],
+            ['sp_busy_slot', 'users_id'],
+            ['sp_location', 'users_id'],
+            ['sp_profession', 'users_id'],
+            ['sp_review', 'user_id'],
+            ['sp_skill', 'users_id'],
+            ['sp_subs_plan', 'users_id'],
+            ['subs_plan', 'users_id'],
+            ['sp_verify', 'users_id'],
+            ['suggestion', 'users_id'],
+            ['tariff', 'users_id'],
+            ['transaction', 'users_id'],
+            ['user_bank_details', 'users_id'],
+            ['user_lang_list', 'users_id'],
+            ['user_review', 'sp_id'],
+            ['user_temp_address', 'users_id'],
+            ['user_time_slot', 'users_id'],
+            ['video_watch', 'users_id'],
+            ['wallet_balance', 'users_id'],
+            ['user_details', 'id'],
+            ['users', 'id']
+        );
+
+        $session = session();
+
+        foreach ($data as $det) {
+            $i = 0;
+
+            if ($i < count($det)) {
+                $model->delete_records_dynamically($det[$i], $det[$i + 1], $id);
+                $i++;
+            }
+        }
+
+        $session->setFlashData('success', 'User Successfully Deleted');
+        return redirect('ct/listUsers');
+    }
+
+
+
+    //-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+
 }

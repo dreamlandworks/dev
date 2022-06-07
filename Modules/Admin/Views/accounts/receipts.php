@@ -134,7 +134,7 @@
                                 <thead>
                                   <tr>
                                     <th>S.No</th>
-                                    <th>Data</th>
+                                    <th>Name</th>
                                     <th>Transaction Id</th>
                                     <th>Method</th>
                                     <th>Description</th>
@@ -147,7 +147,7 @@
                                 <tfoot>
                                     <tr>
                                         <th>S.No</th>
-                                        <th>Data</th>
+                                        <th>Name</th>
                                         <th>Transaction Id</th>
                                         <th>Method</th>
                                         <th>Description</th>
@@ -158,166 +158,35 @@
                                       </tr>
                                 </tfoot>
                                 <tbody>
-        
-                                  <tr>
-                                    <td class="text-center">1</td>
-                                    <td>Data Field </td>
-                                    <td>14045686</td>
-                                    <td>Receipt</td>
-                                    <td>Description Text</td>
-                                    <td>Rs.500000</td>
-                                    <td>1234098765</td>
-                                    <td>3245678943</td>
-                                    <td>3975949694</td>
-                                  </tr>
-                                  <tr>
-                                    <td class="text-center">2</td>
-                                    <td>Data Field </td>
-                                    <td>14045686</td>
-                                    <td>Receipt</td>
-                                    <td>Description Text</td>
-                                    <td>Rs.500000</td>
-                                    <td>1234098765</td>
-                                    <td>3245678943</td>
-                                    <td>3975949694</td>
-                                  </tr>
-                                  <tr>
-                                    <td class="text-center">3</td>
-        
-                                    <td>Data Field </td>
-                                    <td>14045686</td>
-                                    <td>Receipt</td>
-                                    <td>Description Text</td>
-                                    <td>Rs.500000</td>
-                                    <td>1234098765</td>
-                                    <td>3245678943</td>
-                                    <td>3975949694</td>
-                                  </tr>
-        
-                                  <tr>
-                                    <td class="text-center">4</td>
-                                    <td>Data Field </td>
-                                    <td>14045686</td>
-                                    <td>Receipt</td>
-                                    <td>Description Text</td>
-                                    <td>Rs.500000</td>
-                                    <td>1234098765</td>
-                                    <td>3245678943</td>
-                                    <td>3975949694</td>
-                                  </tr>
-        
-                                  <tr>
-                                    <td class="text-center">5</td>
-        
-                                    <td>Data Field </td>
-                                    <td>14045686</td>
-                                    <td>Receipt</td>
-                                    <td>Description Text</td>
-                                    <td>Rs.500000</td>
-                                    <td>1234098765</td>
-                                    <td>3245678943</td>
-                                    <td>3975949694</td>
-                                  </tr>
-        
-        
-        
-                                  <tr>
-                                    <td class="text-center">6</td>
-        
-                                    <td>Data Field </td>
-                                    <td>14045686</td>
-                                    <td>Receipt</td>
-                                    <td>Description Text</td>
-                                    <td>Rs.500000</td>
-                                    <td>1234098765</td>
-                                    <td>3245678943</td>
-                                    <td>3975949694</td>
-                                  </tr>
-        
-        
-        
-                                  <tr>
-                                    <td class="text-center">7</td>
-        
-                                    <td>Data Field </td>
-                                    <td>14045686</td>
-                                    <td>Receipt</td>
-                                    <td>Description Text</td>
-                                    <td>Rs.500000</td>
-                                    <td>1234098765</td>
-                                    <td>3245678943</td>
-                                    <td>3975949694</td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">8</td>
-        
-                                    <td>Data Field </td>
-                                    <td>14045686</td>
-                                    <td>Receipt</td>
-                                    <td>Description Text</td>
-                                    <td>Rs.500000</td>
-                                    <td>1234098765</td>
-                                    <td>3245678943</td>
-                                    <td>3975949694</td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">9</td>
-        
-                                    <td>Data Field </td>
-                                    <td>14045686</td>
-                                    <td>Receipt</td>
-                                    <td>Description Text</td>
-                                    <td>Rs.500000</td>
-                                    <td>1234098765</td>
-                                    <td>3245678943</td>
-                                    <td>3975949694</td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">10</td>
-        
-                                    <td>Data Field </td>
-                                    <td>14045686</td>
-                                    <td>Receipt</td>
-                                    <td>Description Text</td>
-                                    <td>Rs.500000</td>
-                                    <td>1234098765</td>
-                                    <td>3245678943</td>
-                                    <td>3975949694</td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">11</td>
-        
-                                    <td>Data Field </td>
-                                    <td>14045686</td>
-                                    <td>Receipt</td>
-                                    <td>Description Text</td>
-                                    <td>Rs.500000</td>
-                                    <td>1234098765</td>
-                                    <td>3245678943</td>
-                                    <td>3975949694</td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">12</td>
-        
-                                    <td>Data Field </td>
-                                    <td>14045686</td>
-                                    <td>Receipt</td>
-                                    <td>Description Text</td>
-                                    <td>Rs.500000</td>
-                                    <td>1234098765</td>
-                                    <td>3245678943</td>
-                                    <td>3975949694</td>
-                                  </tr>
+                                <?php
+                                  if($arr_receipts != 'failure') {
+                                      foreach($arr_receipts as $key => $receipts) {
+                                      ?>
+                                      <tr>
+                                        <td class="text-center"><?php echo ($key+1); ?></td>
+                                        <td><?php echo $receipts['name']; ?> </td>
+                                        <td> <?php echo $receipts['id']; ?></td>
+                                        <td> <?php echo $receipts['methodName']; ?></td>
+                                        <td> <?php echo $receipts['description']; ?></td>
+                                        <td> <?php echo $receipts['Amount']; ?></td>
+                                        <td> <?php echo $receipts['fname']; ?></td>
+                                        <td> <?php echo $receipts['reference_id']; ?></td>
+                                        <td> <?php echo $receipts['booking_id']; ?></td>
+                                    <!--    <td>-->
+                                    <!--  <div class="togglebutton">-->
+                                    <!--    <label>-->
+                                    <!--      <input class ="chkstatus" data-id="<?php //echo $userplans['id']; ?>"  type="checkbox"  >-->
+                                    <!--      <span class="toggle"></span>-->
+                                    <!--    </label>-->
+                                    <!--  </div>-->
+                                    <!--</td>-->
+                                    
+                                    </tr>
+                                      <?php
+                                      }
+                                  }
+                                  ?>
+                        
                                 </tbody>
                               </table>
                             </div>

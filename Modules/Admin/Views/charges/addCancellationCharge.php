@@ -578,6 +578,7 @@
                                         </button>
                                     </a>
                                 </div> -->
+								<form enctype="multipart/form-data" method="POST" id="cancellationChargeDetails" role="form" action="<?php echo ADMINBASEURL; ?>create_cancellationCharge_submit">
                                 <div class="card ">
                                     <div class="card-header card-header-rose card-header-icon">
                                         <div class="card-icon">
@@ -588,36 +589,36 @@
                                         <h4 class="card-title">New Cancellation Charge</h4>
                                     </div>
                                     <div class="card-body ">
-                                        <form method="#" action="#">
+                                        
                                             <div class="row">
                                                 <div class="col-lg-5 col-md-6 col-sm-12">
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating">
-                                                            CancellationChange Name</label>
-                                                        <input type="text" class="form-control" id="name">
+                                                            CancellationCharge Name</label>
+                                                        <input type="text" class="form-control" id="cancellationCharges_name" name="cancellationCharges_name">
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating">
                                                             Percentage </label>
-                                                        <input type="text" class="form-control" id="name">
+                                                        <input type="text" class="form-control" id="cancellationCharges_percentage" name="cancellationCharges_percentage">
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating">Amount
                                                         </label>
-                                                        <input type="text" class="form-control" id="name">
+                                                        <input type="text" class="form-control" id="cancellationCharges_amount" name="cancellationCharges_amount">
                                                     </div>
 
                                                    
-                                                
+                                                <!--
                                                     <select class="selectpicker" data-style="select-with-transition"
                                                     title="Select Status" data-size="7">
                                                     <option value="2">Active </option>
                                                     <option value="3">Inactive </option>
                                                 </select>
 
-                                       
+                                       -->
 
                                                 </div>
                                                 <div class="col-lg-5 col-md-6 col-sm-12" style="margin:0.4rem 2rem">
@@ -625,9 +626,9 @@
                                                     <label class="col-md-2 col-form-label"> Description : </label>
                                                     <div class="col-md-12">
                                                         <div class="form-group">
-                                                            <div id="editor">
-                                                                <p>This is some sample content.</p>
-                                                            </div>
+                                                            <textarea name="cancellationCharges_description" id="cancellationCharges_description">
+																<p>This is some sample content.</p>															
+                                                            </textarea>
                                                         </div>
                                                     </div>
 
@@ -661,12 +662,13 @@
                                                     </div>
                                                 </div>
                                             </div> -->
-                                        </form>
+                                        
                                     </div>
                                     <div class="card-footer ">
                                         <button type="submit" class="btn btn-fill btn-teal">Submit</button>
                                     </div>
                                 </div>
+								</form>
                             </div>
                         </div>
 
@@ -962,7 +964,7 @@
         <script>
 
             ClassicEditor
-                .create(document.querySelector('#editor'))
+                .create(document.querySelector('#cancellationCharges_description'))
                 .catch(error => {
                     console.error(error);
                 });
@@ -971,7 +973,21 @@
 
 </body>
 
-
-
-
 </html>
+
+
+<script>
+    $(document).ready(function(){
+	var cancellationChargeDetailsForm = $("#cancellationChargeDetails");	
+    	var validator = cancellationChargeDetailsForm.validate({		
+    		
+    		rules:{
+    			cancellationCharges_name :{ required : true}
+    		},
+    		messages:{
+    		    cancellationCharges_name :{ required : "Cancellation Charges Name is Required"}
+    		}			
+    	});
+    });
+   
+</script>

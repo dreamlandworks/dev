@@ -574,10 +574,11 @@
                                         <button class="btn btn-primary" style="background-color:#8f6bf4">
                                             <b> <i class="material-icons">
                                                     <img src="../../assets/img/icons/keyboard_backspace-white-24dp.svg" />
-                                                </i> Back </b>
+                                                </i> Back </b> 
                                         </button>
                                     </a>
                                 </div> -->
+								<form enctype="multipart/form-data" method="POST" id="singleMoveFormDetails" role="form" action="<?php echo ADMINBASEURL; ?>create_singleMoveForm_submit">
                                 <div class="card ">
                                     <div class="card-header card-header-rose card-header-icon">
                                         <div class="card-icon">
@@ -588,64 +589,110 @@
                                         <h4 class="card-title">New Booking</h4>
                                     </div>
                                     <div class="card-body ">
-                                        <form method="#" action="#">
+                                        
                                             <div class="row">
                                                 <div class="col-lg-5 col-md-6 col-sm-12">
                                                     <div class="form-group">
-                                                        <label for="exampleName" class="bmd-label-floating">
-                                                            Date Time </label>
-                                                        <input type="text" class="form-control" id="name">
+                                                        <label for="singleMoveForm_date" class="bmd-label-floating">
+                                                            Date </label>
+                                                        <input type="date" class="form-control" id="singleMoveForm_date" name="singleMoveForm_date">
                                                     </div>
-
+													
+													<div class="form-group">
+														<select name="singleMoveForm_time" id="singleMoveForm_time" class="selectpicker" data-style="select-with-transition"
+															title="Select Time" data-size="7">
+															<?php
+															  if($arr_timeSlots != 'failure') {
+																  foreach($arr_timeSlots as $timeSlot) {
+															  ?>
+																<option value="<?php echo $timeSlot['from']; ?>" ><?php echo $timeSlot['from']; ?> </option>
+																<?php
+															  }}
+																?>
+														</select>
+													</div>
+													
                                                     <div class="form-group">
-                                                        <label for="exampleName" class="bmd-label-floating">Work Description
+                                                        <label for="singleMoveForm_jobDescription" class="bmd-label-floating">Work Description
                                                         </label>
-                                                        <input type="text" class="form-control" id="name">
+                                                        <input type="text" class="form-control" id="singleMoveForm_jobDescription" name="singleMoveForm_jobDescription">
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label for="exampleDesignation"
+                                                        <label for="singleMoveForm_address"
                                                             class="bmd-label-floating">Flat no, locality, street name</label>
-                                                        <input type="text" class="form-control" id="designation">
+                                                        <input type="text" class="form-control" id="singleMoveForm_address" name="singleMoveForm_address">
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label for="examplePass" class="bmd-label-floating">zip code
+                                                        <label for="singleMoveForm_zipCode" class="bmd-label-floating">zip code
                                                             <span style="color:red">*</span></label>
-                                                        <input type="text" class="form-control" id="examplePass">
+                                                        <input type="text" class="form-control" id="singleMoveForm_zipCode" name="singleMoveForm_zipCode">
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="examplePass" class="bmd-label-floating"> City
+                                                        <label for="singleMoveForm_city" class="bmd-label-floating"> City
                                                             <span style="color:red">*</span></label>
-                                                        <input type="text" class="form-control" id="examplePass">
+                                                        <input type="text" class="form-control" id="singleMoveForm_city" name="singleMoveForm_city">
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="examplePass" class="bmd-label-floating">State
+                                                        <label for="singleMoveForm_state" class="bmd-label-floating">State
                                                             <span style="color:red">*</span></label>
-                                                        <input type="text" class="form-control" id="examplePass">
+                                                        <input type="text" class="form-control" id="singleMoveForm_state" name="singleMoveForm_state">
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="examplePass" class="bmd-label-floating">Country
+                                                        <label for="singleMoveForm_country" class="bmd-label-floating">Country
                                                             <span style="color:red">*</span></label>
-                                                        <input type="text" class="form-control" id="examplePass">
+                                                        <input type="text" class="form-control" id="singleMoveForm_country" name="singleMoveForm_country">
                                                     </div>
 
                                                 </div>
                                                 <div class="col-lg-5 col-md-6 col-sm-12" style="margin:0.4rem 2rem">
                                     
                                                     <div class="form-group">
-                                                        <label for="exampleName" class="bmd-label-floating">User Id
+                                                       <!-- <label for="singleMoveForm_userID" class="bmd-label-floating">User Id
                                                         </label>
-                                                        <input type="text" class="form-control" id="name">
-                                                    </div>
+                                                        <input type="text" class="form-control" id="singleMoveForm_userID" name="singleMoveForm_userID">
+														-->
+														<select name="singleMoveForm_userID" id="singleMoveForm_userID" class="selectpicker" data-style="select-with-transition"
+															title="Select User" data-size="7">
+															<?php
+															  if($arr_users != 'failure') {
+																  foreach($arr_users as $user) {
+															  ?>
+																<option value="<?php echo $user['user_id']; ?>" ><?php echo $user['fname'] . ' ' . $user['lname']; ?> </option>
+																<?php
+															  }}
+																?>
+														</select>
+													</div>
+													
+													<div class="fileinput fileinput-new text-center"
+														data-provides="fileinput">
+														<div class="fileinput-new thumbnail">
+															<img src="../../assets/img/image_placeholder.jpg" alt="...">
+														</div>
+														<div class="fileinput-preview fileinput-exists thumbnail"></div>
+														<div>
+															<span class="btn btn-teal btn-round btn-file">
+																<span class="fileinput-new">Select image</span>
+																<span class="fileinput-exists">Change</span>
+																<input type="file" id="singleMoveForm_attachments" name="singleMoveForm_attachments" />
+															</span>
+															<a href="#pablo"
+																class="btn btn-danger btn-round fileinput-exists"
+																data-dismiss="fileinput"><i class="fa fa-times"></i>
+																Remove</a>
+														</div>
+													</div>
                                                 </div>
                                             </div>
-                                        </form>
+                                        
                                     </div>
                                     <div class="card-footer ">
                                         <button type="submit" class="btn btn-fill btn-teal">Submit</button>
                                     </div>
                                 </div>
+								</form>
                             </div>
                         </div>
 
@@ -946,8 +993,35 @@
                     console.error(error);
                 });
     
-        </script>
-
+        
+    $(document).ready(function(){
+	var singleMoveDetailsForm = $("#singleMoveFormDetails");	
+    	var validator = singleMoveDetailsForm.validate({		
+    		
+    		rules:{
+    			singleMoveForm_date :{ required : true},
+				singleMoveForm_time :{ required : true},
+				singleMoveForm_jobDescription :{ required : true},
+				singleMoveForm_zipCode :{ required : true},
+				singleMoveForm_city :{ required : true},
+				singleMoveForm_state :{ required : true},
+				singleMoveForm_country :{ required : true},
+				singleMoveForm_userID :{ required : true}
+    		},
+    		messages:{
+    		    singleMoveForm_date :{ required : "Date is Required"},
+				singleMoveForm_time :{ required : "Time is Required"},
+				singleMoveForm_jobDescription :{ required : "Work Description is Required"},
+				singleMoveForm_zipCode :{ required : "Zip Code is Required"},
+				singleMoveForm_city :{ required : "City is Required"},
+				singleMoveForm_state :{ required : "State is Required"},
+				singleMoveForm_country :{ required : "Country is Required"},
+				singleMoveForm_userID :{ required : "User Id is Required"}
+    		}			
+    	});
+    });
+   
+</script>
 </body>
 
 

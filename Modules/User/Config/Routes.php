@@ -40,6 +40,7 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     
     //Routes pertaining to Search
     $routes->post("search_result","SearchProvider::search_result");// Get List of SP matching the keyword and city
+    $routes->post("search_provider","SearchProvider::search_provider");// Temp
     
     //Routes pertaining to FAQ
     $routes->get("user_faq", "MiscController::user_faq"); //Get all the User related Faq
@@ -62,6 +63,7 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     $routes->post("user_temp_address", "MiscController::user_temp_address"); //Get List of users temp address
     $routes->post("add_address", "MiscController::add_address"); //Add multiple address
     $routes->post("delete_attachment", "MiscController::delete_attachment"); //Add attachment
+    $routes->post("add_funds", "MiscController::add_funds"); //Txn to add funds to wallet
     $routes->post("transfer_funds", "MiscController::transfer_funds"); //Transfer Funds
     $routes->post("withdraw_funds", "MiscController::withdraw_funds"); //Withdraw Funds
     $routes->post("add_bank_account", "MiscController::add_bank_account"); //Add Bank account
@@ -75,18 +77,24 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     $routes->post("booking_details", "BookingController::get_booking_details"); //Get booking details
     $routes->post("user_booking_details", "BookingController::get_user_booking_details"); //Get User booking details
     $routes->post("sp_booking_response", "BookingController::sp_booking_response"); //Update SP response whether booking is accepted/rejected
-    $routes->get("generate_otp", "BookingController::generate_otp"); //generate_otp 
+    $routes->get("generate_otp", "BookingController::generate_otp"); //generate_otp
     $routes->get("validate_otp", "BookingController::validate_otp"); //validate_otp
     $routes->post("cancel_booking", "BookingController::cancel_booking"); //Cancel Booking
     $routes->get("get_sp_slots", "BookingController::get_sp_slots"); //Get all the Sp Slots List 
     $routes->post("update_extra_demand_status", "BookingController::update_extra_demand_status");  //Update Extra demand details status 
     $routes->get("get_goals_installments_requested_list", "BookingController::get_goals_installments_requested_list"); //Get all the Goals List 
     $routes->get("get_booking_status_list", "BookingController::get_booking_status_list"); //Booking Status/History list 
+	$routes->post("complete_booking","BookingController::complete_booking"); // Complete the booking
+    $routes->get("verify_txn/(.*)","BookingController::verify_txn/$1"); // Get status with Order ID
+    $routes->post("process_txn","BookingController::process_txn"); // Get Deep Link for UPI
+    
+
 
     //Routes pertaining to User Reschedule Booking
     $routes->post("reschedule_booking", "BookingController::reschedule_booking");  //User end request to reschedule the booking
     $routes->post("update_reschedule_status_by_sp", "BookingController::update_reschedule_status_by_sp");   //User end request to accept/reject reschedule
     
+    $routes->post("membership_payments_txn_user", "MembershipController::membership_payments_txn_user"); //Txn No for Membership payments
     $routes->post("membership_payments", "MembershipController::membership_payments"); //Membership payments
     
     //Routes pertaining to User Job Post
@@ -119,16 +127,33 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     
     //Routes pertaining to User Account
     $routes->get("get_account_details", "MyAccount::get_account_details"); //Get User account details
-    
-  
+    // Routs for User UPI Add & retrieve
+    $routes->post("save_user_upi", "TransactionsController::save_user_upi");
+    $routes->post("get_user_upi", "TransactionsController::get_user_upi");
+
+
+    $routes->post("get_file", "MiscController::convertFiles");//files to be uploaded to server in blue collar
+    $routes->get("view_files", "MiscController::view_files_user");
+    $routes->post("send_fcm","MiscController::send_fcm"); //Send FCM Messages
+ 
 	
 });
 
 $routes->group("",["namespace" => "\Modules\User\Controllers\web"],function($routes){
 
     $routes->get("/", "Home::index"); //Get Home Page
+    $routes->get("/terms", "Home::terms"); //Get Terms & Conditions
+    $routes->get("/privacy", "Home::privacy"); //Get Privacy Policy
+    $routes->get("/disclaimer", "Home::disclaimer"); //Get Disclaimer
+    $routes->get("/userfaq", "Home::ufaq"); //Get User FAQs
+    $routes->get("/spfaq", "Home::spfaq"); //Get SP FAQs
+    $routes->post("/contact", "Home::contact"); //Post Contact Us Form
+    $routes->post("/subs", "Home::subs"); //Post Subscription Form
+
+
     $routes->get("/categories", "Category::index"); //Get Categories Page
     $routes->post("login","Login::login"); //Login User
     $routes->get("logout","Login::logout"); //Logout Functionality
+
 
 });

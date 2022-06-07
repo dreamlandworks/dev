@@ -4,7 +4,7 @@ namespace Modules\Provider\Controllers\Api;
 
 use CodeIgniter\RESTful\ResourceController;
 use Modules\Provider\Models\CommonModel;
-use Modules\Provider\Models\AlertModel;
+use Modules\User\Models\AlertModel;
 use Modules\User\Models\MiscModel;
 
 class MiscController extends ResourceController
@@ -23,10 +23,11 @@ class MiscController extends ResourceController
 	 * @param key
 	 * </code>
 	 */
-	public function get_profession_list()
+	
+     public function get_profession_list()
 	{
 		$json = $this->request->getVar();
-		if(!array_key_exists('key',$json)) {
+		if(!isset($json['key'])) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -80,7 +81,7 @@ class MiscController extends ResourceController
 	public function get_qualification_list()
 	{
 		$json = $this->request->getVar();
-		if(!array_key_exists('key',$json)) {
+		if(!isset($json['key'])) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -136,7 +137,7 @@ class MiscController extends ResourceController
 	public function get_experience_list()
 	{
 		$json = $this->request->getVar();
-		if(!array_key_exists('key',$json)) {
+		if(!isset($json['key'])) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -192,7 +193,7 @@ class MiscController extends ResourceController
 	public function get_language_list()
 	{
 		$json = $this->request->getVar();
-		if(!array_key_exists('key',$json)) {
+		if(!isset($json['key'])) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -245,7 +246,7 @@ class MiscController extends ResourceController
 	public function get_day_slot_list()
 	{
 		$json = $this->request->getVar();
-		if(!array_key_exists('key',$json)) {
+		if(!isset($json['key'])) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -301,7 +302,7 @@ class MiscController extends ResourceController
 	public function get_initialization_list()
 	{
 		$json = $this->request->getVar();
-		if(!array_key_exists('key',$json)) {
+		if(!isset($json['key'])) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -408,9 +409,9 @@ class MiscController extends ResourceController
             //getting JSON data from API
             $json = $this->request->getJSON();
             
-            if(!array_key_exists('overall_rating',$json) || !array_key_exists('user_rating',$json) || !array_key_exists('booking_rating',$json) 
-                || !array_key_exists('app_review',$json)  || !array_key_exists('job_satisfaction',$json) || !array_key_exists('feedback',$json) 
-                || !array_key_exists('booking_id',$json) || !array_key_exists('user_id',$json) || !array_key_exists('key',$json)
+            if(!property_exists($json, 'overall_rating') || !property_exists($json,'user_rating') || !property_exists($json,'booking_rating') 
+                || !property_exists($json,'app_review')  || !property_exists($json,'job_satisfaction') || !property_exists($json,'feedback') 
+                || !property_exists($json,'booking_id') || !property_exists($json,'user_id') || !property_exists($json,'key')
                             ) {
     		    return $this->respond([
         				'status' => 403,
@@ -449,18 +450,7 @@ class MiscController extends ResourceController
         		            $sp_id = $arr_sp_details['sp_id'];
         		            $job_title = $arr_sp_details['title'];
         		        }
-            		        
-                        //Insert into alert_details table
-        		        $arr_alerts = array(
-            		          'alert_id' => 1, 
-                              'description' => $sp_name." has posted a review for booking $booking_ref_id",
-                              'action' => 1,
-                              'created_on' => date("Y-m-d H:i:s"), 
-                              'status' => 1,
-                              'users_id' => $json->user_id,
-                        );
-                        $common->insert_records_dynamically('alert_details', $arr_alerts);
-                        
+            		    
                         return $this->respond([
             			    "review_id" => $review_id,
             				"status" => 200,
@@ -497,17 +487,14 @@ class MiscController extends ResourceController
     public function get_sp_alerts()
     {
         $json = $this->request->getJSON();
-        if(!array_key_exists('sp_id',$json) || !array_key_exists('type',$json) || !array_key_exists('status',$json) || !array_key_exists('key',$json)) {
+        if(!property_exists($json, 'id') || !property_exists($json, 'key')) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
     		]);
 		}
 		else {
-		    $id = $json->sp_id;
-    		$type = $json->type;
-    		$status = $json->status;
-    		$user_type = "SP";
+		    $id = $json->id;
     		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
 		    
 		    $apiconfig = new \Config\ApiConfig();
@@ -518,21 +505,61 @@ class MiscController extends ResourceController
     
         		$alert = new AlertModel();
                 
-                $res = $alert->all_alerts($id, $type,$status,$user_type);
-        
+                //Regular Alerts
+                $res = $alert->all_alerts($id,3);
+                        
                 if ($res != null) {
-                    return $this->respond([
-                        "status" => 200,
-                        "message" => "Success",
-                        "data" => $res
-                    ]);
+                   $alert_regular = $res;
+                   
                 } else {
-                    return $this->respond([
-                        "status" => 404,
-                        "message" => "No Data to show"
-                    ]);
+                    $alert_regular = [];
                 }
-    		}
+
+                //Actionable Alerts
+
+                $res = $alert->all_alerts($id,4);
+                
+                if ($res != null) {
+                   //$alert_action = $res;
+                  foreach($res as $key=>$dat){
+                     
+                     $alert_action[$key]['id'] = $dat['id'];
+                     $alert_action[$key]['type_id'] = $dat['type_id'];
+                     $alert_action[$key]['user_id'] = $dat['users_id'];
+                     $alert_action[$key]['sp_id'] = $dat['user_id'];
+                     $alert_action[$key]['profile_pic'] = $dat['profile_pic'];
+                     $alert_action[$key]['description'] = $dat['description'];
+                     $alert_action[$key]['status'] = $dat['status'];
+                     $alert_action[$key]['api'] = $dat['api'];
+                     $alert_action[$key]['accept_text'] = $dat['accept_text'];
+                     $alert_action[$key]['reject_text'] = $dat['reject_text'];
+                     $alert_action[$key]['accept_response'] = $dat['accept_response'];
+                     $alert_action[$key]['reject_response'] = $dat['reject_response'];
+                     $alert_action[$key]['created_on'] = $dat['created_on'];
+                     $alert_action[$key]['updated_on'] = $dat['updated_on'];
+                     $alert_action[$key]['booking_id'] = $dat['booking_id'];
+                     $alert_action[$key]['post_id'] = $dat['post_id'];
+                     $alert_action[$key]['reschedule_id'] = $dat['reschedule_id'];
+                     $alert_action[$key]['status_code_id'] = $dat['status_code_id'];
+                     $alert_action[$key]['req_raised_by_id'] = (is_null($dat['req_raised_by_id']) ? "" : $dat['req_raised_by_id']);
+                     $alert_action[$key]['category_id'] = $dat['category_id'];
+                     $alert_action[$key]['bid_id'] = (is_null($dat['bid_id']) ? "" : $dat['bid_id']);
+                     $alert_action[$key]['bid_user_id'] = (is_null($dat['bid_user_id']) ? "" : $dat['bid_user_id']);
+
+                }
+               
+                } else {
+                    $alert_action = [];
+                }
+
+                return $this->respond([
+                    'status' => 200,
+                    'message' => 'Success',
+                    'regular' => $alert_regular,
+                    'action' =>  $alert_action
+                ]);
+    		
+            }
     		else {
     		    return $this->respond([
         				'status' => 403,
@@ -548,7 +575,7 @@ class MiscController extends ResourceController
     {
         $json = $this->request->getJSON();
         
-        if(!array_key_exists('id',$json) || !array_key_exists('type',$json) || !array_key_exists('key',$json)) {
+        if(!property_exists($json, 'id') || !property_exists($json, 'type') || !property_exists($json, 'key')) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -567,7 +594,7 @@ class MiscController extends ResourceController
     
         		$alerts = new AlertModel();
 
-                $date = date('Y-m-d H:m:s', time());
+                $date = date('Y-m-d H:i:s');
                 $res = $alerts->update_alert($id, $date,$type);
         
                 if ($res == "Success") {
@@ -614,10 +641,25 @@ class MiscController extends ResourceController
     		if($key == $api_key) {
     		    $common = new CommonModel();
     		    $misc_model = new MiscModel();
-        		$res = $common->get_table_details_dynamically('sp_plans', 'id', 'ASC');
+        		$resu = $common->get_table_details_dynamically('sp_plans', 'id', 'ASC');
         		
         		$res_plan = $misc_model->get_sp_plan_details($validate_user_id);
-        
+                
+                foreach($resu as $key=>$r){
+                    $res[$key]['id'] = $r['id'];
+                    $res[$key]['name'] = $r['name'];
+                    $res[$key]['description'] = $r['description'];
+                    $res[$key]['amount'] = intval($r['amount'])."";
+                    $res[$key]['premium_tag'] = $r['premium_tag'];
+                    $res[$key]['period'] = $r['period'];
+                    $res[$key]['platform_fee_per_booking'] = intval($r['platform_fee_per_booking'])."";
+                    $res[$key]['bids_per_month'] = $r['bids_per_month'];
+                    $res[$key]['sealed_bids_per_month'] = $r['sealed_bids_per_month'];
+                    $res[$key]['customer_support'] = $r['customer_support'];
+
+                }
+
+
         		if ($res != 'failure') {
         			return $this->respond([
         			    "activated_plan" => ($res_plan != 'failure') ? $res_plan['plans_id'] : 0,
@@ -768,7 +810,7 @@ class MiscController extends ResourceController
 	public function update_sp_watched_video()
 	{
 		$json = $this->request->getVar();
-		if(!array_key_exists('key',$json) && !array_key_exists('video_id',$json) && !array_key_exists('sp_id',$json) && !array_key_exists('points',$json)) {
+		if(!isset($json['key']) && !isset($json['video_id']) && !isset($json['sp_id']) && !isset($json['points'])) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -827,4 +869,5 @@ class MiscController extends ResourceController
 
 
 	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
-}
+
+ }

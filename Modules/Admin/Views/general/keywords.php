@@ -153,349 +153,38 @@
                                   </tr>
                                 </tfoot>
                                 <tbody>
-        
+                                <?php   
+                                    if($keywords != 'failure') {
+                                    foreach($keywords as $key => $keyword){ ?>
                                   <tr>
-                                    <td class="text-center">1</td>
-                                    <td>keyword </td>
-                                    <td>Profession</td>
+                                    <td class="text-center"><?php echo ($key+1); ?></td>
+                                    <td><?php echo $keyword['keyword']; ?> </td>
+                                    <td><?php echo $keyword['name']; ?></td>
                                     <td>Admin</td>
                                     <td>
                                       <div class="togglebutton">
                                         <label>
-                                          <input type="checkbox" checked="">
+                                          <input type="checkbox" class ="chkstatus" data-id="<?php echo $keyword['id']; ?>"  type="checkbox" <?php echo ($keyword['status'] == 'Active') ? 'checked' : ''; ?>>
                                           <span class="toggle"></span>
                                         </label>
                                       </div>
                                     </td>
                                     <td class="td-actions">
-                                      <a href="editKeywords">
+                                      <a href="<?php echo 'editKeywords/'.$keyword['id'];?>">
 									  <button type="button" rel="tooltip" class="btn btn-success btn-round">
                                         <i class="material-icons">
                                           <img src="../../assets/img/create-white-18dp (1).svg" />
                                         </i>
                                       </button>
 									  </a>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
+                                      <button data-id="<?php echo $keyword['id']; ?>" type="button" rel="tooltip" class="btn btn-danger btn-round btndelete">
                                         <i class="material-icons">
                                           <img src="../../assets/img/close-white-18dp.svg" />
                                         </i>
                                       </button>
                                     </td>
                                   </tr>
-                                  <tr>
-                                    <td class="text-center">2</td>
-        
-                                     <td>keyword </td>
-                                    <td>Profession</td>
-                                    <td>Admin</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td class="text-center">3</td>
-        
-                                     <td>keyword </td>
-                                    <td>Profession</td>
-                                    <td>Admin</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-                                  <tr>
-                                    <td class="text-center">4</td>
-                                     <td>keyword </td>
-                                    <td>Profession</td>
-                                    <td>Admin</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-                                  <tr>
-                                    <td class="text-center">5</td>
-        
-                                     <td>keyword </td>
-                                    <td>Profession</td>
-                                    <td>Admin</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-        
-                                  <tr>
-                                    <td class="text-center">6</td>
-        
-                                     <td>keyword </td>
-                                    <td>Profession</td>
-                                    <td>Admin</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-        
-                                  <tr>
-                                    <td class="text-center">7</td>
-        
-                                     <td>keyword </td>
-                                    <td>Profession</td>
-                                    <td>Admin</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">8</td>
-        
-                                     <td>keyword </td>
-                                    <td>Profession</td>
-                                    <td>Admin</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">9</td>
-        
-                                     <td>keyword </td>
-                                    <td>Profession</td>
-                                    <td>Admin</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">10</td>
-        
-                                     <td>keyword </td>
-                                    <td>Profession</td>
-                                    <td>Admin</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">11</td>
-        
-                                     <td>keyword </td>
-                                    <td>Profession</td>
-                                    <td>Admin</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">12</td>
-        
-                                     <td>keyword </td>
-                                    <td>Profession</td>
-                                    <td>Admin</td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
+                                  <?php } }?>
                                 </tbody>
                               </table>
                             </div>
@@ -513,229 +202,7 @@
                 </div>
               </div>
            
-    <!--   Core JS Files   -->
-    <script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.bundle.min.js"></script>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="../../assets/js/core/jquery.min.js"></script>
-    <script src="../../assets/js/core/popper.min.js"></script>
-    <script src="../../assets/js/core/bootstrap-material-design.min.js"></script>
-    <script src="../../assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
-    <!-- Plugin for the momentJs  -->
-    <script src="../../assets/js/plugins/moment.min.js"></script>
-    <!--  Plugin for Sweet Alert -->
-    <script src="../../assets/js/plugins/sweetalert2.js"></script>
-    <!-- Forms Validations Plugin -->
-    <script src="../../assets/js/plugins/jquery.validate.min.js"></script>
-    <!-- Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
-    <script src="../../assets/js/plugins/jquery.bootstrap-wizard.js"></script>
-    <!--	Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
-    <script src="../../assets/js/plugins/bootstrap-selectpicker.js"></script>
-    <!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
-    <script src="../../assets/js/plugins/bootstrap-datetimepicker.min.js"></script>
-    <!--  DataTables.net Plugin, full documentation here: https://datatables.net/  -->
-    <script src="../../assets/js/plugins/jquery.dataTables.min.js"></script>
-    <!--	Plugin for Tags, full documentation here: https://github.com/bootstrap-tagsinput/bootstrap-tagsinputs  -->
-    <script src="../../assets/js/plugins/bootstrap-tagsinput.js"></script>
-    <!-- Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
-    <script src="../../assets/js/plugins/jasny-bootstrap.min.js"></script>
-    <!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
-    <script src="../../assets/js/plugins/fullcalendar.min.js"></script>
-    <!-- Vector Map plugin, full documentation here: http://jvectormap.com/documentation/ -->
-    <script src="../../assets/js/plugins/jquery-jvectormap.js"></script>
-    <!--  Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
-    <script src="../../assets/js/plugins/nouislider.min.js"></script>
-    <!-- Include a polyfill for ES6 Promises (optional) for IE11, UC Browser and Android browser support SweetAlert -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
-    <!-- Library for adding dinamically elements -->
-    <script src="../../assets/js/plugins/arrive.min.js"></script>
-    <!--  Google Maps Plugin    -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
-    <!-- Chartist JS -->
-    <script src="../../assets/js/plugins/chartist.min.js"></script>
-    <!--  Notifications Plugin    -->
-    <script src="../../assets/js/plugins/bootstrap-notify.js"></script>
-    <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
-    <script src="../../assets/js/material-dashboard.js?v=2.1.0" type="text/javascript"></script>
-    <!-- Material Dashboard DEMO methods, don't include it in your project! -->
-    <script src="../../assets/demo/demo.js"></script>
-    <script>
-        $(document).ready(function () {
-            $().ready(function () {
-                $sidebar = $('.sidebar');
-
-                $sidebar_img_container = $sidebar.find('.sidebar-background');
-
-                $full_page = $('.full-page');
-
-                $sidebar_responsive = $('body > .navbar-collapse');
-
-                window_width = $(window).width();
-
-                fixed_plugin_open = $('.sidebar .sidebar-wrapper .nav li.active a p').html();
-
-                if (window_width > 767 && fixed_plugin_open == 'Dashboard') {
-                    if ($('.fixed-plugin .dropdown').hasClass('show-dropdown')) {
-                        $('.fixed-plugin .dropdown').addClass('open');
-                    }
-
-                }
-
-                $('.fixed-plugin a').click(function (event) {
-                    // Alex if we click on switch, stop propagation of the event, so the dropdown will not be hide, otherwise we set the  section active
-                    if ($(this).hasClass('switch-trigger')) {
-                        if (event.stopPropagation) {
-                            event.stopPropagation();
-                        } else if (window.event) {
-                            window.event.cancelBubble = true;
-                        }
-                    }
-                });
-
-                $('.fixed-plugin .active-color span').click(function () {
-                    $full_page_background = $('.full-page-background');
-
-                    $(this).siblings().removeClass('active');
-                    $(this).addClass('active');
-
-                    var new_color = $(this).data('color');
-
-                    if ($sidebar.length != 0) {
-                        $sidebar.attr('data-color', new_color);
-                    }
-
-                    if ($full_page.length != 0) {
-                        $full_page.attr('filter-color', new_color);
-                    }
-
-                    if ($sidebar_responsive.length != 0) {
-                        $sidebar_responsive.attr('data-color', new_color);
-                    }
-                });
-
-                $('.fixed-plugin .background-color .badge').click(function () {
-                    $(this).siblings().removeClass('active');
-                    $(this).addClass('active');
-
-                    var new_color = $(this).data('background-color');
-
-                    if ($sidebar.length != 0) {
-                        $sidebar.attr('data-background-color', new_color);
-                    }
-                });
-
-                $('.fixed-plugin .img-holder').click(function () {
-                    $full_page_background = $('.full-page-background');
-
-                    $(this).parent('li').siblings().removeClass('active');
-                    $(this).parent('li').addClass('active');
-
-
-                    var new_image = $(this).find("img").attr('src');
-
-                    if ($sidebar_img_container.length != 0 && $('.switch-sidebar-image input:checked').length != 0) {
-                        $sidebar_img_container.fadeOut('fast', function () {
-                            $sidebar_img_container.css('background-image', 'url("' + new_image + '")');
-                            $sidebar_img_container.fadeIn('fast');
-                        });
-                    }
-
-                    if ($full_page_background.length != 0 && $('.switch-sidebar-image input:checked').length != 0) {
-                        var new_image_full_page = $('.fixed-plugin li.active .img-holder').find('img').data('src');
-
-                        $full_page_background.fadeOut('fast', function () {
-                            $full_page_background.css('background-image', 'url("' + new_image_full_page + '")');
-                            $full_page_background.fadeIn('fast');
-                        });
-                    }
-
-                    if ($('.switch-sidebar-image input:checked').length == 0) {
-                        var new_image = $('.fixed-plugin li.active .img-holder').find("img").attr('src');
-                        var new_image_full_page = $('.fixed-plugin li.active .img-holder').find('img').data('src');
-
-                        $sidebar_img_container.css('background-image', 'url("' + new_image + '")');
-                        $full_page_background.css('background-image', 'url("' + new_image_full_page + '")');
-                    }
-
-                    if ($sidebar_responsive.length != 0) {
-                        $sidebar_responsive.css('background-image', 'url("' + new_image + '")');
-                    }
-                });
-
-                $('.switch-sidebar-image input').change(function () {
-                    $full_page_background = $('.full-page-background');
-
-                    $input = $(this);
-
-                    if ($input.is(':checked')) {
-                        if ($sidebar_img_container.length != 0) {
-                            $sidebar_img_container.fadeIn('fast');
-                            $sidebar.attr('data-image', '#');
-                        }
-
-                        if ($full_page_background.length != 0) {
-                            $full_page_background.fadeIn('fast');
-                            $full_page.attr('data-image', '#');
-                        }
-
-                        background_image = true;
-                    } else {
-                        if ($sidebar_img_container.length != 0) {
-                            $sidebar.removeAttr('data-image');
-                            $sidebar_img_container.fadeOut('fast');
-                        }
-
-                        if ($full_page_background.length != 0) {
-                            $full_page.removeAttr('data-image', '#');
-                            $full_page_background.fadeOut('fast');
-                        }
-
-                        background_image = false;
-                    }
-                });
-
-                $('.switch-sidebar-mini input').change(function () {
-                    $body = $('body');
-
-                    $input = $(this);
-
-                    if (md.misc.sidebar_mini_active == true) {
-                        $('body').removeClass('sidebar-mini');
-                        md.misc.sidebar_mini_active = false;
-
-                        $('.sidebar .sidebar-wrapper, .main-panel').perfectScrollbar();
-
-                    } else {
-
-                        $('.sidebar .sidebar-wrapper, .main-panel').perfectScrollbar('destroy');
-
-                        setTimeout(function () {
-                            $('body').addClass('sidebar-mini');
-
-                            md.misc.sidebar_mini_active = true;
-                        }, 300);
-                    }
-
-                    // we simulate the window Resize so the charts will get updated in realtime.
-                    var simulateWindowResize = setInterval(function () {
-                        window.dispatchEvent(new Event('resize'));
-                    }, 180);
-
-                    // we stop the simulation of Window Resize after the animations are completed
-                    setTimeout(function () {
-                        clearInterval(simulateWindowResize);
-                    }, 1000);
-
-                });
-            });
-        });
-    </script>
-    <script>
-        $(document).ready(function () {
-            // Javascript method's body can be found in assets/assets-for-demo/js/demo.js
-            demo.initCharts();
-        });
-    </script>
+    
   <script>
     $(document).ready(function () {
       $('#datatables').DataTable({
@@ -771,6 +238,48 @@
       table.on('click', '.like', function () {
         alert('You clicked on Like button');
       });
+    });
+    $(document).ready(function() {  
+   $('.chkstatus').on('change', function() {
+       //alert("here")
+     if(this.checked)
+        {
+            var status='Active';
+        }else{
+            var status='Inactive';
+        }
+      //alert($(this).data('id'))
+      var keyword_id = $(this).data('id');
+      $.ajax({
+            type: "POST",
+            url: '<?php echo "editKeywordStatus";?>',
+            data: {keyword_id : keyword_id, status: status},
+            success: function(data){
+            console.log(data);
+            },
+            error: function(xhr, status, error){
+            console.error(xhr);
+            }
+            });
+    
+   });
+   
+   $('.btndelete').on('click', function() {
+       var keyword_id = $(this).data('id');
+      $.ajax({
+            type: "POST",
+            url: '<?php echo "deleteKeyword";?>',
+            data: {keyword_id : keyword_id },
+            success: function(data){
+            console.log(data);
+            //$(this).closest('tr').remove();
+            
+            },
+            error: function(xhr, status, error){
+            console.error(xhr);
+            }
+            });
+   });
     });
   </script>
 

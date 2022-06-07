@@ -72,6 +72,29 @@ class keywordModel extends Model
 		
 	}
 	
+
+	public function get_keywords_by_profession($profession_id){
+	    $db      = \Config\Database::connect();
+	    
+	    $builder = $db->table('keywords');
+	    $builder->select('keywords.id as keyword_id,keyword,name,subcategory_id,category_id,keywords.profession_id');
+	    $builder->join('list_profession', 'list_profession.id = keywords.profession_id');
+	    $builder->where('keywords.status', 'Active');
+	    $builder->where('list_profession.id', $profession_id);
+	    
+        $query   = $builder->get();
+        //echo "<br> str ".$this->db->getLastQuery();exit;
+        $result = $query->getResult();
+        $count = $builder->countAllResults();
+	    
+	    if($count > 0) {
+            return $result; 
+        }
+	    else {
+	        return 'failure'; 
+	    }
+    }
+
 	public function get_keywords($category_id = 0){
 	    $db      = \Config\Database::connect();
 	    

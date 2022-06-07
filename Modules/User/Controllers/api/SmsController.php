@@ -118,11 +118,13 @@ class SmsController extends ResourceController
 	 	return $res;
 	 }
 
-	//Function to create OTP and save during registration
+	
+	
+	 //Function to create OTP and save during registration
 	public function reg_sms()
 	{
 		$json = $this->request->getJSON();
-        if(!array_key_exists('fname',$json) || !array_key_exists('lname',$json) || !array_key_exists('mobile',$json) || !array_key_exists('key',$json)) {
+        if(!property_exists($json, 'fname') || !property_exists($json, 'lname') || !property_exists($json, 'mobile') || !property_exists($json, 'key')) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -198,7 +200,7 @@ class SmsController extends ResourceController
 	public function forgot_sms(){
 
 		$json = $this->request->getJSON();
-        if(!array_key_exists('mobile',$json) || !array_key_exists('key',$json)) {
+        if(!property_exists($json, 'mobile') || !property_exists($json, 'key')) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'

@@ -578,6 +578,7 @@
                                         </button>
                                     </a>
                                 </div> -->
+								<form enctype="multipart/form-data" method="POST" id="multiMoveFormDetails" role="form" action="<?php echo ADMINBASEURL; ?>create_multiMoveForm_submit">
                                 <div class="card ">
                                     <div class="card-header card-header-rose card-header-icon">
                                         <div class="card-icon">
@@ -588,64 +589,158 @@
                                         <h4 class="card-title">New Booking</h4>
                                     </div>
                                     <div class="card-body ">
-                                        <form method="#" action="#">
+                                      
                                             <div class="row">
                                                 <div class="col-lg-5 col-md-6 col-sm-12">
                                                     <div class="form-group">
-                                                        <label for="exampleName" class="bmd-label-floating">
-                                                            Date Time </label>
-                                                        <input type="text" class="form-control" id="name">
+                                                        <label for="multiMoveForm_date" class="bmd-label-floating">
+                                                            Date </label>
+                                                        <input type="date" class="form-control" id="multiMoveForm_date" name="multiMoveForm_date">
                                                     </div>
-
-                                                    <div class="form-group">
-                                                        <label for="exampleName" class="bmd-label-floating">Work Description
+													
+													<div class="form-group">
+														<select name="multiMoveForm_time" id="multiMoveForm_time" class="selectpicker" data-style="select-with-transition"
+															title="Select Time" data-size="7">
+															<?php
+															  if($arr_timeSlots != 'failure') {
+																  foreach($arr_timeSlots as $timeSlot) {
+															  ?>
+																<option value="<?php echo $timeSlot['from']; ?>" ><?php echo $timeSlot['from']; ?> </option>
+																<?php
+															  }}
+																?>
+														</select>
+													</div>
+													
+													<div class="form-group">
+                                                       <!-- <label for="multiMoveForm_userID" class="bmd-label-floating">User Id
                                                         </label>
-                                                        <input type="text" class="form-control" id="name">
+                                                        <input type="text" class="form-control" id="multiMoveForm_userID" name="multiMoveForm_userID">-->
+														<select name="multiMoveForm_userID" id="multiMoveForm_userID" class="selectpicker" data-style="select-with-transition"
+															title="Select User" data-size="7">
+															<?php
+															  if($arr_users != 'failure') {
+																  foreach($arr_users as $user) {
+															  ?>
+																<option value="<?php echo $user['user_id']; ?>" ><?php echo $user['fname'] . ' ' . $user['lname']; ?> </option>
+																<?php
+															  }}
+																?>
+														</select>
                                                     </div>
-
-                                                    <div class="form-group">
-                                                        <label for="exampleDesignation"
-                                                            class="bmd-label-floating">Flat no, locality, street name</label>
-                                                        <input type="text" class="form-control" id="designation">
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label for="examplePass" class="bmd-label-floating">zip code
-                                                            <span style="color:red">*</span></label>
-                                                        <input type="text" class="form-control" id="examplePass">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="examplePass" class="bmd-label-floating"> City
-                                                            <span style="color:red">*</span></label>
-                                                        <input type="text" class="form-control" id="examplePass">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="examplePass" class="bmd-label-floating">State
-                                                            <span style="color:red">*</span></label>
-                                                        <input type="text" class="form-control" id="examplePass">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="examplePass" class="bmd-label-floating">Country
-                                                            <span style="color:red">*</span></label>
-                                                        <input type="text" class="form-control" id="examplePass">
-                                                    </div>
-
-                                                </div>
-                                                <div class="col-lg-5 col-md-6 col-sm-12" style="margin:0.4rem 2rem">
-                                    
+													
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating">Referred By
                                                         </label>
                                                         <input type="text" class="form-control" id="name">
                                                     </div>
+
+                                                </div>
+                                                <div class="col-lg-5 col-md-6 col-sm-12" style="margin:0.4rem 2rem">
+													
+													<div class="fileinput fileinput-new text-center"
+														data-provides="fileinput">
+														<div class="fileinput-new thumbnail">
+															<img src="../../assets/img/image_placeholder.jpg" alt="...">
+														</div>
+														<div class="fileinput-preview fileinput-exists thumbnail"></div>
+														<div>
+															<span class="btn btn-teal btn-round btn-file">
+																<span class="fileinput-new">Select image</span>
+																<span class="fileinput-exists">Change</span>
+																<input type="file" id="multiMoveForm_attachments" name="multiMoveForm_attachments" />
+															</span>
+															<a href="#pablo"
+																class="btn btn-danger btn-round fileinput-exists"
+																data-dismiss="fileinput"><i class="fa fa-times"></i>
+																Remove</a>
+														</div>
+													</div>
+													
                                                 </div>
                                             </div>
-                                        </form>
+											
+											
+											
+											<div class="row">
+												<hr/>
+                                                <div class="col-lg-5 col-md-6 col-sm-12">
+
+													<div class="form-group">
+														<label for="multiMoveForm_sequenceNo" class="bmd-label-floating">Sequence No
+														</label>
+														<input type="text" class="form-control" id="multiMoveForm_sequenceNo[]" name="multiMoveForm_sequenceNo[]">
+													</div>
+													
+													<div class="form-group">
+														<label for="multiMoveForm_jobDescription" class="bmd-label-floating">Work Description
+														</label>
+														<input type="text" class="form-control" id="multiMoveForm_jobDescription[]" name="multiMoveForm_jobDescription[]">
+													</div>													
+													
+													<div class="form-group">
+														<select name="multiMoveForm_weight[]" id="multiMoveForm_weight[]" class="selectpicker" data-style="select-with-transition"
+															title="Select Weight" data-size="7">
+																<option value="1" >Light</option>
+																<option value="2" >Medium</option>
+																<option value="3" >Heavy</option>
+														</select>
+													</div>
+
+													<div class="form-group">
+														<label for="multiMoveForm_address"
+															class="bmd-label-floating">Flat no, locality, street name</label>
+														<input type="text" class="form-control" id="multiMoveForm_address[]" name="multiMoveForm_address[]">
+													</div>
+													
+												</div>
+												<div class="col-lg-5 col-md-6 col-sm-12" style="margin:0.4rem 2rem">
+
+													<div class="form-group">
+														<label for="multiMoveForm_zipCode" class="bmd-label-floating">zip code
+															<span style="color:red">*</span></label>
+														<input type="text" class="form-control" id="multiMoveForm_zipCode[]" name="multiMoveForm_zipCode[]">
+													</div>
+													<div class="form-group">
+														<label for="multiMoveForm_city" class="bmd-label-floating"> City
+															<span style="color:red">*</span></label>
+														<input type="text" class="form-control" id="multiMoveForm_city[]" name="multiMoveForm_city[]">
+													</div>
+													<div class="form-group">
+														<label for="multiMoveForm_state" class="bmd-label-floating">State
+															<span style="color:red">*</span></label>
+														<input type="text" class="form-control" id="multiMoveForm_state[]" name="multiMoveForm_state[]">
+													</div>
+													<div class="form-group">
+														<label for="multiMoveForm_country" class="bmd-label-floating">Country
+															<span style="color:red">*</span></label>
+														<input type="text" class="form-control" id="multiMoveForm_country[]" name="multiMoveForm_country[]">
+													</div>
+												</div>
+												
+												
+													
+											</div>
+											
+											<div id="dv_repeatBlock">
+											</div>
+											
+											<div class="row">
+                                                <div class="col-md-12">
+													<!--<a href="javascript:void(0);" class="add_button" title="Add New Address">+ Add New Address</a>-->
+													<button type="button" class="add_button">+ Add New Address</button>
+												</div>
+											</div>
                                     </div>
-                                    <div class="card-footer ">
-                                        <button type="submit" class="btn btn-fill btn-teal">Submit</button>
-                                    </div>
-                                </div>
+									
+									<div class="card-footer ">											
+											<button type="submit" class="btn btn-fill btn-teal">Submit</button>
+									</div>	
+                                    
+                                </div>								
+								
+								
+								</form>
                             </div>
                         </div>
 
@@ -947,6 +1042,30 @@
                 });
     
         </script>
+		
+		
+	<script type="text/javascript">
+	var id_counter = 1;
+	
+		$(document).ready(function(){
+			var fieldHTML = '<div id="dv_extraAddr_'+id_counter+'" class="row"><hr/><div class="col-lg-5 col-md-6 col-sm-12"><div class="form-group"><label for="multiMoveForm_sequenceNo" class="bmd-label-floating">Sequence No</label><input type="text" class="form-control" id="multiMoveForm_sequenceNo[]" name="multiMoveForm_sequenceNo[]"></div><div class="form-group"><label for="multiMoveForm_jobDescription" class="bmd-label-floating">Work Description</label><input type="text" class="form-control" id="multiMoveForm_jobDescription[]" name="multiMoveForm_jobDescription[]"></div><div class="form-group"><select name="multiMoveForm_weight[]" id="multiMoveForm_weight[]" class="selectpicker" data-style="select-with-transition" title="Select Weight" data-size="7"><option value="1" >Light</option><option value="2" >Medium</option><option value="3" >Heavy</option></select></div><div class="form-group"><label for="multiMoveForm_address" class="bmd-label-floating">Flat no, locality, street name</label><input type="text" class="form-control" id="multiMoveForm_address[]" name="multiMoveForm_address[]"></div></div><div class="col-lg-5 col-md-6 col-sm-12" style="margin:0.4rem 2rem"><div class="form-group"><label for="multiMoveForm_zipCode" class="bmd-label-floating">zip code<span style="color:red">*</span></label><input type="text" class="form-control" id="multiMoveForm_zipCode[]" name="multiMoveForm_zipCode[]"></div><div class="form-group"><label for="multiMoveForm_city" class="bmd-label-floating"> City <span style="color:red">*</span></label><input type="text" class="form-control" id="multiMoveForm_city[]" name="multiMoveForm_city[]"></div><div class="form-group"><label for="multiMoveForm_state" class="bmd-label-floating">State<span style="color:red">*</span></label><input type="text" class="form-control" id="multiMoveForm_state[]" name="multiMoveForm_state[]"></div><div class="form-group"><label for="multiMoveForm_country" class="bmd-label-floating">Country<span style="color:red">*</span></label><input type="text" class="form-control" id="multiMoveForm_country[]" name="multiMoveForm_country[]"></div></div><a href="javascript:void(0);" class="remove_button">Remove</a></div>'; //New input field html 
+			
+			//Once add button is clicked
+			$('.add_button').click(function(){
+				
+				$('#dv_repeatBlock').append(fieldHTML); //Add field html
+				id_counter++;
+			});
+			
+			//Once remove button is clicked
+			$('#dv_repeatBlock').on('click', '.remove_button', function(e){
+				e.preventDefault();
+				$(this).parent('div').remove(); //Remove field html
+			});
+		});
+		
+		
+	</script>
 
 </body>
 

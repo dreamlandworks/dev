@@ -126,77 +126,102 @@
                                         <h4 class="card-title">New Ticket</h4>
                                     </div>
                                     <div class="card-body ">
-                                        <form method="#" action="#">
+                                        <form enctype="multipart/form-data" method="POST" id="addCompliants" role="form" action="<?php echo ADMINBASEURL; ?>create_ticket_submit">
                                             <div class="row">
                                                 <div class="col-lg-5 col-md-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="exampleName" class="bmd-label-floating">
-                                                           Complaint Id</label>
-                                                        <input type="text" class="form-control" id="name">
-                                                    </div>
+                                                    <!--<div class="form-group">-->
+                                                    <!--    <label for="exampleName" class="bmd-label-floating">-->
+                                                    <!--       Complaint Id</label>-->
+                                                    <!--    <input type="text" class="form-control" id="complaint_id" name="complaint_id">-->
+                                                    <!--</div>-->
 
                                                     <div class="form-group">
                                                         <label for="Publishing_year">Created_on<span
                                                                 style="color:red">*</span></label>
-                                                        <input type="date" class="form-control datepicker" value=""
-                                                            id="exampleJoining_date">
+                                                        <input type="date" class="form-control datepicker" value="" name="created_on"
+                                                            id="created_on">
                                                     </div>
 
+                                                    
+                                                    
                                                     <div class="form-group">
                                                         <label for="exampleDesignation"
-                                                            class="bmd-label-floating">Created_by</label>
-                                                        <input type="text" class="form-control" id="designation">
+                                                            class="bmd-label-floating">Booking</label>
+                                                        <?php //print_r($arr_booking);?>
+                                                        <select class="selectpicker" data-style="select-with-transition"
+                                                        title="Select Booking" data-size="7" id="booking" name="booking">
+                                                           <?php  
+                                                           
+                                                            foreach($arr_booking as $key => $booking) {
+                                                            
+                                                         ?>
+                                                         <option value="<?php echo $booking['id'];?>"><?php echo $booking_ref_id = str_pad($booking['id'], 6, "0", STR_PAD_LEFT);?></option>
+                                                         <?php }?>
+                                                         </select>
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label for="examplePass" class="bmd-label-floating">Description
                                                             <span style="color:red">*</span></label>
-                                                        <input type="textarea" class="form-control" id="examplePass">
+                                                        <input type="textarea" class="form-control" id="description" name="description">
                                                     </div>
 
                                               
 
                                                 </div>
                                                 <div class="col-lg-5 col-md-6 col-sm-12" style="margin:0.4rem 2rem">
-                                      
+                                                    
                                                     <select class="selectpicker" data-style="select-with-transition"
-                                                    title="Select Module" data-size="7">
-                                                    <option value="2">Technical </option>
-                                                    <option value="3">Service Provider </option>
+                                                    title="Select Module" data-size="7" name="module" id="module">
+                                                    <?php foreach($arr_compliant_module as $key => $module) {
+                                                            
+                                                         ?>
+                                                         <option value="<?php echo $module['id'];?>"><?php echo $module['module_name'];?></option>
+                                                         <?php }?>
                                                 </select>
                                                     <div class="form-group">
+                                                        
                                                         <select class="selectpicker" data-style="select-with-transition"
-                                                        title="Select Priority" data-size="7">
-                                                        <option value="2">Highest - P1 </option>
-                                                        <option value="3">High - P2 </option>
-                                                        <option value="2">Medium - P3 </option>
-                                                        <option value="3">Normal - P4 </option>
+                                                        title="Select Priority" data-size="7" id="priority" name="priority">
+                                                        <option value="Urgent">Urgent </option>
+                                                        <option value="High priority">High priority</option>
+                                                        <option value="Medium Priority">Medium Priority</option>
+                                                        <option value="Low priority">Low priority</option>
                                                     </select>
                                                     </div>
                                                     <div class="form-group">
+                                                        
                                                         <select class="selectpicker" data-style="select-with-transition"
-                                                        title="Assign to" data-size="7">
-                                                        <option value="2">admin </option>
-                                                        <option value="3">user</option>
+                                                        title="Assign to" data-size="7" name="assign_to" id="assign_to">
+                                                       <?php foreach($arr_staffs as $key => $staffs) {
+                                                            
+                                                         ?>
+                                                         <option value="<?php echo $staffs['staff_id'];?>"><?php echo $staffs['staff_name'];?></option>
+                                                         <?php }?>
                                                    
                                                     </select>
                                                     </div>
 
                                                     <div class="form-group">
+                                                        
                                                         <select class="selectpicker" data-style="select-with-transition"
-                                                        title="Select status" data-size="7">
-                                                        <option value="2">In Progress </option>
-                                                        <option value="3">Resolved</option>
-                                                        <option value="2">Not Assigned </option>
-                                                        <option value="3">Pending</option>
+                                                        title="Select status" data-size="7" name="status" id="status">
+                                                        <option value="In Progress">In Progress </option>
+                                                        <option value="Resolved">Resolved</option>
+                                                        <option value="Not Assigned">Not Assigned </option>
+                                                        <option value="Pending">Pending</option>
+                                                        <option value="In Review">In Review</option>
+                                                        <option value="Transferred">Transferred</option>
+                                                        <option value="Re Open">Re Open</option>
                                                     </select>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </form>
-                                    </div>
+                                        
                                     <div class="card-footer ">
                                         <button type="submit" class="btn btn-fill btn-teal">Submit</button>
+                                    </div>
+                                    </form>
                                     </div>
                                 </div>
                             </div>
@@ -477,6 +502,38 @@
                 });
     
         </script>
+
+
+<script>
+    $(document).ready(function(){
+	var addCompliantsForm = $("#addCompliants");	
+    	var validator = addCompliantsForm.validate({		
+    		
+    		rules:{
+    			created_on :{ required : true},
+    			booking :{ required : true},
+    			description :{ required : true},
+    			module :{ required : true},
+    			priority :{ required : true},
+    			assign_to :{ required : true},
+    			status:{required : true}
+    			
+    			
+    		},
+    		messages:{
+    		    created_on :{ required : "Created Date  is Required"},
+    		    booking : {required : "Select booking ID"},
+    		    description : {required : "Description is required"},
+    		    module : {required : "Select Compliant Module"},
+    		    priority : {required : "Select Priority"},
+    		    assign_to : {required : "Select Any one option"},
+    		    status:{required : "Select Status"}
+    		    
+    		}
+    	});
+    });
+   
+</script>
 
 </body>
 

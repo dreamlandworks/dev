@@ -1,639 +1,665 @@
-<body class="">
-    <div class="wrapper">
-       
-        <div class="main-panel">
-            <!-- Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
-                <div class="container-fluid">
-                    <div class="navbar-wrapper">
-                        <div class="navbar-minimize">
-                            <button id="minimizeSidebar" class="btn btn-just-icon btn-white btn-fab btn-round">
-                                <i class="material-icons">
-                                    <img src="../../assets/img/icons/more_vert-black-24dp.svg">
-                                </i>
-                                <!-- <i class="material-icons design_bullet-list-67 visible-on-sidebar-mini">
-                                    <img src="../../assets/img/icons/view_list-black-24dp.svg" />
-                                </i> -->
-                            </button>
-                        </div>
-                        <a class="navbar-brand" href="#pablo">Dashboard</a>
-                    </div>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="navbar-toggler-icon icon-bar"></span>
-                        <span class="navbar-toggler-icon icon-bar"></span>
-                        <span class="navbar-toggler-icon icon-bar"></span>
-                    </button>
-                    <div class="collapse navbar-collapse justify-content-end">
+<?php $this->extend("\Modules\Admin\Views\_layout\\template.php") ?>
+<!-- Page Title Comes Here -->
+<?php $title = "Dashboard" ?>
+<?php $this->section("site_title") ?>
+<?php echo $title ?>
 
-                        <ul class="navbar-nav">
+<?php $this->endsection(); ?>
 
-                            <li class="nav-item dropdown">
-                                <a class="nav-link" href="http://example.com" id="navbarDropdownMenuLink"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="material-icons">
-                                        <img src="../../assets/img/icons/notifications_active-black-24dp.svg" />
-                                    </i>
-                                    <span class="notification">5</span>
-                                    <p class="d-lg-none d-md-block">
-                                        Some Actions
-                                    </p>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" href="#">Mike John responded to your email</a>
-                                    <a class="dropdown-item" href="#">You have 5 new tasks</a>
-                                    <a class="dropdown-item" href="#">You're now friend with Andrew</a>
-                                    <a class="dropdown-item" href="#">Another Notification</a>
-                                    <a class="dropdown-item" href="#">Another One</a>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link" href="#pablo" id="navbarDropdownProfile" data-toggle="dropdown"
-                                    aria-haspopup="true" aria-expanded="false">
-                                    <i class="material-icons">
-                                        <img src="../../assets/img/faces/avatar.jpg" height="40px"
-                                            style="border-radius: 30px;" />
-                                    </i>
 
-                                    <p class="d-lg-none d-md-block">
-                                        Account
-                                    </p>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-                                    <a class="dropdown-item" href="#">Profile</a>
-                                    <a class="dropdown-item" href="settings.html">Settings</a>
-                                    <div class="dropdown-divider"></div>
 
-                                    <a class="dropdown-item" data-toggle="modal" data-target="#myModal10">
-                                        Log out</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+<?php $this->section("nav_title") ?>
+
+<?php echo $title ?>
+
+<?php $this->endsection(); ?>
+
+
+
+<?php $this->section("section_title") ?>
+
+<?php echo $title ?>
+
+<?php $this->endsection(); ?>
+
+
+
+<!-- Body Comes Here -->
+
+<?php $this->section("body") ?>
+<!-- Booking Status Static -->
+<div class="row">
+    <div class="col-lg-4 col-md-4 col-sm-12">
+        <div class="card card-stats">
+            <div class="card-header card-header-warning card-header-icon">
+                <div class="card-icon">
+                    <i class="material-icons">location_on</i>
                 </div>
-            </nav>
+                <p class="card-category">Single Move</p>
+                <h3 class="card-title">00</h3>
+            </div>
+            <div class="table-responsive ">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Pending</td>
+                            <td>12</td>
+                        </tr>
+                        <tr>
+                            <td>In Progress</td>
+                            <td>12</td>
+                        </tr>
+                        <tr>
+                            <td>Completed</td>
+                            <td>12</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-12">
+        <div class="card card-stats">
+            <div class="card-header card-header-rose card-header-icon">
+                <div class="card-icon">
+                    <i class="material-icons">weekend</i>
+                </div>
+                <p class="card-category">Blue Collar</p>
+                <h3 class="card-title">00</h3>
+            </div>
+            <div class="table-responsive ">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Pending</td>
+                            <td>12</td>
+                        </tr>
+                        <tr>
+                            <td>In Progress</td>
+                            <td>12</td>
+                        </tr>
+                        <tr>
+                            <td>Completed</td>
+                            <td>12</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-12">
+        <div class="card card-stats">
+            <div class="card-header card-header-success card-header-icon">
+                <div class="card-icon">
+                    <i class="material-icons">airline_stops</i>
+                </div>
+                <p class="card-category">Multi Move</p>
+                <h3 class="card-title">00</h3>
+            </div>
+            <div class="table-responsive ">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Pending</td>
+                            <td>12</td>
+                        </tr>
+                        <tr>
+                            <td>In Progress</td>
+                            <td>12</td>
+                        </tr>
+                        <tr>
+                            <td>Completed</td>
+                            <td>12</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Booking Status Static End -->
+<!-- Booking Comparison Static -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-chart">
+            <div class="card-header card-header-success" data-header-animation="true">
+                <div class="ct-chart" id="dailySalesChart"></div>
+            </div>
+            <div class="card-body">
+                <div class="card-actions">
+                    <button type="button" class="btn btn-danger btn-link fix-broken-card">
+                        <i class="material-icons">build</i> Fix Header!
+                    </button>
+                    <button type="button" class="btn btn-info btn-link" rel="tooltip" data-placement="bottom" title="Refresh">
+                        <i class="material-icons">refresh</i>
+                    </button>
+                    <button type="button" class="btn btn-default btn-link" rel="tooltip" data-placement="bottom" title="Change Date">
+                        <i class="material-icons">edit</i>
+                    </button>
+                </div>
+                <select class="form-control" name="" id="">
+                    <option value="">Daily Sales</option>
+                    <option value="">Weekly Sales</option>
+                    <option value="">Monthly Sales</option>
+                </select>
+                <h4 class="card-title">Daily Sales</h4>
+                <p class="card-category">
+                    <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in today sales.
+                </p>
+            </div>
+            <div class="card-footer">
+                <div class="stats">
+                    <i class="material-icons">access_time</i> updated 4 minutes ago
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Booking Comparison Static End -->
+<!-- Job Status Static -->
+<div class="row">
+    <div class="col-lg-4 col-md-4 col-sm-12">
+        <div class="card card-stats">
+            <div class="card-header card-header-warning card-header-icon">
+                <div class="card-icon">
+                    <i class="material-icons">work_outline</i>
+                </div>
+                <p class="card-category">Jobs</p>
+                <h3 class="card-title">00</h3>
+            </div>
+            <div class="table-responsive ">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Posted</td>
+                            <td>12</td>
+                        </tr>
+                        <tr>
+                            <td>Awarded </td>
+                            <td>12</td>
+                        </tr>
+                        <tr>
+                            <td>Expired</td>
+                            <td>12</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8 col-md-8 col-sm-12">
+        <div class="card card-chart">
+            <div class="card-header card-header-info" data-header-animation="true">
+                <div class="ct-chart" id="completedTasksChart"></div>
+            </div>
+            <div class="card-body">
+                <div class="card-actions">
+                    <button type="button" class="btn btn-danger btn-link fix-broken-card">
+                        <i class="material-icons">build</i> Fix Header!
+                    </button>
+                    <button type="button" class="btn btn-info btn-link" rel="tooltip" data-placement="bottom" title="Refresh">
+                        <i class="material-icons">refresh</i>
+                    </button>
+                    <button type="button" class="btn btn-default btn-link" rel="tooltip" data-placement="bottom" title="Change Date">
+                        <i class="material-icons">edit</i>
+                    </button>
+                </div>
+                <select class="form-control" name="" id="">
+                    <option value="">Daily</option>
+                    <option value="">Weekly</option>
+                    <option value="">Monthly</option>
+                </select>
+                <p class="card-category">Job Posted Statics</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Job Status Static End -->
+<!-- Revenue Status Static -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-chart">
+            <div class="card-header card-header-rose" data-header-animation="true">
+                <div class="ct-chart" id="websiteViewsChart"></div>
+            </div>
+            <div class="card-body">
+                <div class="card-actions">
+                    <button type="button" class="btn btn-danger btn-link fix-broken-card">
+                        <i class="material-icons">build</i> Fix Header!
+                    </button>
+                    <button type="button" class="btn btn-info btn-link" rel="tooltip" data-placement="bottom" title="Refresh">
+                        <i class="material-icons">refresh</i>
+                    </button>
+                    <button type="button" class="btn btn-default btn-link" rel="tooltip" data-placement="bottom" title="Change Date">
+                        <i class="material-icons">edit</i>
+                    </button>
+                </div>
+                <h4 class="card-title">Revenue Statics</h4>
+                <select class="form-control" name="" id="">
+                    <option value="">Daily</option>
+                    <option value="">Weekly</option>
+                    <option value="">Monthly</option>
+                </select>
+            </div>
+            <div class="card-footer">
+                <div class="stats">
+                    <i class="material-icons">access_time</i> campaign sent 2 days ago
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-
-            <!-- End Navbar -->
-            <div class="content">
-                <div class="container-fluid">
-                    <!-- small modal -->
-                    <div class="modal fade modal-mini modal-primary" id="myModal10" tabindex="-1" role="dialog"
-                        aria-labelledby="myModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-small">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i
-                                            class="material-icons">
-                                            <img src="../../assets/img/icons/clear-black-18dp.svg" />
-                                        </i></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Are you sure you want to LOGOUT?</p>
-                                </div>
-                                <div class="modal-footer justify-content-center">
-                                    <button type="button" class="btn btn-link" data-dismiss="modal">Back</button>
-                                    <a href="../examples/pages/login.html">
-                                        <button type="button" class="btn btn-success btn-link">
-                                            Yes
-                                            <div class="ripple-container"></div>
-                                        </button>
-                                    </a>
-
-                                </div>
-                            </div>
+<!-- Revenue Status Static End-->
+<!-- 
+<div class="row">
+    <div class="col-md-12">
+        <div class="card ">
+            <div class="card-header card-header-success card-header-icon">
+                <div class="card-icon">
+                    <i class="material-icons"></i>
+                </div>
+                <h4 class="card-title">Global Sales by Top Locations</h4>
+            </div>
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="table-responsive table-sales">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="<?php echo base_url(); ?>/assets/img/flags/US.png">
+                                            </div>
+                                        </td>
+                                        <td>USA</td>
+                                        <td class="text-right">
+                                            2.920
+                                        </td>
+                                        <td class="text-right">
+                                            53.23%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="<?php echo base_url(); ?>/assets/img/flags/DE.png">
+                                            </div>
+                                        </td>
+                                        <td>Germany</td>
+                                        <td class="text-right">
+                                            1.300
+                                        </td>
+                                        <td class="text-right">
+                                            20.43%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="<?php echo base_url(); ?>/assets/img/flags/AU.png">
+                                            </div>
+                                        </td>
+                                        <td>Australia</td>
+                                        <td class="text-right">
+                                            760
+                                        </td>
+                                        <td class="text-right">
+                                            10.35%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="<?php echo base_url(); ?>/assets/img/flags/GB.png">
+                                            </div>
+                                        </td>
+                                        <td>United Kingdom</td>
+                                        <td class="text-right">
+                                            690
+                                        </td>
+                                        <td class="text-right">
+                                            7.87%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="<?php echo base_url(); ?>/assets/img/flags/RO.png">
+                                            </div>
+                                        </td>
+                                        <td>Romania</td>
+                                        <td class="text-right">
+                                            600
+                                        </td>
+                                        <td class="text-right">
+                                            5.94%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="<?php echo base_url(); ?>/assets/img/flags/BR.png">
+                                            </div>
+                                        </td>
+                                        <td>Brasil</td>
+                                        <td class="text-right">
+                                            550
+                                        </td>
+                                        <td class="text-right">
+                                            4.34%
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <!--    end small modal -->
-                    <!-- Chat modal -->
-                    <!-- notice modal -->
-                    <div class="modal fade" id="myModalMessage" tabindex="-1" role="dialog"
-                        aria-labelledby="myModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-notice">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="myModalLabel">Contact us through <strong>CHAT</strong>
-                                    </h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                                        <i class="material-icons">close</i>
-                                    </button>
-                                </div>
-                                <br />
-                                <div class="modal-body">
-                                    <div class="instruction">
-                                        <div class="row">
-                                            <div class="col-md-12">
-
-                                                <div>
-                                                    <div class="form-group">
-                                                        <label for="exampleFName" class="bmd-label-floating">Enter Your
-                                                            Message </label>
-                                                        <input type="text" class="form-control" id="fname"
-                                                            list="Messages" autocomplete="off">
-                                                        <datalist id="Messages">
-                                                            <option>I ll call you later </option>
-                                                            <option>We will get back to you</option>
-                                                            <option>Thank you for your Update</option>
-                                                            <option>Currently Unavailable</option>
-                                                        </datalist>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div class="row" style="justify-content: center;">
-                                            <div class="col-md-8">
-                                                <small>If you have more questions, We're here to help!</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer justify-content-center">
-                                        <button type="button" class="btn btn-teal btn-round"
-                                            data-dismiss="modal">Send..!!</button>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                    <!-- end notice modal -->
-                    <!--    end Chat modal -->
-                    <!-- Email modal -->
-                    <div class="modal fade" id="myModalEmail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog modal-notice">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="myModalLabel">Contact us through
-                                        <strong>Message</strong>
-                                    </h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                                        <i class="material-icons">close</i>
-                                    </button>
-                                </div>
-                                <br />
-                                <div class="modal-body">
-                                    <div class="instruction">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div>
-                                                    <div class="form-group">
-                                                        <label for="exampleFName" class="bmd-label-floating">Enter Your
-                                                            Message </label>
-                                                        <input type="text" class="form-control" id="fname"
-                                                            list="Messages" autocomplete="off">
-                                                        <datalist id="Messages">
-                                                            <option>I ll call you later </option>
-                                                            <option>We will get back to you</option>
-                                                            <option>Thank you for your Update</option>
-                                                            <option>Currently Unavailable</option>
-                                                        </datalist>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <div class="row" style="justify-content: center;">
-                                            <div class="col-md-8">
-                                                <small>If you have more questions, We're here to help!</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer justify-content-center">
-                                        <button type="button" class="btn btn-teal btn-round"
-                                            data-dismiss="modal">Send..!!</button>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                    <!--    end Email modal -->
-                    <div class="row">
-                        <div class="col-md-12 grid-margin">
-                            <div class="row">
-                                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-                                    <h3 class="font-weight-bold">Welcome Admin</h3>
-                                    <h6 class="font-weight-normal mb-0">All systems are running smoothly! You have <span
-                                            class="text-primary">3 unread alerts!</span></h6>
-                                </div>
-                                <div class="col-12 col-xl-4">
-                                    <div class="justify-content-end d-flex">
-                                        <div class="dropdown flex-md-grow-1 flex-xl-grow-0">
-                                            <button class="btn btn-sm btn-light bg-white dropdown-toggle"
-                                                style="color: black;" type="button" id="dropdownMenuDate2"
-                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                <i class="mdi mdi-calendar"></i> Today (10 Jan 2021)
-                                            </button>
-                                            <div class="dropdown-menu dropdown-menu-right"
-                                                aria-labelledby="dropdownMenuDate2">
-                                                <a class="dropdown-item" href="#">January - March</a>
-                                                <a class="dropdown-item" href="#">March - June</a>
-                                                <a class="dropdown-item" href="#">June - August</a>
-                                                <a class="dropdown-item" href="#">August - November</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 grid-margin stretch-card">
-                            <div class="card tale-bg">
-                                <div class="card-people mt-auto">
-                                    <img src="https://bootstrapdash.com/demo/skydash-free/template/images/dashboard/people.svg"
-                                        alt="people">
-                                    <!-- <div class="weather-info">
-                                <div class="d-flex">
-                                  <div>
-                                    <h2 class="mb-0 font-weight-normal"><i class="icon-sun mr-2"></i>31<sup>C</sup></h2>
-                                  </div>
-                                  <div class="ml-2">
-                                    <h4 class="location font-weight-normal">Chicago</h4>
-                                    <h6 class="font-weight-normal">Illinois</h6>
-                                  </div>
-                                </div>
-                              </div> -->
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 grid-margin transparent">
-                            <div class="row">
-                                <div class="col-md-6 stretch-card transparent">
-                                    <div class="card card-tale">
-                                        <div class="card-body">
-                                            <p class="mb-4">Today’s Bookings</p>
-                                            <p class="fs-30 mb-2">4006</p>
-                                            <p>10.00% (30 days)</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 stretch-card transparent">
-                                    <div class="card card-dark-blue">
-                                        <div class="card-body">
-                                            <p class="mb-4">Total Bookings</p>
-                                            <p class="fs-30 mb-2">61344</p>
-                                            <p>22.00% (30 days)</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-4 mb-lg-0 stretch-card transparent">
-                                    <div class="card card-light-blue">
-                                        <div class="card-body">
-                                            <p class="mb-4">Number of Meetings</p>
-                                            <p class="fs-30 mb-2">34040</p>
-                                            <p>2.00% (30 days)</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 stretch-card transparent">
-                                    <div class="card card-light-danger">
-                                        <div class="card-body">
-                                            <p class="mb-4">Number of Service Providers</p>
-                                            <p class="fs-30 mb-2">47033</p>
-                                            <p>0.22% (30 days)</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-6 col-md-12">
-                            <div class="card">
-                                <div class="card-header card-header-tabs card-header-info">
-                                    <div class="nav-tabs-navigation">
-                                        <div class="nav-tabs-wrapper">
-                                            <span class="nav-tabs-title"></span>
-                                            <ul class="nav nav-tabs" data-tabs="tabs">
-                                                <li class="nav-item">
-                                                    <a class="nav-link active" href="#userss" data-toggle="tab">
-                                                        <i class="material-icons">groups</i> Users
-                                                        <div class="ripple-container"></div>
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="#providers" data-toggle="tab">
-                                                        <i class="material-icons">person_add</i> Service Providers
-                                                        <div class="ripple-container"></div>
-                                                    </a>
-                                                </li>
-                                                <!-- <li class="nav-item">
-                                      <a class="nav-link" href="#settings" data-toggle="tab">
-                                        <i class="material-icons">cloud</i> Server
-                                        <div class="ripple-container"></div>
-                                      </a>
-                                    </li> -->
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="tab-content">
-                                        <div class="tab-pane active" id="userss">
-                                            <div class="card-body table-responsive">
-                                                <table class="table table-hover">
-                                                    <thead class="text-teal">
-                                                        <tr>
-                                                            <th> <b>Total Users</b></th>
-                                                            <th><b>1089</b></th>
-
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>Today Users</td>
-                                                            <td> 400</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>This Month Users</td>
-                                                            <td>200</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Last Month Users</td>
-                                                            <td>200</td>
-                                                        </tr>
-
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane" id="providers">
-                                            <div class="card-body table-responsive">
-                                                <table class="table table-hover">
-                                                    <thead class="text-teal">
-                                                        <tr>
-                                                            <th> <b>Total Service Providers</b></th>
-                                                            <th><b>1209</b></th>
-
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>Today Service Providers</td>
-                                                            <td> 340</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>This Month Service Providers</td>
-                                                            <td>240</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Last Month Service Providers</td>
-                                                            <td>239</td>
-                                                        </tr>
-
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-12">
-                            <div class="card">
-                                <div class="card-header card-header-warning">
-                                    <h4 class="card-title">Notifications</h4>
-                                    <a ref="#">
-                                        <p class="card-category">View All</p>
-                                    </a>
-                                </div>
-                                <ul class="icon-data-list">
-                                    <li style="margin:2rem 2rem;">
-                                        <div class="d-flex">
-                                            <img src="../../assets/img/faces/avatar.jpg" alt="user"
-                                                style="border-radius: 30px; margin:0rem 1rem;" height="40px">
-                                            <div>
-                                                <p class="text-info mb-1">Isabella Becker</p>
-                                                <p class="mb-0">Sales dashboard have been created</p>
-                                                <small>9:30 am</small>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li style="margin:2rem 2rem;">
-                                        <div class="d-flex">
-                                            <img src="../../assets/img/faces/avatar.jpg" alt="user"
-                                                style="border-radius: 30px; margin:0rem 1rem;" height="40px">
-                                            <div>
-                                                <p class="text-info mb-1">Adam Warren</p>
-                                                <p class="mb-0">You have done a great job #TW111</p>
-                                                <small>10:30 am</small>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li style="margin:2rem 2rem;">
-                                        <div class="d-flex">
-                                            <img src="../../assets/img/faces/avatar.jpg" alt="user"
-                                                style="border-radius: 30px; margin:0rem 1rem;" height="40px">
-                                            <div>
-                                                <p class="text-info mb-1">Leonard Thornton</p>
-                                                <p class="mb-0">Sales dashboard have been created</p>
-                                                <small>11:30 am</small>
-                                            </div>
-                                        </div>
-                                    </li>
-
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="card">
-                            <div class="card-header card-header-tabs card-header-primary">
-                                <div class="nav-tabs-navigation">
-                                    <div class="nav-tabs-wrapper">
-                                        <span class="nav-tabs-title"></span>
-                                        <ul class="nav nav-tabs" data-tabs="tabs">
-                                            <li class="nav-item">
-                                                <a class="nav-link active" href="#singleMove" data-toggle="tab">
-                                                    <i class="material-icons">construction</i> Single Move Bookings
-                                                    <div class="ripple-container"></div>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="#multiMove" data-toggle="tab">
-                                                    <i class="material-icons"><span class="material-icons-outlined">
-                                                        local_shipping
-                                                        </span></i> Multi Move Bookings
-                                                    <div class="ripple-container"></div>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="#blueCollor" data-toggle="tab">
-                                                    <i class="material-icons">laptop_mac</i> Blue Collor Bookings
-                                                    <div class="ripple-container"></div>
-                                                </a>
-                                            </li>
-         
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="tab-content">
-                                    <div class="tab-pane active" id="singleMove">
-                                        <div class="card-body table-responsive">
-                                            <table class="table table-hover">
-                                                <thead class="text-teal">
-                                                    <tr>
-                                                        <th><b>Total SingleMove Bookings</b></th>
-                                                        <th><b>1089</b></th>
-
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Today SingleMove Bookings</td>
-                                                        <td> 400</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>This Month SingleMove Bookings</td>
-                                                        <td>200</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Last Month SingleMove Bookings</td>
-                                                        <td>200</td>
-                                                    </tr>
-
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane" id="multiMove">
-                                        <div class="card-body table-responsive">
-                                            <table class="table table-hover">
-                                                <thead class="text-teal">
-                                                    <tr>
-                                                        <th>  <b>Total MultiMove Bookings</b></th>
-                                                        <th><b>1209</b></th>
-
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Today MultiMove Bookings</td>
-                                                        <td> 340</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>This Month MultiMove Bookings</td>
-                                                        <td>240</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Last Month MultiMove Bookings</td>
-                                                        <td>239</td>
-                                                    </tr>
-
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                    <div class="tab-pane" id="blueCollor">
-                                        <div class="card-body table-responsive">
-                                            <table class="table table-hover">
-                                                <thead class="text-teal">
-                                                    <tr> 
-                                                        <th> <b>Total BlurCollor Bookings</b></th>
-                                                        <th><b>1209</b></th>
-
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Today BlurCollor Bookings</td>
-                                                        <td> 340</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>This Month BlurCollor Bookings</td>
-                                                        <td>240</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Last Month BlurCollor Bookings</td>
-                                                        <td>239</td>
-                                                    </tr>
-
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-8 col-md-12">
-                            <div class="card">
-                                <div class="card-header card-header-info">
-                                    <h4 class="card-title">Revenue</h4>
-                                    <a ref="#">
-                                        <p class="card-category">Last Year Vs This Year</p>
-                                    </a>
-                                </div>
-                                <div class="col-md-10" style="margin:1rem;">
-                                    <canvas id="myChartline"> </canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-12">
-                            <div class="card">
-                                <div class="card-header card-header-primary">
-                                    <h4 class="card-title">Revenue</h4>
-                                    <a ref="#">
-                                        <p class="card-category">Last Month Vs This Month</p>
-                                    </a>
-                                </div>
-                                <div class="col-md-12" style="margin:1rem;">
-                                  <div style="margin:1rem 0rem;"> <b>The total number of sessions within the date range. It is the period time a user is actively engaged with your website, page or app, etc</b></div>
-                                    <canvas id="myChart1"> </canvas>
-                                </div>
-                            </div>
-                        </div>
-                    
-                    </div>
-
-                    <div class="row">
-
-                        <div class="col-lg-4 col-md-12">
-                            <div class="card">
-                                <div class="card-header card-header-primary">
-                                    <h4 class="card-title">Payments</h4>
-                                    <a ref="#">
-                                        <p class="card-category">Last Month Vs This Month</p>
-                                    </a>
-                                </div>
-                                <div class="col-md-12" style="margin:1rem;">
-                                  <div style="margin:1rem 0rem;"> <b>The total number of sessions within the date range. It is the period time a user is actively engaged with your website, page or app, etc</b></div>
-                                    <canvas id="myChartPay1" style="margin:2rem 0rem"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-8 col-md-12">
-                            <div class="card">
-                                <div class="card-header card-header-info">
-                                    <h4 class="card-title">Payments</h4>
-                                    <a ref="#">
-                                        <p class="card-category">Last Year Vs This Year</p>
-                                    </a>
-                                </div>
-                                <div class="col-md-10" style="margin:1rem;">
-                                    <canvas id="myChartlinePay"> </canvas>
-                                </div>
-                            </div>
-                        </div>
-                       
-                    
+                    <div class="col-md-6 ml-auto mr-auto">
+                        <div id="worldMap" style="height: 300px;"></div>
                     </div>
                 </div>
             </div>
-            <br>
-            <br>
-            <br>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card card-chart">
+            <div class="card-header card-header-rose" data-header-animation="true">
+                <div class="ct-chart" id="websiteViewsChart"></div>
+            </div>
+            <div class="card-body">
+                <div class="card-actions">
+                    <button type="button" class="btn btn-danger btn-link fix-broken-card">
+                        <i class="material-icons">build</i> Fix Header!
+                    </button>
+                    <button type="button" class="btn btn-info btn-link" rel="tooltip" data-placement="bottom" title="Refresh">
+                        <i class="material-icons">refresh</i>
+                    </button>
+                    <button type="button" class="btn btn-default btn-link" rel="tooltip" data-placement="bottom" title="Change Date">
+                        <i class="material-icons">edit</i>
+                    </button>
+                </div>
+                <h4 class="card-title">Website Views</h4>
+                <p class="card-category">Last Campaign Performance</p>
+            </div>
+            <div class="card-footer">
+                <div class="stats">
+                    <i class="material-icons">access_time</i> campaign sent 2 days ago
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-chart">
+            <div class="card-header card-header-success" data-header-animation="true">
+                <div class="ct-chart" id="dailySalesChart"></div>
+            </div>
+            <div class="card-body">
+                <div class="card-actions">
+                    <button type="button" class="btn btn-danger btn-link fix-broken-card">
+                        <i class="material-icons">build</i> Fix Header!
+                    </button>
+                    <button type="button" class="btn btn-info btn-link" rel="tooltip" data-placement="bottom" title="Refresh">
+                        <i class="material-icons">refresh</i>
+                    </button>
+                    <button type="button" class="btn btn-default btn-link" rel="tooltip" data-placement="bottom" title="Change Date">
+                        <i class="material-icons">edit</i>
+                    </button>
+                </div>
+                <h4 class="card-title">Daily Sales</h4>
+                <p class="card-category">
+                    <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in today sales.
+                </p>
+            </div>
+            <div class="card-footer">
+                <div class="stats">
+                    <i class="material-icons">access_time</i> updated 4 minutes ago
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-chart">
+            <div class="card-header card-header-info" data-header-animation="true">
+                <div class="ct-chart" id="completedTasksChart"></div>
+            </div>
+            <div class="card-body">
+                <div class="card-actions">
+                    <button type="button" class="btn btn-danger btn-link fix-broken-card">
+                        <i class="material-icons">build</i> Fix Header!
+                    </button>
+                    <button type="button" class="btn btn-info btn-link" rel="tooltip" data-placement="bottom" title="Refresh">
+                        <i class="material-icons">refresh</i>
+                    </button>
+                    <button type="button" class="btn btn-default btn-link" rel="tooltip" data-placement="bottom" title="Change Date">
+                        <i class="material-icons">edit</i>
+                    </button>
+                </div>
+                <h4 class="card-title">Completed Tasks</h4>
+                <p class="card-category">Last Campaign Performance</p>
+            </div>
+            <div class="card-footer">
+                <div class="stats">
+                    <i class="material-icons">access_time</i> campaign sent 2 days ago
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="card card-stats">
+            <div class="card-header card-header-warning card-header-icon">
+                <div class="card-icon">
+                    <i class="material-icons">weekend</i>
+                </div>
+                <p class="card-category">Bookings</p>
+                <h3 class="card-title">184</h3>
+            </div>
+            <div class="card-footer">
+                <div class="stats">
+                    <i class="material-icons text-danger">warning</i>
+                    <a href="#pablo">Get More Space...</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="card card-stats">
+            <div class="card-header card-header-rose card-header-icon">
+                <div class="card-icon">
+                    <i class="material-icons">equalizer</i>
+                </div>
+                <p class="card-category">Website Visits</p>
+                <h3 class="card-title">75.521</h3>
+            </div>
+            <div class="card-footer">
+                <div class="stats">
+                    <i class="material-icons">local_offer</i> Tracked from Google Analytics
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="card card-stats">
+            <div class="card-header card-header-success card-header-icon">
+                <div class="card-icon">
+                    <i class="material-icons">store</i>
+                </div>
+                <p class="card-category">Revenue</p>
+                <h3 class="card-title">$34,245</h3>
+            </div>
+            <div class="card-footer">
+                <div class="stats">
+                    <i class="material-icons">date_range</i> Last 24 Hours
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="card card-stats">
+            <div class="card-header card-header-info card-header-icon">
+                <div class="card-icon">
+                    <i class="fa fa-twitter"></i>
+                </div>
+                <p class="card-category">Followers</p>
+                <h3 class="card-title">+245</h3>
+            </div>
+            <div class="card-footer">
+                <div class="stats">
+                    <i class="material-icons">update</i> Just Updated
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<h3>Manage Listings</h3>
+<br>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card card-product">
+            <div class="card-header card-header-image" data-header-animation="true">
+                <a href="#pablo">
+                    <img class="img" src="<?php echo base_url(); ?>/assets/img/card-2.jpg">
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="card-actions text-center">
+                    <button type="button" class="btn btn-danger btn-link fix-broken-card">
+                        <i class="material-icons">build</i> Fix Header!
+                    </button>
+                    <button type="button" class="btn btn-default btn-link" rel="tooltip" data-placement="bottom" title="View">
+                        <i class="material-icons">art_track</i>
+                    </button>
+                    <button type="button" class="btn btn-success btn-link" rel="tooltip" data-placement="bottom" title="Edit">
+                        <i class="material-icons">edit</i>
+                    </button>
+                    <button type="button" class="btn btn-danger btn-link" rel="tooltip" data-placement="bottom" title="Remove">
+                        <i class="material-icons">close</i>
+                    </button>
+                </div>
+                <h4 class="card-title">
+                    <a href="#pablo">Cozy 5 Stars Apartment</a>
+                </h4>
+                <div class="card-description">
+                    The place is close to Barceloneta Beach and bus stop just 2 min by walk and near to "Naviglio" where you can enjoy the main night life in Barcelona.
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="price">
+                    <h4>$899/night</h4>
+                </div>
+                <div class="stats">
+                    <p class="card-category"><i class="material-icons">place</i> Barcelona, Spain</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-product">
+            <div class="card-header card-header-image" data-header-animation="true">
+                <a href="#pablo">
+                    <img class="img" src="<?php echo base_url(); ?>/assets/img/card-3.jpg">
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="card-actions text-center">
+                    <button type="button" class="btn btn-danger btn-link fix-broken-card">
+                        <i class="material-icons">build</i> Fix Header!
+                    </button>
+                    <button type="button" class="btn btn-default btn-link" rel="tooltip" data-placement="bottom" title="View">
+                        <i class="material-icons">art_track</i>
+                    </button>
+                    <button type="button" class="btn btn-success btn-link" rel="tooltip" data-placement="bottom" title="Edit">
+                        <i class="material-icons">edit</i>
+                    </button>
+                    <button type="button" class="btn btn-danger btn-link" rel="tooltip" data-placement="bottom" title="Remove">
+                        <i class="material-icons">close</i>
+                    </button>
+                </div>
+                <h4 class="card-title">
+                    <a href="#pablo">Office Studio</a>
+                </h4>
+                <div class="card-description">
+                    The place is close to Metro Station and bus stop just 2 min by walk and near to "Naviglio" where you can enjoy the night life in London, UK.
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="price">
+                    <h4>$1.119/night</h4>
+                </div>
+                <div class="stats">
+                    <p class="card-category"><i class="material-icons">place</i> London, UK</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-product">
+            <div class="card-header card-header-image" data-header-animation="true">
+                <a href="#pablo">
+                    <img class="img" src="<?php echo base_url(); ?>/assets/img/card-1.jpg">
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="card-actions text-center">
+                    <button type="button" class="btn btn-danger btn-link fix-broken-card">
+                        <i class="material-icons">build</i> Fix Header!
+                    </button>
+                    <button type="button" class="btn btn-default btn-link" rel="tooltip" data-placement="bottom" title="View">
+                        <i class="material-icons">art_track</i>
+                    </button>
+                    <button type="button" class="btn btn-success btn-link" rel="tooltip" data-placement="bottom" title="Edit">
+                        <i class="material-icons">edit</i>
+                    </button>
+                    <button type="button" class="btn btn-danger btn-link" rel="tooltip" data-placement="bottom" title="Remove">
+                        <i class="material-icons">close</i>
+                    </button>
+                </div>
+                <h4 class="card-title">
+                    <a href="#pablo">Beautiful Castle</a>
+                </h4>
+                <div class="card-description">
+                    The place is close to Metro Station and bus stop just 2 min by walk and near to "Naviglio" where you can enjoy the main night life in Milan.
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="price">
+                    <h4>$459/night</h4>
+                </div>
+                <div class="stats">
+                    <p class="card-category"><i class="material-icons">place</i> Milan, Italy</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+
+<?php $this->endsection(); ?>
+
+
+
+<!-- CSS Styles Comes Here -->
+
+<?php $this->section("script") ?>
+
+
+
+<?php $this->endsection(); ?>
+
+
+
+
+
+
+
+<!-- JS Script Comes Here -->
+
+<?php $this->section("script") ?>
+
+
+
+<?php $this->endsection(); ?>

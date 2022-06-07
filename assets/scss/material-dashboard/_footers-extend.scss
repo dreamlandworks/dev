@@ -31,7 +31,7 @@
     }
 }
 .footer-white{
-    background-color: $white-color;
+    background-color: $white;
 }
 .footer-gray{
     background-color: $gray-lighter;
@@ -40,7 +40,7 @@
     @include radial-gradient(#232323,#585858);
 
     a{
-        color: $white-color;
+        color: $white;
         opacity: .86;
 
         &:hover,
@@ -50,11 +50,11 @@
     }
 
     .footer-brand{
-        color: $white-color;
+        color: $white;
 
         &:hover,
         &:focus{
-            color: $white-color;
+            color: $white;
         }
     }
 
@@ -62,10 +62,10 @@
     h4,
     i,
     .copyright{
-        color: $white-color;
+        color: $white;
     }
 
     hr{
-        border-color: rgba($white-color, .2);
+        border-color: rgba($white, .2);
     }
 }

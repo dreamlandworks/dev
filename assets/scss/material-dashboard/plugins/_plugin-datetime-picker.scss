@@ -4,8 +4,8 @@
  * https://github.com/Eonasdan/bootstrap-datetimepicker/
  */
  $bs-datetimepicker-timepicker-font-size: 1.2em !default;
- $bs-datetimepicker-active-bg: $brand-primary !default;
- $bs-datetimepicker-active-color: $white-color !default;
+ $bs-datetimepicker-active-bg: $primary !default;
+ $bs-datetimepicker-active-color: $white !default;
  $bs-datetimepicker-border-radius: $border-radius-base;
  $bs-datetimepicker-btn-hover-bg: #eee !default;
  $bs-datetimepicker-disabled-color: $gray-lighter !default;
@@ -106,7 +106,7 @@
         margin: 0;
         border-width: 0;
         background-color: transparent;
-        color: $brand-primary;
+        color: $primary;
         box-shadow: none;
 
         &:hover{
@@ -114,7 +114,7 @@
 
             span{
                 background-color: $bs-datetimepicker-btn-hover-bg;
-                color: $brand-primary;
+                color: $primary;
             }
         }
     }
@@ -361,11 +361,11 @@
             &.active:hover > div {
                 background-color: $bs-datetimepicker-active-bg;
                 color: $bs-datetimepicker-active-color;
-                @include shadow-small-color($brand-primary);
+                @include shadow-small-color($primary);
             }
 
             &.active.today:before > div{
-                border-bottom-color: $white-color;
+                border-bottom-color: $white;
             }
 
             &.disabled > div,

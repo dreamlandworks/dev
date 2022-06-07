@@ -128,9 +128,33 @@ class MyAccount extends ResourceController
 		       
 		       //Get Reviews Details
 		       $arr_reviews = $misc_model->get_sp_reviews_details($sp_id);
-		       
+
+               $overall = 0;
+               $professionalism = 0;
+               $skill = 0;
+               $behaviour = 0;
+               $satisfaction = 0;
+               $count = 0;
+
+               foreach ($arr_reviews as $key=>$arr){
+                  
+                   $overall = $overall + $arr['overall_rating'];
+                   $professionalism = $professionalism + $arr['professionalism'];
+                   $skill = $skill + $arr['skill'];
+                   $behaviour = $behaviour + $arr['behaviour'];
+                   $satisfaction = $satisfaction + $arr['satisfaction'];
+                   $count++;
+                   
+                    }
+                   
 	           return $this->respond([
-		            "sp_reviews" => ($arr_reviews != 'failure') ? $arr_reviews : array(),
+		            "overall" => number_format($overall/$count,1,'.',''),
+                    "professionalism" => number_format($professionalism/$count,1,'.',''),
+                    "skill" => number_format($skill/$count,1,'.',''),
+                    "behaviour" => number_format($behaviour/$count,1,'.',''),
+                    "satisfaction" => number_format($satisfaction/$count,1,'.',''),
+                    "reviews_count" => $count,
+                    "sp_reviews" => ($arr_reviews != 'failure') ? $arr_reviews : array(),
 		            "status" => 200,
     				"message" => "Success",
     			]);

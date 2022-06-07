@@ -8,17 +8,17 @@
   padding: 0;
   margin: 0;
   border: 0;
-  color: $white-color;
+  color: $white;
   position: relative;
   align-items: center;
 
   .page-header-image{
-      position: absolute;
-      background-size: cover;
-      background-position: center center;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
+    position: absolute;
+    background-size: cover;
+    background-position: center center;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
   }
 
   .content-center{

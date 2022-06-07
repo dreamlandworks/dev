@@ -124,7 +124,7 @@
                                           <label class="col-md-2 col-form-label">BookingID : </label>
                                           <div class="col-md-9">
                                             <div class="form-group has-default">
-                                              <input type="text" class="form-control" disabled value="33546">
+                                              <input type="text" class="form-control" disabled value="<?php echo $bookingDetail['booking_id']; ?>">
                                             </div>
                                           </div>
                                         </div>
@@ -132,7 +132,7 @@
                                           <label class="col-md-2 col-form-label">Amount : </label>
                                           <div class="col-md-9">
                                             <div class="form-group">
-                                              <input type="text" class="form-control" disabled value="50000">
+                                              <input type="text" class="form-control" disabled value="Rs. <?php echo $bookingDetail['amount']; ?>">
                                             </div>
                                           </div>
                                         </div>
@@ -140,15 +140,15 @@
                                           <label class="col-md-2 col-form-label">Date : </label>
                                           <div class="col-md-9">
                                             <div class="form-group">
-                                              <input type="text" class="form-control" disabled value="13th Aug 2021">
+                                              <input type="text" class="form-control" disabled value="<?php echo $bookingDetail['scheduled_date']; ?>">
                                             </div>
                                           </div>
                                         </div>
                                         <div class="row">
                                           <label class="col-md-2 col-form-label">Time : </label>
                                           <div class="col-md-9">
-                                            <div class="form-group">
-                                              <input type="text" class="form-control" disabled value="05:00:00">
+                                            <div class="form-group">											
+                                              <input type="text" class="form-control" disabled value="<?php echo $bookingDetail['booking_time']; ?>">
                                             </div>
                                           </div>
                                         </div>
@@ -156,7 +156,12 @@
                                           <label class="col-md-2 col-form-label">Is Scheduled : </label>
                                           <div class="col-md-9">
                                             <div class="form-group">
-                                              <input type="text" class="form-control" disabled value="Yes">
+											<?php if($bookingDetail['reschedule_status_id'] == 1){
+																	$resStatus = "Yes";
+																} else{
+																	$resStatus = "No";
+																} ?>
+                                              <input type="text" class="form-control" disabled value="<?php echo $resStatus; ?>">
                                             </div>
                                           </div>
                                         </div>
@@ -164,7 +169,21 @@
                                           <label class="col-md-2 col-form-label">Time Remaining : </label>
                                           <div class="col-md-9">
                                             <div class="form-group">
-                                              <input type="text" class="form-control" disabled value="02:30:00">
+											<?php 
+														$scheduled_date = $bookingDetail['scheduled_date'] . " " . $bookingDetail['booking_time'];
+														$current_date_time = date('Y-m-d H:i:s');
+														$remaining_days = "00";
+														$remaining_hours = "00";
+														$remaining_minutes = "00";
+
+														if ($current_date_time < $scheduled_date) {
+															$dateDiff = intval((strtotime($scheduled_date) - strtotime($current_date_time)) / 60);
+															$remaining_days = intval($dateDiff / (60 * 24));
+															$remaining_hours = intval($dateDiff / 60);
+															$remaining_minutes = $dateDiff % 60;
+														}														
+														?>
+                                              <input type="text" class="form-control" disabled value="<?php echo $remaining_days." days ".$remaining_hours." hours ".$remaining_minutes. " minutes "; ?>">
                                             </div>
                                           </div>
                                         </div>
@@ -172,7 +191,7 @@
                                           <label class="col-md-2 col-form-label">Category : </label>
                                           <div class="col-md-9">
                                             <div class="form-group">
-                                              <input type="text" class="form-control" disabled value="Single Move">
+                                              <input type="text" class="form-control" disabled value="<?php echo $bookingDetail['category']; ?>">
                                             </div>
                                           </div>
                                         </div>
@@ -180,7 +199,7 @@
                                           <label class="col-md-2 col-form-label">Bookings Status : </label>
                                           <div class="col-md-9">
                                             <div class="form-group">
-                                              <input type="text" class="form-control" disabled value="Pending">
+                                              <input type="text" class="form-control" disabled value="<?php echo $bookingDetail['booking_status']; ?>">
                                             </div>
                                           </div>
                                         </div>

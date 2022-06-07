@@ -151,337 +151,42 @@
                                   </tr>
                                 </tfoot>
                                 <tbody>
-        
-                                  <tr>
-                                    <td class="text-center">1</td>
-                                    <td>Single Move </td>
-                                    <td><img src="../../assets/img/card-3.jpg" height="30px"/></td>
-                                    <td>
+                                <?php
+                                  if($arr_categories != 'failure') {
+                                      foreach($arr_categories as $key => $category) {
+                                      ?>
+                                      <tr>
+                                        <td class="text-center"><?php echo ($key+1); ?></td>
+                                        <td><?php echo $category['category']; ?> </td>
+                                        <td><img src="<?php echo base_url().$category['image']; ?>" height="30px"/> </td>
+                                        <td>
                                       <div class="togglebutton">
                                         <label>
-                                          <input type="checkbox" checked="">
+                                          <input class ="chkstatus" data-id="<?php echo $category['id']; ?>"  type="checkbox" <?php echo ($category['status'] == 'Active') ? 'checked' : ''; ?> >
                                           <span class="toggle"></span>
                                         </label>
                                       </div>
                                     </td>
                                     <td class="td-actions">
-                                      <a href="editServiceProviders">
+                                      <a href="<?php echo 'editCategory/'.$category['id'];?>">
 									  <button type="button" rel="tooltip" class="btn btn-success btn-round">
                                         <i class="material-icons">
                                           <img src="../../assets/img/create-white-18dp (1).svg" />
                                         </i>
                                       </button>
 									  </a>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
+                                      <button type="button" rel="tooltip" data-id="<?php echo $category['id']; ?>" class="btn btn-danger btn-round btndelete">
                                         <i class="material-icons">
                                           <img src="../../assets/img/close-white-18dp.svg" />
                                         </i>
                                       </button>
                                     </td>
-                                  </tr>
-                                  <tr>
-                                    <td class="text-center">2</td>
-        
-                                     <td>Single Move </td>
-                                    <td><img src="../../assets/img/card-3.jpg" height="30px"/></td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td class="text-center">3</td>
-        
-                                     <td>Single Move </td>
-                                    <td><img src="../../assets/img/card-3.jpg" height="30px"/></td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-                                  <tr>
-                                    <td class="text-center">4</td>
-                                     <td>Single Move </td>
-                                    <td><img src="../../assets/img/card-3.jpg" height="30px"/></td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-                                  <tr>
-                                    <td class="text-center">5</td>
-        
-                                     <td>Single Move </td>
-                                    <td><img src="../../assets/img/card-3.jpg" height="30px"/></td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-        
-                                  <tr>
-                                    <td class="text-center">6</td>
-        
-                                     <td>Single Move </td>
-                                    <td><img src="../../assets/img/card-3.jpg" height="30px"/></td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-        
-                                  <tr>
-                                    <td class="text-center">7</td>
-        
-                                     <td>Single Move </td>
-                                    <td><img src="../../assets/img/card-3.jpg" height="30px"/></td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">8</td>
-        
-                                     <td>Single Move </td>
-                                    <td><img src="../../assets/img/card-3.jpg" height="30px"/></td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">9</td>
-        
-                                     <td>Single Move </td>
-                                    <td><img src="../../assets/img/card-3.jpg" height="30px"/></td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">10</td>
-        
-                                     <td>Single Move </td>
-                                    <td><img src="../../assets/img/card-3.jpg" height="30px"/></td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">11</td>
-        
-                                     <td>Single Move </td>
-                                    <td><img src="../../assets/img/card-3.jpg" height="30px"/></td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
-        
-        
-                                  <tr>
-                                    <td class="text-center">12</td>
-        
-                                     <td>Single Move </td>
-                                    <td><img src="../../assets/img/card-3.jpg" height="30px"/></td>
-                                    <td>
-                                      <div class="togglebutton">
-                                        <label>
-                                          <input type="checkbox" checked="">
-                                          <span class="toggle"></span>
-                                        </label>
-                                      </div>
-                                    </td>
-                                    <td class="td-actions">
-                                      <button type="button" rel="tooltip" class="btn btn-success btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/create-white-18dp (1).svg" />
-                                        </i>
-                                      </button>
-                                      <button type="button" rel="tooltip" class="btn btn-danger btn-round">
-                                        <i class="material-icons">
-                                          <img src="../../assets/img/close-white-18dp.svg" />
-                                        </i>
-                                      </button>
-                                    </td>
-                                  </tr>
+                                    </tr>
+                                      <?php
+                                      }
+                                  }
+                                  ?>
+                                
                                 </tbody>
                               </table>
                             </div>
@@ -752,12 +457,58 @@
         table.row($tr).remove().draw();
         e.preventDefault();
       });
+      
+      
 
       //Like record
       table.on('click', '.like', function () {
         alert('You clicked on Like button');
       });
     });
+    
+    $(document).ready(function() {  
+   $('.chkstatus').on('change', function() {
+       //alert("here")
+     if(this.checked)
+        {
+            var status='Active';
+        }else{
+            var status='Inactive';
+        }
+      //alert($(this).data('id'))
+      var cat_id = $(this).data('id');
+      $.ajax({
+            type: "POST",
+            url: '<?php echo "editStatus";?>',
+            data: {cat_id : cat_id, status: status},
+            success: function(data){
+            console.log(data);
+            },
+            error: function(xhr, status, error){
+            console.error(xhr);
+            }
+            });
+    
+   });
+   
+   $('.btndelete').on('click', function() {
+       var cat_id = $(this).data('id');
+      $.ajax({
+            type: "POST",
+            url: '<?php echo "deleteCategory";?>',
+            data: {cat_id : cat_id },
+            success: function(data){
+            console.log(data);
+            //$(this).closest('tr').remove();
+            
+            },
+            error: function(xhr, status, error){
+            console.error(xhr);
+            }
+            });
+   });
+    });
+	
   </script>
 
 </body>

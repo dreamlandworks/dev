@@ -107,7 +107,7 @@
                         <!--    end small modal -->
                         <!-- My code starts-->
                         <div class="row">
-
+                        <?php //print_r($arr_pending);?>
                             <div class="col-lg-4 col-md-6 col-sm-6">
                                 <a href="#">
                                 <div class="card card-stats">
@@ -117,11 +117,11 @@
                                                     src="../../assets/img/icons/groups-white-24dp.svg" /></i>
                                         </div>
                                         <!-- <p class="card-category">Single Move</p> -->
-                                        <h3 class="card-title">Pending - 30</h3>
+                                        <h3 class="card-title">Pending - <?php echo $arr_pending[0]['Pending'];?></h3>
                                     </div>
                                     <div class="card-footer">
                                         <div class="stats">
-                                            Pending - 30 
+                                            Pending - <?php echo $arr_pending[0]['Pending'];?> 
                                         </div>
                                     </div>
                                 </div>
@@ -137,11 +137,11 @@
                                                     src="../../assets/img/icons/groups-white-24dp.svg" /></i>
                                         </div>
                                         <!-- <p class="card-category">Last Month Users</p> -->
-                                        <h3 class="card-title">In Progress - 100</h3>
+                                        <h3 class="card-title">In Progress - <?php echo $arr_pending[0]['InProgress'];?></h3>
                                     </div>
                                     <div class="card-footer">
                                         <div class="stats">
-                                            In Progress - 100
+                                            In Progress - <?php echo $arr_pending[0]['InProgress'];?>
                                         </div>
                                     </div>
                                 </div>
@@ -157,11 +157,11 @@
                                                     src="../../assets/img/icons/person_add_alt_1-white-24dp.svg" /></i>
                                         </div>
                                         <!-- <p class="card-category">This Month Users </p> -->
-                                        <h3 class="card-title"> Resolved - 20</h3>
+                                        <h3 class="card-title"> Resolved - <?php echo $arr_pending[0]['Resolved'];?></h3>
                                     </div>
                                     <div class="card-footer">
                                         <div class="stats">
-                                            Resolved - 20
+                                            Resolved - <?php echo $arr_pending[0]['Resolved'];?>
                                         </div>
                                     </div>
                                 </div>
@@ -218,8 +218,9 @@
                                                 <thead>
                                                     <tr>
                                                         <th>S.No</th>
-                                                        <th>Complaint Id</th>
-                                                        <th>Created By</th>
+                                                        <!--<th>Complaint Id</th>-->
+                                                        <th>Booking ID</th>
+                                                        <!--<th>Created By</th>-->
                                                         <th>Created On</th>
                                                         <th>Module</th>
                                                         <th>Description</th>
@@ -232,8 +233,9 @@
                                                 <tfoot>
                                                     <tr>
                                                         <th>S.No</th>
-                                                        <th>Complaint Id</th>
-                                                        <th>Created By</th>
+                                                        <!--<th>Complaint Id</th>-->
+                                                        <th>Booking ID</th>
+                                                        <!--<th>Created By</th>-->
                                                         <th>Created On</th>
                                                         <th>Module</th>
                                                         <th>Description</th>
@@ -244,217 +246,53 @@
                                                     </tr>
                                                 </tfoot>
                                                 <tbody>
-                                                    <tr>
-                                                        <td class="text-center">1</td>
-                                                        <td>14045686</td>
-                                                        <td>Admin</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>module</td>
-                                                        <td>description..</td>
-                                                        <td>High</td>
-                                                        <td>Single Move</td>
-                                                        <td>Resolved</td>
-                                                        <td class="td-actions">
-                                                            <a href="viewTickets">
-                                                                <h4><b>View</b></h4>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-center">2</td>
-                                                        <td>14045686</td>
-                                                        <td>Admin</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>module</td>
-                                                        <td>description..</td>
-                                                        <td>High</td>
-                                                        <td>Single Move</td>
-                                                        <td>Resolved</td>
-                                                        <td class="td-actions">
-                                                            <a href="#">
-                                                                <h4><b>View</b></h4>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-center">3</td>
-                                                        <td>14045686</td>
-                                                        <td>Admin</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>module</td>
-                                                        <td>description..</td>
-                                                        <td>High</td>
-                                                        <td>Single Move</td>
-                                                        <td>Resolved</td>
-                                                        <td class="td-actions">
-                                                            <a href="#">
-                                                                <h4><b>View</b></h4>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
+                                <?php
+                                  if($arr_supports != 'failure') {
+                                      foreach($arr_supports as $key => $supports) {
+                                      ?>
+                                      <tr>
+                                        <td class="text-center"><?php echo ($key+1); ?></td>
+                                        <!--<td><?php echo  $supports['complaints_id']; ?> </td>-->
+                                        <!--<td> <?php //echo $supports['fname'] . " " .$supports['lname']; ?></td>-->
+                                        <td> 
+                                        <?php echo $booking_ref_id = str_pad($supports['booking_id'], 6, "0", STR_PAD_LEFT);?></td>
+                                        <td> <?php echo $supports['created_on']; ?></td>
+                                        <td> <?php echo $supports['module_name']; ?></td>
+                                        <td> <?php echo $supports['description']; ?></td>
+                                        <td> <?php echo $supports['priority']; ?></td>
+                                        <td> <?php echo $supports['staff_name']; ?></td>
+                                        <td> <?php echo $supports['status']; ?></td>
+                                    <!--    <td>-->
+                                    <!--  <div class="togglebutton">-->
+                                    <!--    <label>-->
+                                    <!--      <input class ="chkstatus" data-id="<?php //echo $userplans['id']; ?>"  type="checkbox"  >-->
+                                    <!--      <span class="toggle"></span>-->
+                                    <!--    </label>-->
+                                    <!--  </div>-->
+                                    <!--</td>-->
+                                    <td class="td-actions">
+                                      <a href="<?php echo ADMINBASEURL;?>editTickets/<?php echo $supports['id'];?>">
+									  <button type="button" rel="tooltip" class="btn btn-success btn-round">
+                                        <i class="material-icons">
+                                          <img src="../../assets/img/create-white-18dp (1).svg" />
+                                        </i>
+                                      </button>
+									  </a>
+                                      <button type="button" rel="tooltip" data-id="<?php echo $supports['id']; ?>" class="btn btn-danger btn-round btndelete">
+                                    <!--<button class="btn btn-danger" onclick="delete_book(<?php //echo $userplans['id']; ?>)">Delete</button>-->
 
-                                                    <tr>
-                                                        <td class="text-center">4</td>
-                                                           <td>14045686</td>
-                                                        <td>Admin</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>module</td>
-                                                        <td>description..</td>
-                                                        <td>High</td>
-                                                        <td>Single Move</td>
-                                                        <td>Resolved</td>
-                                                        <td class="td-actions">
-                                                            <a href="#">
-                                                                <h4><b>View</b></h4>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td class="text-center">5</td>
-                                                           <td>14045686</td>
-                                                        <td>Admin</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>module</td>
-                                                        <td>description..</td>
-                                                        <td>High</td>
-                                                        <td>Single Move</td>
-                                                        <td>Resolved</td>
-                                                        <td class="td-actions">
-                                                            <a href="#">
-                                                                <h4><b>View</b></h4>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-
-
-
-                                                    <tr>
-                                                        <td class="text-center">6</td>
-                                                           <td>14045686</td>
-                                                        <td>Admin</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>module</td>
-                                                        <td>description..</td>
-                                                        <td>High</td>
-                                                        <td>Single Move</td>
-                                                        <td>Resolved</td>
-                                                        <td class="td-actions">
-                                                            <a href="#">
-                                                                <h4><b>View</b></h4>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-
-
-
-                                                    <tr>
-                                                        <td class="text-center">7</td>
-                                                           <td>14045686</td>
-                                                        <td>Admin</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>module</td>
-                                                        <td>description..</td>
-                                                        <td>High</td>
-                                                        <td>Single Move</td>
-                                                        <td>Resolved</td>
-                                                        <td class="td-actions">
-                                                            <a href="#">
-                                                                <h4><b>View</b></h4>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td class="text-center">8</td>
-                                                           <td>14045686</td>
-                                                        <td>Admin</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>module</td>
-                                                        <td>description..</td>
-                                                        <td>High</td>
-                                                        <td>Single Move</td>
-                                                        <td>Resolved</td>
-                                                        <td class="td-actions">
-                                                            <a href="#">
-                                                                <h4><b>View</b></h4>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td class="text-center">9</td>
-                                                           <td>14045686</td>
-                                                        <td>Admin</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>module</td>
-                                                        <td>description..</td>
-                                                        <td>High</td>
-                                                        <td>Single Move</td>
-                                                        <td>Resolved</td>
-                                                        <td class="td-actions">
-                                                            <a href="#">
-                                                                <h4><b>View</b></h4>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td class="text-center">10</td>
-                                                           <td>14045686</td>
-                                                        <td>Admin</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>module</td>
-                                                        <td>description..</td>
-                                                        <td>High</td>
-                                                        <td>Single Move</td>
-                                                        <td>Resolved</td>
-                                                        <td class="td-actions">
-                                                            <a href="#">
-                                                                <h4><b>View</b></h4>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td class="text-center">11</td>
-                                                           <td>14045686</td>
-                                                        <td>Admin</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>module</td>
-                                                        <td>description..</td>
-                                                        <td>High</td>
-                                                        <td>Single Move</td>
-                                                        <td>Resolved</td>
-                                                        <td class="td-actions">
-                                                            <a href="#">
-                                                                <h4><b>View</b></h4>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-
-
-                                                    <tr>
-                                                        <td class="text-center">12</td>
-                                                           <td>14045686</td>
-                                                        <td>Admin</td>
-                                                        <td>13th Aug 2021</td>
-                                                        <td>module</td>
-                                                        <td>description..</td>
-                                                        <td>High</td>
-                                                        <td>Single Move</td>
-                                                        <td>Resolved</td>
-                                                        <td class="td-actions">
-                                                            <a href="#">
-                                                                <h4><b>View</b></h4>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
+                                        <i class="material-icons">
+                                          <img src="../../assets/img/close-white-18dp.svg" />
+                                        </i>
+                                      </button>
+                                    </td>
+                                    </tr>
+                                      <?php
+                                      }
+                                  }
+                                  ?>
+                        
+                                </tbody>
                                             </table>
                                         </div>
                                     </div>
@@ -557,3 +395,28 @@
             });
         });
     </script>
+    
+    <script>
+  $(document).ready(function(){
+     $('.btndelete').on('click', function() {
+       var compliant_id = $(this).data('id');
+       
+      $.ajax({
+            type: "POST",
+            url: '<?php echo "deleteTicket";?>',
+            data: {compliant_id : compliant_id },
+            success: function(data){
+            console.log(data);
+            //$(this).closest('tr').remove();
+            location.reload();
+            },
+            error: function(xhr, status, error){
+            console.error(xhr);
+            }
+            });
+   
+     });
+    });
+
+  </script>
+

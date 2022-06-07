@@ -44,33 +44,33 @@
         top: -6px;
         left: 0px;
         border-radius: 4px;
-        color: $white-color;
+        color: $white;
         cursor: pointer;
         font-weight: 500;
     }
 
     &[data-color="purple"]{
-        @include set-wizard-color($brand-primary);
+        @include set-wizard-color($primary);
     }
 
     &[data-color="green"]{
-        @include set-wizard-color($brand-success);
+        @include set-wizard-color($success);
     }
 
     &[data-color="blue"]{
-        @include set-wizard-color($brand-info);
+        @include set-wizard-color($info);
     }
 
     &[data-color="orange"]{
-        @include set-wizard-color($brand-warning);
+        @include set-wizard-color($warning);
     }
 
     &[data-color="red"]{
-        @include set-wizard-color($brand-danger);
+        @include set-wizard-color($danger);
     }
 
     &[data-color="rose"]{
-        @include set-wizard-color($brand-rose);
+        @include set-wizard-color($rose);
     }
 
     .picture input[type="file"] {

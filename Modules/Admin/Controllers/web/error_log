@@ -1,0 +1,4 @@
+[18-Jan-2022 05:05:59 UTC] PHP Fatal error:  Uncaught Error: Class 'App\Controllers\BaseController' not found in /home2/satraskn/dev.satrango.com/Modules/Admin/Controllers/web/Users.php:23
+Stack trace:
+#0 {main}
+  thrown in /home2/satraskn/dev.satrango.com/Modules/Admin/Controllers/web/Users.php on line 23

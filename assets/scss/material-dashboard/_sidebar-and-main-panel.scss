@@ -143,7 +143,7 @@
 
             &.active > a,
             &.active > a i{
-                color: $white-color;
+                color: $white;
             }
 
             &.separator{
@@ -263,7 +263,7 @@
             float: left;
             font-size: 20px;
             margin: 10px 10px;
-            color: $white-color;
+            color: $white;
             line-height: 20px;
         }
 
@@ -356,16 +356,16 @@
     }
 
     &[data-background-color="black"]{
-        @include sidebar-background-color($gray-base, $white-color);
+        @include sidebar-background-color($gray-base, $white);
 
         .nav li .dropdown-menu .dropdown-item{
-          color: $white-color;
+          color: $white;
         }
     }
 
     &[data-background-color="red"]{
-        @include sidebar-background-color($brand-danger, $white-color);
-        background-color: $brand-danger;
+        @include sidebar-background-color($danger, $white);
+        background-color: $danger;
 
         .user,
         .logo,
@@ -384,26 +384,26 @@
     }
 
     &[data-color="purple"]{
-        @include set-background-color-button($brand-primary);
+        @include set-background-color-button($primary);
     }
     &[data-color="azure"]{
-        @include set-background-color-button($brand-info);
+        @include set-background-color-button($info);
     }
     &[data-color="green"]{
-        @include set-background-color-button($brand-success);
+        @include set-background-color-button($success);
     }
     &[data-color="orange"]{
-        @include set-background-color-button($brand-warning);
+        @include set-background-color-button($warning);
     }
     &[data-color="danger"]{
-        @include set-background-color-button($brand-danger);
+        @include set-background-color-button($danger);
     }
     &[data-color="rose"]{
-        @include set-background-color-button($brand-rose);
+        @include set-background-color-button($rose);
     }
 
     &[data-color="white"]{
-        @include set-background-color-button($white-color);
+        @include set-background-color-button($white);
         @include sidebar-active-color($black-color);
     }
 
@@ -417,7 +417,7 @@
     .nav {
         > li > a,
         > li > a:hover{
-            color: $white-color;
+            color: $white;
             margin: 0 15px;
         }
 

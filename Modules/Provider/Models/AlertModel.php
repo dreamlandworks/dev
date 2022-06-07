@@ -107,7 +107,7 @@ class AlertModel extends Model
 		$builder = $this->db->table('alert_details');
 		$builder->where('sp_id',$id);
 		$builder->where('action', $type);
-		$builder->where('created_on <',$date);
+		$builder->where('created_on <=',$date);
 		$builder->update(['status'=>2]);
 		$query = $builder->get();
 
@@ -136,9 +136,10 @@ class AlertModel extends Model
 		}
 		
 		$builder->where('action', $type);
+		$builder->orderBy('alert_details.created_on','DESC');
 		$query = $builder->get();
-
-		$res = $query->getResultArray();
+        $res = $query->getResultArray();
+        // echo "<br> str ".$this->db->getLastQuery();exit;
 
 		if ($res != null) {
 			return $res;

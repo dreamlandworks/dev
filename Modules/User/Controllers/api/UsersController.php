@@ -16,6 +16,7 @@ use Modules\User\Models\TempUserModel;
 use Modules\User\Models\UserDetailsModel;
 use Modules\User\Models\UsersModel;
 use Modules\Provider\Models\CommonModel;
+use Modules\User\Models\MiscModel;
 use Modules\User\Models\SmsTemplateModel;
 
 use function PHPUnit\Framework\isEmpty;
@@ -49,13 +50,13 @@ class UsersController extends ResourceController
             //getting JSON data from API
             $json = $this->request->getJSON();
             
-            if(!array_key_exists('first_name',$json) || !array_key_exists('last_name',$json) || !array_key_exists('mobile_no',$json) 
-                            || !array_key_exists('email_id',$json) || !array_key_exists('dob',$json) || !array_key_exists('gender',$json)
-                            || !array_key_exists('facebook_id',$json) || !array_key_exists('twitter_id',$json) 
-                            || !array_key_exists('google_id',$json) || !array_key_exists('password',$json) || !array_key_exists('city',$json)
-                            || !array_key_exists('state',$json) || !array_key_exists('country',$json) || !array_key_exists('postal_code',$json) 
-                            || !array_key_exists('address',$json) || !array_key_exists('user_lat',$json) || !array_key_exists('user_long',$json)
-                            || !array_key_exists('referral_id',$json) || !array_key_exists('key',$json)
+            if(!property_exists($json, 'first_name') || !property_exists($json, 'last_name') || !property_exists($json, 'mobile_no') 
+                            || !property_exists($json, 'email_id') || !property_exists($json, 'dob') || !property_exists($json, 'gender')
+                            || !property_exists($json, 'facebook_id') || !property_exists($json, 'twitter_id') 
+                            || !property_exists($json, 'google_id') || !property_exists($json, 'password') || !property_exists($json, 'city')
+                            || !property_exists($json, 'state') || !property_exists($json, 'country') || !property_exists($json, 'postal_code') 
+                            || !property_exists($json, 'address') || !property_exists($json, 'user_lat') || !property_exists($json, 'user_long')
+                            || !property_exists($json, 'referral_id') || !property_exists($json, 'key')
                             ) {
     		    return $this->respond([
         				'status' => 403,
@@ -77,7 +78,6 @@ class UsersController extends ResourceController
                     $address_model = new AddressModel();
                     $userdetails_model = new UserDetailsModel();
                     $users_model = new UsersModel();
-                    $alert_model = new AlertModel();
                     $common = new CommonModel();
                 
                     //JSON Objects declared into variables
@@ -102,7 +102,14 @@ class UsersController extends ResourceController
         
                     if (empty($referral_id)) {
                         $referral_id = "NoRef";
-                    }
+                    }else{
+						$ref = $common->get_details_dynamically('users','userid',$referral_id);
+							if($ref != 'failure'){
+								$referral_id = $ref[0]['id'];
+							}else{
+								$referral_id = "NoRef";
+							}
+						}
                     
                     $validate_user_result = $users_model->search_by_email_mobile($email,$mobile);
                     //echo "<br> str ".$users_model->getLastQuery();exit;
@@ -197,6 +204,7 @@ class UsersController extends ResourceController
                                 'twitter_id' => $twitter_id,
                                 'users_id' => $users_id
                             ];
+							
         
                             $user_id = $users_model->create_user($data2);
         
@@ -206,18 +214,33 @@ class UsersController extends ResourceController
                                 $bb = $this->create_ref($fname, $mobile, $referral_id, $user_id);
                                 $cc = $this->delete_temp($mobile);
                                 $dd = $userdetails_model->update_user_details($users_id, ['referral_id' => $bb['id']]);
+                               
                                 //Insert into alert_details table
                 		        $arr_alerts = array(
-                    		          'alert_id' => 4, 
-                                      'description' => "You have succesfully registered",
-                                      'action' => 1,
-                                      'created_on' => date("Y-m-d H:i:s"), 
-                                      'status' => 1,
-                                      'users_id' => $user_id,
+                    		          'type_id' => 4, 
+                                      'user_id' => $user_id,
+                                      'profile_pic_id' => $user_id,
+                                      'description' => 'Thanks for registering with us. Have a good day',
+                                      'status' => 2,
+                                      'created_on' => date('Y-m-d H:i:s'),
+                                      'updated_on' => date('Y-m-d H:i:s')
                                 );
-                                $ale = $common->insert_records_dynamically('alert_details', $arr_alerts);
+
+                                $ale = $common->insert_records_dynamically('alert_regular_user', $arr_alerts);
                                 
-                                if ($aa != 0 && $bb != null && $cc != 0 && $dd != null && $ale > 0) {
+								//Insert into wallet balance
+
+								$wal_data = [
+								
+								 'users_id' => $user_id,
+								 'amount' => 0,
+								 'amount_blocked' => 0
+							
+								];
+
+								$wal = $common->insert_records_dynamically('wallet_balance', $wal_data);
+								
+                                if ($aa != 0 && !is_null($bb) && $cc != 0 && !is_null($dd) && $ale > 0) {
                                     //Send SMS
                                     $sms_model = new SmsTemplateModel();
                                     
@@ -345,7 +368,7 @@ class UsersController extends ResourceController
     public function update_pass()
     {
         $json = $this->request->getJSON();
-        if(!array_key_exists('id',$json) || !array_key_exists('password',$json) || !array_key_exists('key',$json)) {
+        if(!property_exists($json, 'id') || !property_exists($json, 'password') || !property_exists($json, 'key')) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -365,20 +388,22 @@ class UsersController extends ResourceController
         		$new = new UsersModel();
 
                 $res = $new->update_pass($id, $pass);
-        
+               
                 if ($res != 0) {
                     $common = new CommonModel();
-    		        
+    		        $date = date('Y-m-s H:i:s');
     		        //Insert into alert_details table
     		        $arr_alerts = array(
-        		          'alert_id' => 4, 
-                          'description' => "You have successfully reset your password",
-                          'action' => 1,
-                          'created_on' => date("Y-m-d H:i:s"), 
-                          'status' => 1,
-                          'users_id' => $id,
-                    );
-                    $common->insert_records_dynamically('alert_details', $arr_alerts);
+                        'type_id' => 4, 
+                        'description' => "You have succesfully reset your password on ".$date,
+                        'user_id' => $id,
+                        'profile_pic_id' => $id,
+                        'status' => 2,
+                        'created_on' => $date,
+                        'updated_on' => $date
+                  );
+
+                  $common->insert_records_dynamically('alert_regular_user', $arr_alerts);
                     
                     return $this->respond([
                         "status" => 200,
@@ -416,7 +441,7 @@ class UsersController extends ResourceController
     public function get_alerts()
     {
         $json = $this->request->getJSON();
-        if(!array_key_exists('id',$json) || !array_key_exists('type',$json) || !array_key_exists('status',$json) || !array_key_exists('key',$json)) {
+        if(!property_exists($json, 'id') || !property_exists($json, 'key')) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -424,8 +449,6 @@ class UsersController extends ResourceController
 		}
 		else {
 		    $id = $json->id;
-    		$type = $json->type;
-    		$status = $json->status;
     		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
 		    
 		    $apiconfig = new \Config\ApiConfig();
@@ -436,21 +459,66 @@ class UsersController extends ResourceController
     
         		$alert = new AlertModel();
                 
-                $res = $alert->all_alerts($id, $type,$status);
+                //Regular Alerts
+                $res = $alert->all_alerts($id,1);
         
-                if ($res != null) {
-                    return $this->respond([
-                        "status" => 200,
-                        "message" => "Success",
-                        "data" => $res
-                    ]);
+                if ($res != 'failure') {
+                   $alert_regular = $res;
+                                  
                 } else {
-                    return $this->respond([
-                        "status" => 404,
-                        "message" => "No Data to show"
-                    ]);
+                    $alert_regular = [];
                 }
-    		}
+
+                //Actionable Alerts
+
+                $res1 = $alert->all_alerts($id,2);
+                // print_r($res);
+                // print_r($res1);
+                // exit;
+                
+
+                if ($res1 != 'failure') {
+                
+                    foreach($res1 as $key=>$dat){
+                     
+                        $alert_action[$key]['id'] = $dat['id'];
+                        $alert_action[$key]['type_id'] = $dat['type_id'];
+                        $alert_action[$key]['user_id'] = $dat['user_id'];
+                        $alert_action[$key]['sp_id'] = $dat['sp_id'];
+                        $alert_action[$key]['profile_pic'] = $dat['profile_pic'];
+                        $alert_action[$key]['description'] = $dat['description'];
+                        $alert_action[$key]['status'] = $dat['status'];
+                        $alert_action[$key]['api'] = $dat['api'];
+                        $alert_action[$key]['accept_text'] = $dat['accept_text'];
+                        $alert_action[$key]['reject_text'] = $dat['reject_text'];
+                        $alert_action[$key]['accept_response'] = $dat['accept_response'];
+                        $alert_action[$key]['reject_response'] = $dat['reject_response'];
+                        $alert_action[$key]['created_on'] = $dat['created_on'];
+                        $alert_action[$key]['updated_on'] = $dat['updated_on'];
+                        $alert_action[$key]['booking_id'] = $dat['booking_id'];
+                        $alert_action[$key]['post_id'] = $dat['post_id'];
+                        $alert_action[$key]['reschedule_id'] = $dat['reschedule_id'];
+                        $alert_action[$key]['status_code_id'] = $dat['status_code_id'];
+                        $alert_action[$key]['req_raised_by_id'] = (is_null($dat['req_raised_by_id']) ? "" : $dat['req_raised_by_id']);
+                        $alert_action[$key]['category_id'] = $dat['category_id'];
+                        $alert_action[$key]['bid_id'] = (is_null($dat['bid_id']) ? "" : $dat['bid_id']);
+                        $alert_action[$key]['bid_user_id'] = (is_null($dat['bid_user_id']) ? "" : $dat['bid_user_id']);
+   
+                   }
+                    // $alert_action = $res1;
+               
+                } else {
+                    $alert_action = [];
+                }
+
+                return $this->respond([
+                    'status' => 200,
+                    'message' => 'Success',
+                    'regular' => $alert_regular,
+                    'action' =>  $alert_action
+                ]);
+    		
+            }
     		else {
     		    return $this->respond([
         				'status' => 403,
@@ -468,7 +536,7 @@ class UsersController extends ResourceController
     {
         $json = $this->request->getJSON();
         
-        if(!array_key_exists('id',$json) || !array_key_exists('type',$json) || !array_key_exists('key',$json)) {
+        if(!property_exists($json, 'id') || !property_exists($json, 'last_alert_id') || !property_exists($json, 'user_type') || !property_exists($json, 'key')) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'
@@ -476,7 +544,9 @@ class UsersController extends ResourceController
 		}
 		else {
 		    $id = $json->id;
-		    $type = $json->type;
+		    $last_alert_id = $json->last_alert_id;
+            $user_type = $json->user_type;
+
 		    $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
 		    
 		    $apiconfig = new \Config\ApiConfig();
@@ -487,8 +557,7 @@ class UsersController extends ResourceController
     
         		$alerts = new AlertModel();
 
-                $date = date('Y-m-d H:m:s', time());
-                $res = $alerts->update_alert($id, $date,$type);
+                $res = $alerts->update_alert($id, $user_type,$last_alert_id);
         
                 if ($res == "Success") {
                     return $this->respond([

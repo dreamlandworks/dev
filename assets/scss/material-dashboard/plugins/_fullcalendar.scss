@@ -36,7 +36,7 @@ body .fc { /* extra precedence to overcome jqui */
 }
 
 .fc-unthemed .fc-popover {
-	background-color: $white-color;
+	background-color: $white;
 }
 
 .fc-unthemed .fc-divider,
@@ -172,7 +172,7 @@ NOTE: use percentage font sizes or else old IE chokes
 
     &,
     &.btn-primary{
-        @include btn-styles($brand-primary);
+        @include btn-styles($primary);
     }
 }
 
@@ -530,29 +530,29 @@ temporary rendered events).
 	font-size: .85em;
 	line-height: 1.3;
 	border-radius: 2px;
-	background-color: $brand-success; /* default BACKGROUND color */
-	@include shadow-big-color($brand-success);
+	background-color: $success; /* default BACKGROUND color */
+	@include shadow-big-color($success);
 	font-weight: normal; /* undo jqui's ui-widget-header bold */
 
     &.event-azure{
-        background-color: $brand-info;
-		@include shadow-big-color($brand-info);
+        background-color: $info;
+		@include shadow-big-color($info);
     }
     &.event-green{
-        background-color: $brand-success;
-		@include shadow-big-color($brand-success);
+        background-color: $success;
+		@include shadow-big-color($success);
     }
     &.event-orange{
-        background-color: $brand-warning;
-		@include shadow-big-color($brand-warning);
+        background-color: $warning;
+		@include shadow-big-color($warning);
     }
     &.event-red{
-        background-color: $brand-danger;
-		@include shadow-big-color($brand-danger);
+        background-color: $danger;
+		@include shadow-big-color($danger);
     }
 	&.event-rose{
-		background-color: $brand-rose;
-		@include shadow-big-color($brand-rose);
+		background-color: $rose;
+		@include shadow-big-color($rose);
 	}
 	&.event-default{
 		background-color: $gray-light;
@@ -568,7 +568,7 @@ temporary rendered events).
 .fc-event,
 .fc-event:hover,
 .ui-widget .fc-event {
-	color: $white-color; /* default TEXT color */
+	color: $white; /* default TEXT color */
 	text-decoration: none; /* if <a> has an href */
 }
 
@@ -584,7 +584,7 @@ temporary rendered events).
 
 .fc-event .fc-bg { /* the generic .fc-bg already does position */
 	z-index: 1;
-	background: $white-color;
+	background: $white;
 	opacity: .25;
 }
 
@@ -1470,7 +1470,7 @@ be a descendant of the grid when it is being dragged.
 		border: 0;
 
 		.fc-title{
-			color: $white-color;
+			color: $white;
 		}
 	}
 

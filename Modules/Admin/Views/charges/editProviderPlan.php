@@ -126,38 +126,39 @@
                                         <h4 class="card-title">Edit Provider Plan</h4>
                                     </div>
                                     <div class="card-body ">
-                                        <form method="#" action="#">
+                                        <form enctype="multipart/form-data" method="POST" id="editproviderplans" role="form" action="<?php echo ADMINBASEURL; ?>edit_providerplan_submit">
+                                        <input type="hidden" class="form-control" name="providerplan_id" id="providerplan" value="<?php echo $providerplan->id; ?>">
                                             <div class="row">
                                                 <div class="col-lg-5 col-md-6 col-sm-12">
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating">
                                                             Name</label>
-                                                        <input type="text" class="form-control" id="name" value="namee">
+                                                        <input type="text" class="form-control" id="name" name="name" value="<?php echo $providerplan->name; ?>">
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating">
                                                             Amount </label>
-                                                        <input type="text" class="form-control" id="name" value="1000"> 
+                                                        <input type="text" class="form-control" id="amount" name="amount" value="<?php echo $providerplan->amount; ?>"> 
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating">Period in
                                                             Days
                                                         </label>
-                                                        <input type="text" class="form-control" id="name" value="3">
+                                                        <input type="text" class="form-control" id="period" name="period" value="<?php echo $providerplan->period; ?>">
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating"> Platform Fees (In Percentage)
                                                         </label>
-                                                        <input type="text" class="form-control" id="name" value="5000">
+                                                        <input type="text" class="form-control" id="platform_fee_per_booking" value="<?php echo $providerplan->platform_fee_per_booking; ?>" name="platform_fee_per_booking">
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating"> No. of Bids per month
                                                         </label>
-                                                        <input type="text" class="form-control" id="name" value="10">
+                                                        <input type="text" class="form-control" id="bids_per_month" value="<?php echo $providerplan->bids_per_month; ?>" name="bids_per_month">
                                                     </div>
 
                                                  
@@ -167,32 +168,23 @@
                                                 <div class="col-lg-5 col-md-6 col-sm-12" style="margin:0.4rem 2rem">
                                                
                                                     <select class="selectpicker" data-style="select-with-transition"
-                                                        title="Premium Tag" data-size="7">
-                                                        <option value="2" selected>Yes </option>
-                                                        <option value="3">No </option>
+                                                        title="Premium Tag" data-size="7" name="premium_tag" id= "premium_tag"> 
+                                                        <option value="Yes" <?=($providerplan->premium_tag=='Yes')?'selected':''; ?>>Yes </option>
+                                                        <option value="No" <?=($providerplan->premium_tag=='No')?'selected':''; ?>>No </option>
                                                     </select>
 
                                                     <select class="selectpicker" data-style="select-with-transition"
-                                                        title="Premium Customer Support" data-size="7">
-                                                        <option value="2">Yes </option>
-                                                        <option value="3" selected>No </option>
+                                                        title="Premium Customer Support" data-size="7" name="customer_support" id="customer_support">
+                                                        <option value="Yes" <?=($providerplan->customer_support=='Yes')?'selected':''; ?>>Yes </option>
+                                                        <option value="No" <?=($providerplan->customer_support=='No')?'selected':''; ?>>No </option>
                                                     </select>
 
-                                                    <select class="selectpicker" data-style="select-with-transition"
-                                                        title="Select Status" data-size="7">
-                                                        <option value="2" selected>Yes </option>
-                                                        <option value="3">No </option>
-                                                    </select>
-                                                    <div class="form-group">
-                                                        <label for="exampleName" class="bmd-label-floating"> No.
-                                                            Proposals per post
-                                                        </label>
-                                                        <input type="text" class="form-control" id="name" value="8">
-                                                    </div>
+                                                    
+                                                    
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating"> No. of Sealed Bids per month
                                                         </label>
-                                                        <input type="text" class="form-control" id="name" value="10">
+                                                        <input type="text" class="form-control" id="sealed_bids_per_month" value="<?php echo $providerplan->sealed_bids_per_month; ?>" name="sealed_bids_per_month">
                                                     </div>
 
                                                 </div>
@@ -207,10 +199,11 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </form>
-                                    </div>
+                                        
                                     <div class="card-footer ">
                                         <button type="submit" class="btn btn-fill btn-teal">Submit</button>
+                                    </div>
+                                    </form>
                                     </div>
                                 </div>
                             </div>
@@ -489,6 +482,37 @@
             });
 
     </script>
+<script>
+    $(document).ready(function(){
+	var userplansForm = $("#edituserplans");	
+    	var validator = userplansForm.validate({		
+    		
+    		rules:{
+    			name :{ required : true},
+    			description :{ required : true},
+    			amount :{ required : true},
+    			period :{ required : true},
+    			posts_per_month :{ required : true},
+    			proposals_per_post :{ required : true},
+    			premium_tag:{required : true},
+    			customer_support:{required : true}
+    			
+    		},
+    		messages:{
+    		    name :{ required : "Name  is Required"},
+    		    description : {required : "Description is required"},
+    		    amount : {required : "Amount is required"},
+    		    period : {required : "Period is required"},
+    		    posts_per_month : {required : "Post per month is required"},
+    		    proposals_per_post : {required : "Proposal per month is required"},
+    		    premium_tag:{required : "Select Any one option"},
+    		    customer_support:{required : "Select Any one option"}
+    			
+    		}
+    	});
+    });
+   
+</script>
 
 </body>
 

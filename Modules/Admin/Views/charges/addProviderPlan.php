@@ -1,465 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8" />
-    <link rel="apple-touch-icon" sizes="76x76" href="../../assets/img/apple-icon.png">
-    <link rel="icon" type="image/png" href="../../assets/img/favicon.png">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <title>
-        Dashboard
-    </title>
-    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
-        name='viewport' />
-    <!--     Fonts and icons     -->
-    <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
-    <!-- CSS Files -->
-    <link href="../../assets/css/material-dashboard.css?v=2.1.0" rel="stylesheet" />
-    <!-- CSS Just for demo purpose, don't include it in your project -->
-    <link href="../../assets/demo/demo.css" rel="stylesheet" />
-</head>
-<style>
-    .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
-        width: 590px;
-    }
-</style>
-
-<body class="">
-    <div class="wrapper ">
-        <div class="sidebar" data-color="rose" data-background-color="black">
-            <!--
-        Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
-
-        Tip 2: you can also add an image using data-image tag
-    -->
-            <div class="logo" style="text-align:center">
-                <a href="#" class="simple-text logo-normal">
-                    <img src="https://dev.satrango.com/public/assets/img/logo-black.png" height="50px" />
-                </a>
-            </div>
-            <div class="sidebar-wrapper">
-                <div class="user">
-                    <div class="photo">
-                        <img src="../../assets/img/faces/avatar.jpg" />
-                    </div>
-                    <div class="user-info">
-                        <a data-toggle="collapse" href="#collapseExample" class="username">
-                            <span>
-                                Admin
-                                <b class="caret"></b>
-                            </span>
-                        </a>
-                        <div class="collapse" id="collapseExample">
-                            <ul class="nav">
-
-                                <li class="nav-item">
-                                    <a class="nav-link" href="editProfile.html">
-                                        <span class="sidebar-mini"> P </span>
-                                        <span class="sidebar-normal">Profile </span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="dashboard.html">
-                            <i class="material-icons">
-                                <img src="../../assets/img/icons/dashboard-white-18dp.svg" />
-                            </i>
-                            <p> Dashboard </p>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="collapse" href="#userDashboard">
-                            <i class="material-icons">
-                                <img src="../../assets/img/icons/person_add_alt_1-white-24dp.svg" />
-                            </i>
-                            <p> User
-                                <b class="caret"></b>
-                            </p>
-                        </a>
-                        <div class="collapse" id="userDashboard">
-                            <ul class="nav">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="createNewUser.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> Create a New User </span>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item ">
-                                    <a class="nav-link" href="listUsers.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> List Users </span>
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </div>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="collapse" href="#serviceProviders">
-                            <i class="material-icons">
-                                <img src="../../assets/img/icons/groups-white-24dp.svg" />
-                            </i>
-                            <p> Service Providers
-                                <b class="caret"></b>
-                            </p>
-                        </a>
-                        <div class="collapse" id="serviceProviders">
-                            <ul class="nav">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="activateProvider.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> Activate Provider </span>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item ">
-                                    <a class="nav-link" href="listServiceProviders.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> List Service Providers </span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-
-
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="collapse" href="#accounts">
-                            <i class="material-icons">
-                                <img src="../../assets/img/icons/attach_money-white-24dp.svg" />
-                            </i>
-                            <p> Accounts
-                                <b class="caret"></b>
-                            </p>
-                        </a>
-                        <div class="collapse" id="accounts">
-                            <ul class="nav">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="receipts.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> Receipts </span>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item ">
-                                    <a class="nav-link" href="receiptsDue.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> Receipts Due </span>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item ">
-                                    <a class="nav-link" href="paymentRequests.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> Payment Requests </span>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item ">
-                                    <a class="nav-link" href="paymentDone.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> Payments Done </span>
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </div>
-                    </li>
-
-
-
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="collapse" href="#bookings">
-                            <i class="material-icons">
-                                <img src="../../assets/img/icons/credit_score-white-24dp.svg" />
-                            </i>
-                            <p> Bookings
-                                <b class="caret"></b>
-                            </p>
-                        </a>
-                        <div class="collapse" id="bookings">
-                            <ul class="nav">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="createNewBooking.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> Create New Booking </span>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link" href="listBooking.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> List Booking </span>
-                                    </a>
-                                </li>
-
-
-
-                            </ul>
-                        </div>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="collapse" href="#postJob">
-                            <i class="material-icons">
-                                <img src="../../assets/img/drive_file_move-white-24dp.svg" />
-                            </i>
-                            <p> Post Job
-                                <b class="caret"></b>
-                            </p>
-                        </a>
-                        <div class="collapse" id="postJob">
-                            <ul class="nav">
-
-
-                                <li class="nav-item ">
-                                    <a class="nav-link" href="newJobs.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> New Jobs </span>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item ">
-                                    <a class="nav-link" href="postJob.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> Post a Job </span>
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </div>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="collapse" href="#support">
-                            <i class="material-icons">
-                                <img src="../../assets/img/icons/support_agent_white_24dp.svg" />
-                            </i>
-                            <p> Support
-                                <b class="caret"></b>
-                            </p>
-                        </a>
-                        <div class="collapse" id="support">
-                            <ul class="nav">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="createTickets.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> Create Tickets </span>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item ">
-                                    <a class="nav-link" href="listAllTickets.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> List all Tickets </span>
-                                    </a>
-                                </li>
-
-
-                            </ul>
-                        </div>
-                    </li>
-
-
-                    <li class="nav-item ">
-                        <a class="nav-link" data-toggle="collapse" href="#general">
-                            <i class="material-icons">
-                                <img src="../../assets/img/icons/info_white_24dp.svg" />
-                            </i>
-                            <p> General
-                                <b class="caret"></b>
-                            </p>
-                        </a>
-                        <div class="collapse" id="general">
-                            <ul class="nav">
-                                <li class="nav-item ">
-                                    <a class="nav-link" href="categories.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> Categories </span>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item ">
-                                    <a class="nav-link" href="subcategories.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> Sub Categories </span>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item ">
-                                    <a class="nav-link" href="keywords.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> Keywords </span>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item ">
-                                    <a class="nav-link" href="languages.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> Languages </span>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item ">
-                                    <a class="nav-link" href="professions.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal">Professions </span>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item ">
-                                    <a class="nav-link" href="qualifications.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> Qualifications </span>
-                                    </a>
-                                </li>
-
-                                  
-                            </ul>
-                        </div>
-                    </li>
-
-
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="collapse" href="#blogs">
-                            <i class="material-icons">
-                                <img src="../../assets/img/icons/post_add_white_24dp.svg" />
-                            </i>
-                            <p> Blogs
-                                <b class="caret"></b>
-                            </p>
-                        </a>
-                        <div class="collapse" id="blogs">
-                            <ul class="nav">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="viewPosts.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> View Posts </span>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link" href="receiptsDue.html">
-                                        <span class="sidebar-mini"> <i class="material-icons">
-                                                <img src="../../assets/img/icons/add-white-24dp.svg" />
-                                            </i> </span>
-                                        <span class="sidebar-normal"> Create New Post </span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="collapse" href="#chargesPacks"> <i class="material-icons">
-                                <img src="../../assets/img/icons/backpack_white_24dp.svg" />
-                            </i>
-                            <p> Charges & Packs
-                                <b class="caret"></b>
-                            </p>
-                        </a>
-                        <div class="collapse show" id="chargesPacks">
-                            <ul class="nav">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="cancellationCharges.html">
-                                        <span class="sidebar-mini"> <i class="material-icons"><img
-                                                    src="../../assets/img/icons/add-white-24dp.svg" /></i> </span>
-                                        <span class="sidebar-normal"> Cancellation Charges</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="userPlans.html">
-                                        <span class="sidebar-mini"> <i class="material-icons"><img
-                                                    src="../../assets/img/icons/add-white-24dp.svg" /></i> </span>
-                                        <span class="sidebar-normal">User Plans </span>
-                                    </a>
-                                </li>
-                                <li class="nav-item active">
-                                    <a class="nav-link" href="providerPlans.html">
-                                        <span class="sidebar-mini"> <i class="material-icons"><img
-                                                    src="../../assets/img/icons/add-white-24dp.svg" /></i> </span>
-                                        <span class="sidebar-normal">Provider Plans </span>
-                                    </a>
-                                </li>
-                                
-                            </ul>
-                        </div>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="collapse" href="#settings"> <i class="material-icons">
-                                <img src="../../assets/img/icons/settings_suggest-white-24dp.svg" />
-                            </i>
-                            <p> Settings
-                                <b class="caret"></b>
-                            </p>
-                        </a>
-                        <div class="collapse" id="settings">
-                            <ul class="nav">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="logout.html">
-                                        <span class="sidebar-mini"> <i class="material-icons"><img
-                                                    src="../../assets/img/icons/add-white-24dp.svg" /></i> </span>
-                                        <span class="sidebar-normal">Logout</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
         <div class="main-panel">
             <!-- Navbar -->
             <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
@@ -588,38 +126,38 @@
                                         <h4 class="card-title">New Provider Plan</h4>
                                     </div>
                                     <div class="card-body ">
-                                        <form method="#" action="#">
+                                        <form enctype="multipart/form-data" method="POST" id="providerplans" role="form" action="<?php echo ADMINBASEURL; ?>create_providerplan_submit">
                                             <div class="row">
                                                 <div class="col-lg-5 col-md-6 col-sm-12">
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating">
                                                             Name</label>
-                                                        <input type="text" class="form-control" id="name">
+                                                        <input type="text" class="form-control" id="name" name="name">
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating">
                                                             Amount </label>
-                                                        <input type="text" class="form-control" id="name">
+                                                        <input type="text" class="form-control" id="amount" name="amount">
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating">Period in
                                                             Days
                                                         </label>
-                                                        <input type="text" class="form-control" id="name">
+                                                        <input type="text" class="form-control" id="period" name="period">
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating"> Platform Fees (In Percentage)
                                                         </label>
-                                                        <input type="text" class="form-control" id="name">
+                                                        <input type="text" class="form-control" id="platform_fee_per_booking" name="platform_fee_per_booking">
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating"> No. of Bids per month
                                                         </label>
-                                                        <input type="text" class="form-control" id="name">
+                                                        <input type="text" class="form-control" id="bids_per_month	" name="bids_per_month">
                                                     </div>
 
                                                  
@@ -629,32 +167,32 @@
                                                 <div class="col-lg-5 col-md-6 col-sm-12" style="margin:0.4rem 2rem">
                                                
                                                     <select class="selectpicker" data-style="select-with-transition"
-                                                        title="Premium Tag" data-size="7">
+                                                        title="Premium Tag" data-size="7" id="premium_tag" name="premium_tag">
                                                         <option value="2">Yes </option>
                                                         <option value="3">No </option>
                                                     </select>
 
                                                     <select class="selectpicker" data-style="select-with-transition"
-                                                        title="Premium Customer Support" data-size="7">
+                                                        title="Premium Customer Support" data-size="7" id="customer_support" name="customer_support">
                                                         <option value="2">Yes </option>
                                                         <option value="3">No </option>
                                                     </select>
 
-                                                    <select class="selectpicker" data-style="select-with-transition"
-                                                        title="Select Status" data-size="7">
-                                                        <option value="2">Yes </option>
-                                                        <option value="3">No </option>
-                                                    </select>
-                                                    <div class="form-group">
-                                                        <label for="exampleName" class="bmd-label-floating"> No.
-                                                            Proposals per post
-                                                        </label>
-                                                        <input type="text" class="form-control" id="name">
-                                                    </div>
+                                                    <!--<select class="selectpicker" data-style="select-with-transition"-->
+                                                    <!--    title="Select Status" data-size="7">-->
+                                                    <!--    <option value="2">Yes </option>-->
+                                                    <!--    <option value="3">No </option>-->
+                                                    <!--</select>-->
+                                                    <!--<div class="form-group">-->
+                                                    <!--    <label for="exampleName" class="bmd-label-floating"> No.-->
+                                                    <!--        Proposals per post-->
+                                                    <!--    </label>-->
+                                                    <!--    <input type="text" class="form-control" id="name" name="">-->
+                                                    <!--</div>-->
                                                     <div class="form-group">
                                                         <label for="exampleName" class="bmd-label-floating"> No. of Sealed Bids per month
                                                         </label>
-                                                        <input type="text" class="form-control" id="name">
+                                                        <input type="text" class="form-control" id="sealed_bids_per_month" name="sealed_bids_per_month">
                                                     </div>
 
                                                 </div>
@@ -669,10 +207,11 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </form>
-                                    </div>
+                                       
                                     <div class="card-footer ">
                                         <button type="submit" class="btn btn-fill btn-teal">Submit</button>
+                                    </div>
+                                     </form>
                                     </div>
                                 </div>
                             </div>
@@ -710,7 +249,7 @@
     <div></div>
     </div>
     <!--   Core JS Files   -->
-    <script src="https://cdn.ckeditor.com/ckeditor5/22.0.0/classic/ckeditor.js"></script>
+     <script src="https://cdn.ckeditor.com/ckeditor5/22.0.0/classic/ckeditor.js"></script>
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.bundle.min.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -933,41 +472,44 @@
             demo.initCharts();
         });
     </script>
+  <script>
+    $(document).ready(function () {
+      $('#datatables').DataTable({
+        "pagingType": "full_numbers",
+        "lengthMenu": [
+          [10, 25, 50, -1],
+          [10, 25, 50, "All"]
+        ],
+        responsive: true,
+        language: {
+          search: "_INPUT_",
+          searchPlaceholder: "Search records",
+        }
+      });
 
-    <script>
+      var table = $('#datatable').DataTable();
 
-        var ctxHor = document.getElementById('myHorizontal').getContext('2d');
+      // Edit record
+      table.on('click', '.edit', function () {
+        $tr = $(this).closest('tr');
+        var data = table.row($tr).data();
+        alert('You press on Row: ' + data[0] + ' ' + data[1] + ' ' + data[2] + '\'s row.');
+      });
 
+      // Delete a record
+      table.on('click', '.remove', function (e) {
+        $tr = $(this).closest('tr');
+        table.row($tr).remove().draw();
+        e.preventDefault();
+      });
 
-        var myHorizontal = new Chart(ctxHor, {
-            // The type of chart we want to create
-            type: 'horizontalBar',
-
-            // The data for our dataset
-            data: {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [{
-                    label: 'Topper Performace',
-                    backgroundColor: 'rgb(255, 99, 132)',
-                    borderColor: 'rgb(255, 99, 132)',
-                    data: [0, 10, 5, 2, 20, 30, 45],
-                    fill: false
-                }, {
-                    label: 'Your Performance',
-                    backgroundColor: 'rgba(75, 192, 192)',
-                    borderColor: 'rgba(75, 192, 192)',
-                    data: [0, 30, 15, 20, 0, 10, 40],
-                    fill: false
-                },
-                ]
-            },
-
-            options: {
-
-            }
-        });
-    </script>
-    <script>
+      //Like record
+      table.on('click', '.like', function () {
+        alert('You clicked on Like button');
+      });
+    });
+  </script>
+        <script>
 
         ClassicEditor
             .create(document.querySelector('#editor'))
@@ -976,6 +518,39 @@
             });
 
     </script>
+<script>
+    $(document).ready(function(){
+	var providerplansForm = $("#providerplans");	
+    	var validator = providerplansForm.validate({		
+    		
+    		rules:{
+    			name :{ required : true},
+    			description :{ required : true},
+    			amount :{ required : true},
+    			period :{ required : true},
+    			platform_fee_per_booking :{ required : true},
+    			premium_tag :{ required : true},
+    			bids_per_month:{required : true},
+    			sealed_bids_per_month:{required : true},
+    			customer_support:{required : true}
+    			
+    		},
+    		messages:{
+    		    name :{ required : "Name  is Required"},
+    		    description : {required : "Description is required"},
+    		    amount : {required : "Amount is required"},
+    		    period : {required : "Period is required"},
+    		    platform_fee_per_booking : {required : "Post per month is required"},
+    		    premium_tag : {required : "Select Any one option"},
+    		    bids_per_month:{required : "Bids per month is required"},
+    		    sealed_bids_per_month:{required : "Sealed bids per Month required"},
+    		    customer_support:{required : "Select Any one option"}
+    			
+    		}
+    	});
+    });
+   
+</script>
 
 </body>
 

@@ -25,7 +25,7 @@ class SpProfileController extends ResourceController
     public function get_sp_details()
 	{
 		$json = $this->request->getVar();
-		if(!array_key_exists('key',$json) || !array_key_exists('sp_id',$json)) {
+		if(!property_exists($json,'key') || !property_exists($json, 'sp_id')) {
 		    return $this->respond([
     				'status' => 403,
                     'message' => 'Invalid Parameters'

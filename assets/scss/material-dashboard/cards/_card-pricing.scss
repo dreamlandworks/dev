@@ -27,25 +27,25 @@
         }
 
         &.icon-primary i{
-          color: $brand-primary;
+          color: $primary;
           }
         &.icon-info i{
-          color: $brand-info;
+          color: $info;
         }
         &.icon-success i{
-          color: $brand-success;
+          color: $success;
         }
         &.icon-warning i{
-          color: $brand-warning;
+          color: $warning;
         }
         &.icon-danger i{
-          color: $brand-danger;
+          color: $danger;
         }
         &.icon-rose i{
-          color: $brand-rose;
+          color: $rose;
         }
         &.icon-white i{
-          color: $white-color;
+          color: $white;
         }
     }
 
@@ -93,18 +93,18 @@
     &[class*="bg-"]{
         ul{
             li{
-                color: $white-color;
-                border-color: rgba($white-color,.3);
+                color: $white;
+                border-color: rgba($white,.3);
 
                 b{
-                    color: $white-color;
+                    color: $white;
                     font-weight: 700;
                 }
             }
         }
         [class*="text-"],
         .card-category{
-            color: $white-color !important;
+            color: $white !important;
         }
     }
 

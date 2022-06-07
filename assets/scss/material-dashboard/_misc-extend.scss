@@ -8,7 +8,7 @@ a{
 
   &.text-info{
       &:hover, &:focus{
-          color: darken($brand-info, 5%);
+          color: darken($info, 5%);
       }
   }
 
@@ -56,6 +56,21 @@ a{
   }
 }
 
+// Fix placement for selectpicker in a Wizzard
+
+.card-wizard {
+  .select-wizard {
+    label {
+      position: absolute;
+      margin-top: 7px;
+    }
+    .bootstrap-select {
+      .btn.select-with-transition {
+        margin-top: 16px;
+      }
+    }
+  }
+}
 
 // offline-doc
 .offline-doc,
@@ -72,19 +87,38 @@ a{
     width: 100%;
     background: transparent;
     bottom: 0;
-    color: $white-color;
+    color: $white;
     z-index: 1;
 
     .copyright a{
-      color: $white-color;
+      color: $white;
     }
   }
 
   .navbar {
     .navbar-brand,
     .navbar-collapse .nav-link {
-      color: $white-color;
+      color: $white;
     }
+
+    .navbar-toggler .navbar-toggler-icon {
+      background-color: $white !important;
+    }
+  }
+
+  .pro-badge {
+    position: absolute;
+    font-size: 22px;
+    text-transform: uppercase;
+    font-weight: bold;
+    right: -30px;
+    padding: 10px 18px;
+    top: -30px;
+    background: $white;
+    border-radius: 3px;
+    color: #444444;
+    line-height: 22px;
+    box-shadow: 0 5px 5px -2px rgba(31, 31, 31, 0.4);
   }
 }
 
@@ -263,7 +297,7 @@ a{
     min-height: 740px;
 }
 #notifications{
-    background-color: $white-color;
+    background-color: $white;
     display: block;
     width: 100%;
     position: relative;
@@ -488,7 +522,32 @@ a{
 
 .error-page .title {
   font-size: 12em;
-  color: $white-color;
+  color: $white;
   letter-spacing: $mdb-input-font-size-base;
   font-weight: $font-weight-extra-bold;
+}
+
+
+@media (max-width: 768px){
+  .offline-doc {
+    .pro-badge {
+      right: -10px !important;
+    }
+  }
+
+  .footer {
+    .float-left {
+      ul li a {
+        padding: .87rem;
+      }
+    }
+  }
+}
+
+
+// fix the PerfectScrollbar issue on Windows
+.perfect-scrollbar-on {
+  .ps__rail-y {
+    display: none;
+  }
 }

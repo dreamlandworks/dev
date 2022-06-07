@@ -1,0 +1,30 @@
+ERROR - 2022-04-12 14:58:00 --> Error connecting to the database: Access denied for user ''@'localhost' (using password: NO)
+ERROR - 2022-04-12 14:58:07 --> Error connecting to the database: Access denied for user ''@'localhost' (using password: NO)
+INFO - 2022-04-12 15:05:27 --> Used the default controller.
+INFO - 2022-04-12 15:20:33 --> Used the default controller.
+INFO - 2022-04-12 15:27:59 --> Used the default controller.
+INFO - 2022-04-12 16:50:58 --> Used the default controller.
+INFO - 2022-04-12 17:00:56 --> Used the default controller.
+INFO - 2022-04-12 17:22:10 --> Used the default controller.
+INFO - 2022-04-12 18:02:53 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+ERROR - 2022-04-12 18:03:00 --> Expression #12 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill.users.email' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-04-12 18:03:33 --> Expression #12 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill.users.email' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+INFO - 2022-04-12 18:05:28 --> Used the default controller.
+INFO - 2022-04-12 18:12:12 --> Used the default controller.
+INFO - 2022-04-12 18:15:41 --> Used the default controller.
+INFO - 2022-04-12 18:22:29 --> Used the default controller.
+INFO - 2022-04-12 18:31:58 --> Used the default controller.
+INFO - 2022-04-12 19:54:16 --> Used the default controller.
+INFO - 2022-04-12 20:01:21 --> Used the default controller.
+INFO - 2022-04-12 20:45:14 --> Used the default controller.
+INFO - 2022-04-12 20:45:16 --> Used the default controller.
+INFO - 2022-04-12 21:03:35 --> Used the default controller.
+INFO - 2022-04-12 21:23:47 --> Used the default controller.
+INFO - 2022-04-12 21:29:31 --> Used the default controller.
+INFO - 2022-04-12 22:12:30 --> Used the default controller.
+INFO - 2022-04-12 22:18:42 --> Used the default controller.
+ERROR - 2022-04-12 22:50:18 --> Error connecting to the database: The server requested authentication method unknown to the client
+ERROR - 2022-04-12 22:50:29 --> Error connecting to the database: The server requested authentication method unknown to the client
+INFO - 2022-04-12 22:52:05 --> Used the default controller.
+INFO - 2022-04-12 22:59:32 --> Used the default controller.
+INFO - 2022-04-12 23:15:38 --> Used the default controller.
