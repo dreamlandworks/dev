@@ -22,6 +22,7 @@ helper('Modules\User\custom');
 class MiscController extends ResourceController
 {
 
+        
     //------------------------------------------------------GET LIST OF SUB CATEGORIES HERE ---------------------------------------------
     //-------------------------------------------------------------**************** -----------------------------------------------------
 
@@ -811,6 +812,7 @@ class MiscController extends ResourceController
                 $misc_model = new MiscModel();
                 $resu = $common->get_table_details_dynamically('user_plans', 'id', 'ASC');
 
+                
                 foreach ($resu as $key => $r) {
                     $res[$key]['id'] = $r['id'];
                     $res[$key]['name'] = $r['name'];
@@ -825,11 +827,21 @@ class MiscController extends ResourceController
 
                 $res_plan = $misc_model->get_user_plan_details($validate_user_id);
 
+                //Get Wallet Balance
+                $bal = $common->get_details_dynamically('wallet_balance','users_id',$validate_user_id);
+
+                if($bal != 'failure'){
+                    $wal_balance = $bal[0]['amount'];
+                }else{
+                    $wal_balance = 0;
+                }
+
                 if ($res != 'failure') {
                     return $this->respond([
                         "activated_plan" => ($res_plan != 'failure') ? $res_plan['plans_id'] : 0,
                         "valid_from_date" => ($res_plan != 'failure') ? $res_plan['start_date'] : "",
                         "valid_till_date" => ($res_plan != 'failure') ? $res_plan['end_date'] : "",
+                        "wallet_balance" => $wal_balance,
                         "status" => 200,
                         "message" => "Success",
                         "data" => $res
@@ -1638,7 +1650,10 @@ class MiscController extends ResourceController
                 $res = $misc_model->get_complaints_details($users_id);
                 if ($res != 'failure') {
                     foreach ($res as $key => $res_data) {
-                        if (!property_exists($res_data["id"], $arr_main_data)) {
+                        // print_r($arr_main_data[$res_data['id']]);
+                        // exit;
+                        
+                        if (!isset($arr_main_data[$res_data["id"]])) {
                             $cnt = 0;
 
                             $arr_main_data[$res_data["id"]] = $res_data["id"];
@@ -2116,6 +2131,8 @@ class MiscController extends ResourceController
     public function get_cities()
     {
         $validate_key = $this->request->getVar('key');
+        $user_id = $this->request->getVar('user_id');
+
         if ($validate_key == "") {
             return $this->respond([
                 'status' => 403,
@@ -2129,8 +2146,18 @@ class MiscController extends ResourceController
             $api_key = $apiconfig->user_key;
 
             if ($key == $api_key) {
-                $common = new CommonModel();
-                $res = $common->get_table_details_dynamically('city', 'id', 'ASC');
+
+                if($user_id != 0){
+                    $misc = new MiscModel();
+                    $res = $misc->get_cities_by_user($user_id);
+
+                }else{
+
+                    $common = new CommonModel();
+                    $res = $common->get_table_details_dynamically('city', 'id', 'ASC');
+              
+                }
+                
 
                 if ($res != 'failure') {
                     return $this->respond([
@@ -2141,7 +2168,7 @@ class MiscController extends ResourceController
                 } else {
                     return $this->respond([
                         "status" => 200,
-                        "message" => "No Faq to Show"
+                        "message" => "No data to Show"
                     ]);
                 }
             } else {
@@ -2225,6 +2252,78 @@ class MiscController extends ResourceController
                     );
                     $common->insert_records_dynamically('attachments', $arr_attach);
 
+                    $file_path[$attach_key] = $file;
+                    
+                               
+            }
+
+            return $this->respond([
+                "status" => 200,
+                "message" => "Success",
+                "file_name" => $file_path
+            ]);
+        }
+    }
+
+
+    //-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+
+    //-------------------------------------------------------------UPLOAD FILES-----------------------------------------------------------
+
+    public function uploadImage()
+    {
+
+        $common = new CommonModel();
+        $json = $this->request->getJSON();
+        
+        $attachments = $this->request->getJsonVar('attachments', true);
+        
+        //Create and save atatchments
+        if (count($attachments) > 0) {
+
+            foreach ($attachments as $attach_key => $data) {
+                                
+                
+                $pos = strpos($data['file'], 'firebasestorage');
+
+                if ($pos !== false) { //URL
+                    $url = $data['file'];
+
+                    list($path, $token) = explode('?', $url);
+
+                    $type = pathinfo($path, PATHINFO_EXTENSION);
+                    $data = file_get_contents($url);
+                    $base64_file = base64_encode($data);
+
+                    $file = $base64_file;
+                    
+                } else {
+                    $type = $data['type'];
+                   
+                }
+                //---------Code for S3 Object Create Starts
+                $images = ['png','jpeg','jpg','gif','tiff'];
+                $video = ['mp4','mp3','mpeg','mpeg4','3gp','wav','mov'];
+
+                if(in_array($data['type'],$images)){
+                    $folder = "images";
+                }elseif(in_array($data['type'],$video)){
+                    $folder = 'videos';
+                }else{
+                    $folder = 'documents';
+                }
+
+                $file = generateS3Object($folder,$data['file'],$data['type']); 
+
+                // $filename_path = md5(time().uniqid()).".".$type;
+                
+                // $decoded=base64_decode($data['file']); 
+                // file_put_contents("uploads/".$filename_path,$decoded);
+
+                
+                // $file = generateDynamicImage("images/attachments", $data, $type);
+
+                    
                     $file_path[$attach_key] = $file;
                     
                                
@@ -2379,4 +2478,77 @@ class MiscController extends ResourceController
     }
     
 
+    //-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+
+
+    //-------------------------------------------------------------SEND FCM MESSAGE TO SERVER-----------------------------------------------------------
+
+
+    public function send_multi_fcm(){
+
+        $json = $this->request->getJSON();
+    
+        //Url to send FCM Message
+        $url = "https://fcm.googleapis.com/fcm/send";
+        
+        $tokens = array();
+        
+        $priority = $json->priority;
+        $notification = $json->notification;
+
+        $server_key = 'AAAAKN1BReU:APA91bGKiUADwwYmrfdxBEKhxle_k7axC4nGQYMDVAU-w3fJ09vDaWNoUfum3KCXr5bJKNcUE2bxtt30_ID6DF1vWHUfBu7grfoc_ncZi13HrKM73Np4POKUrT1ng-FAlK_T7ZQf-kPc';    
+        $headers = array(
+            'Content-Type:application/json',
+            'Authorization:key='.$server_key
+            );
+
+        $ch = curl_init($url);
+    
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+    
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+       
+        foreach ($json->to as $key=>$token){
+                
+            // $tokens[$key] = $token->token;
+        
+        $post_data = array(
+            'to' => $token->token,
+            'priority' => $priority,
+            'notification' => $notification
+        );
+
+               
+        $post_data = json_encode($post_data);
+
+    
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+    
+        $response = curl_exec($ch);
+
+        if ($response === FALSE) {
+            die('Oops! FCM Send Error: ' . curl_error($ch));
+        }
+        
+
+        $res[$key] = json_decode($response, true);
+            
+    }
+
+    curl_close($ch);
+
+
+        return $this->respond([
+        'status' => 200,
+        'message' => $res
+        ]);
+
+
+        }
+
+        
 }

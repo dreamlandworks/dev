@@ -318,6 +318,7 @@ class MiscController extends ResourceController
     		
     		if($key == $api_key) {
     		    $common = new CommonModel();
+				
         		$res['list_profession'] = $common->get_table_details_dynamically('list_profession', 'name', 'ASC');
         		$res['qualification'] = $common->get_table_details_dynamically('sp_qual', 'qualification', 'ASC');
         		$res['experience'] = $common->get_table_details_dynamically('sp_exp', 'id', 'ASC');
@@ -508,7 +509,7 @@ class MiscController extends ResourceController
                 //Regular Alerts
                 $res = $alert->all_alerts($id,3);
                         
-                if ($res != null) {
+                if ($res != 'failure') {
                    $alert_regular = $res;
                    
                 } else {
@@ -519,7 +520,8 @@ class MiscController extends ResourceController
 
                 $res = $alert->all_alerts($id,4);
                 
-                if ($res != null) {
+                if ($res != 'failure') {
+
                    //$alert_action = $res;
                   foreach($res as $key=>$dat){
                      
@@ -736,6 +738,10 @@ class MiscController extends ResourceController
         		        $watched_videos[$wkey]["points"] = $wvideo_data["points"];
         		        $watched_videos[$wkey]["created_on"] = $wvideo_data["created_on"];
         		        
+						$im = explode('=',$watched_videos[$key]["url"]);
+						$watched_videos[$wkey]['thumbnail'] = "https://img.youtube.com/vi/".$im[1]."/sddefault.jpg";
+
+
         		        $points_earned += $wvideo_data["points"];
         		        $watched_videos_cnt ++;
         		    }
@@ -754,6 +760,11 @@ class MiscController extends ResourceController
             		        $recent_videos[$key]["subcategories_id"] = $video_data["subcategories_id"];
             		        $recent_videos[$key]["points"] = $video_data["points"];
             		        $recent_videos[$key]["created_on"] = $video_data["created_on"];
+
+							$im = explode('=',$recent_videos[$key]["url"]);
+							$recent_videos[$key]['thumbnail'] = "https://img.youtube.com/vi/".$im[1]."/sddefault.jpg";
+							
+
         		        }
         		        
         		        if(array_key_exists($video_data["subcategories_id"],$arr_subcategories)) {
@@ -766,6 +777,9 @@ class MiscController extends ResourceController
             		        $recommended_videos[$rec_key]["points"] = $video_data["points"];
             		        $recommended_videos[$rec_key]["created_on"] = $video_data["created_on"];
             		        
+							$im = explode('=',$recommended_videos[$rec_key]["url"]);
+							$recommended_videos[$rec_key]['thumbnail'] = "https://img.youtube.com/vi/".$im[1]."/sddefault.jpg";
+							
             		        $rec_key++;
         		        }
         		        
@@ -870,4 +884,6 @@ class MiscController extends ResourceController
 
 	//-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
 
+	
+	
  }

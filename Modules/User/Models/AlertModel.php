@@ -183,7 +183,7 @@ class AlertModel extends Model
             $builder->join('user_details','user_details.id = alert_action_user.profile_pic_id');
             $builder->where('user_id', $id);
             $builder->where('status', 2);
-            // echo "<br> str ".$this->db->getLastQuery();exit;
+            // echo "<br>".$this->db->getLastQuery();exit;
             
         }elseif($type == 3){
 

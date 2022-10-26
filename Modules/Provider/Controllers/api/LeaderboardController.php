@@ -78,7 +78,7 @@ class LeaderboardController extends ResourceController
                             $arr_sp_key[$rdata['id']] = $key;
                         }
                     }
-
+                    
                     //Get reviews
                     $arr_reviews = $misc_model->get_sp_review_data($arr_sp);
                     if ($arr_reviews != 'failure') {
@@ -94,12 +94,24 @@ class LeaderboardController extends ResourceController
                         }
                     }
 
+                    $arr_sp_rating = [];
+                    
                     if ((count($arr_sp_ratings) > 0) || (count($arr_ratings) > 0)) {
+
+                        if(count($arr_sp_ratings) > 1){
+                            foreach($arr_sp_ratings as $arr){
+                                array_push($arr_sp_rating,$arr);
+                            }
+                        }
+
+                        // print_r($arr_sp_rating);
+                        // exit;
+
                         return $this->respond([
                             "status" => 200,
                             "message" => "Success",
                             "sp_data" => (count($arr_ratings) > 0) ? $arr_ratings[0] : array(),
-                            "data" => (count($arr_sp_ratings) > 0) ? $arr_sp_ratings : array(),
+                            "data" => (count($arr_sp_ratings) > 0) ? $arr_sp_rating : array(),
                         ]);
                     }
 
@@ -111,10 +123,25 @@ class LeaderboardController extends ResourceController
                     ]);
                 } else {
                     return $this->respond([
-                        'status' => 403,
-                        'message' => 'Access Denied ! Authentication Failed'
+                        'status' => 200,
+                        'sp_data' => [
+                            'fname' => '',
+                            'lname' => '',
+                            'profession' => '',
+                            'profile_pic' => '',
+                            'points_count' => '',
+                            'rank' => '',
+                            'rating' => '',
+                            'total_people' => ''
+                        ],
+                        'data' => []
                     ]);
                 }
+            }else{
+                return $this->respond([
+                    'status' => 403,
+                    'message' => 'Access Denied ! Authentication Failed'
+                ]);
             }
         }
     }

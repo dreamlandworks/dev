@@ -1,0 +1,56 @@
+INFO - 2022-06-10 00:16:37 --> Used the default controller.
+INFO - 2022-06-10 00:16:38 --> Used the default controller.
+INFO - 2022-06-10 00:16:40 --> Used the default controller.
+INFO - 2022-06-10 00:16:45 --> Used the default controller.
+INFO - 2022-06-10 00:24:08 --> Used the default controller.
+INFO - 2022-06-10 01:09:57 --> Used the default controller.
+INFO - 2022-06-10 01:23:23 --> Used the default controller.
+INFO - 2022-06-10 02:21:49 --> Used the default controller.
+INFO - 2022-06-10 02:40:05 --> Used the default controller.
+INFO - 2022-06-10 04:10:14 --> Used the default controller.
+INFO - 2022-06-10 04:18:54 --> Used the default controller.
+INFO - 2022-06-10 04:38:57 --> Used the default controller.
+INFO - 2022-06-10 05:40:39 --> Used the default controller.
+INFO - 2022-06-10 06:16:49 --> Used the default controller.
+INFO - 2022-06-10 07:11:16 --> Used the default controller.
+INFO - 2022-06-10 07:22:56 --> Used the default controller.
+INFO - 2022-06-10 08:16:20 --> Used the default controller.
+INFO - 2022-06-10 08:22:59 --> Used the default controller.
+INFO - 2022-06-10 08:42:01 --> Used the default controller.
+INFO - 2022-06-10 09:07:55 --> Used the default controller.
+INFO - 2022-06-10 10:07:15 --> Used the default controller.
+INFO - 2022-06-10 10:11:11 --> Used the default controller.
+INFO - 2022-06-10 10:16:16 --> Used the default controller.
+INFO - 2022-06-10 10:26:30 --> Used the default controller.
+INFO - 2022-06-10 11:42:11 --> Used the default controller.
+INFO - 2022-06-10 13:13:07 --> Used the default controller.
+INFO - 2022-06-10 14:42:12 --> Used the default controller.
+INFO - 2022-06-10 16:11:38 --> Used the default controller.
+INFO - 2022-06-10 16:34:53 --> Used the default controller.
+ERROR - 2022-06-10 16:40:38 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:38 --> Expression #2 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.booking.users_id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:38 --> Expression #4 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.users.fcm_token' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:38 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:39 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.sp_location.city' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:42 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:42 --> Expression #2 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.booking.users_id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:42 --> Expression #4 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.users.fcm_token' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:42 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:42 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.sp_location.city' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:45 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:45 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:53 --> Expression #2 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.booking.users_id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:53 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:53 --> Expression #4 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.users.fcm_token' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:53 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:53 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.sp_location.city' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:58 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-06-10 16:40:58 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+INFO - 2022-06-10 16:41:48 --> Used the default controller.
+INFO - 2022-06-10 17:42:25 --> Used the default controller.
+INFO - 2022-06-10 19:11:56 --> Used the default controller.
+INFO - 2022-06-10 19:58:02 --> Used the default controller.
+INFO - 2022-06-10 21:03:15 --> Used the default controller.
+INFO - 2022-06-10 22:11:18 --> Used the default controller.
+INFO - 2022-06-10 22:42:01 --> Used the default controller.
+INFO - 2022-06-10 23:41:42 --> Used the default controller.

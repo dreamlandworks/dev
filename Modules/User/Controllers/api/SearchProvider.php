@@ -88,8 +88,11 @@ class SearchProvider extends ResourceController
                     if($arr_charges != 'failure') {
                         foreach($arr_charges as $charge_data) {
                             $name = $charge_data['name'];
-                            $amount = ($charge_data['amount'] > 0) ? $charge_data['amount'] : $charge_data['percentage'];
+                            $amount = ($charge_data['amount'] > 0 || !is_null($charge_data['amount'])) ? $charge_data   ['amount'] : $charge_data['percentage'];
                             
+                            $charge_data['amount'] = (is_null($charge_data['amount']) ? 0 : $charge_data['amount']);
+                            $charge_data['percentage'] = (is_null($charge_data['percentage']) ? 0 : $charge_data['percentage']);
+
                             if($name == "CGST") {
                                 $CGST = $amount;
                             }
@@ -104,6 +107,7 @@ class SearchProvider extends ResourceController
                     $GST = $CGST + $SGST;
                     
                     $city = $json->city;
+                    
                     
                     $zip_model = new ZipcodeModel();
                     $city_model = new CityModel();
@@ -165,26 +169,37 @@ class SearchProvider extends ResourceController
 									$wallet_amount = "0";
 								}
 					
-                    
+                    $keyword_id = array();
+                    $cat_id = array();
+
+
                     if(empty($json->search_phrase)){
 
                         //Get Keywords ID by subcat_id
-					$keywords_data = $misc_model->get_keyword_by_subcat_id($json->subcat_id);
+					    $keywords_data = $misc_model->get_keyword_by_subcat_id($json->subcat_id);
+
+                            if($keywords_data == 'failure'){
+
+                                $dat = $common->get_details_dynamically('subcategories','id',$json->subcat_id);
+                                
+                                $keyword_id = $dat[0]['sub_name'];
+                                $cat_id = $dat[0]['category_id'];
+                                                                
+                            }
 
                     }else{
 
-                    //Get Keywords ID by search string
-                    $keywords_data = $misc_model->get_keyword_by_search_string($json->search_phrase); 
-
+                        //Get Keywords ID by search string
+                        $keywords_data = $misc_model->get_keyword_by_search_string($json->search_phrase); 
+                        
                     }
 
                     // print_r($keywords_data);
                     // exit;                                        
                     
-                    $keyword_id = array();
-                    $cat_id = array();
 
-                    if($keywords_data != 'failure'){
+                    if($keywords_data != 'failure' && is_array($keywords_data)){
+                        
                         foreach($keywords_data as $key=>$data){
                             if($data['category_id'] != 0){
                                
@@ -196,11 +211,15 @@ class SearchProvider extends ResourceController
                             }
                         }
                     }
-                                        
+
+                    // print_r($keyword_id);
+                    // exit; 
+                                                            
 					$arr_search_result_list = array();
                     
+                    if(is_array($cat_id)){
 
-                    foreach ($cat_id as $cat){
+                        foreach ($cat_id as $cat){
                                                
                             $arr_search_result = $misc_model->get_search_results($keyword_id,$city,$json->user_lat,$json->user_long,$json->users_id,$cat);
                             
@@ -212,7 +231,21 @@ class SearchProvider extends ResourceController
                             }
                                                     
                         }
+                    }else{
+
+                        $arr_search_result = $misc_model->get_search_results($keyword_id,$city,$json->user_lat,$json->user_long,$json->users_id,$cat_id);
+
+                        if($cat_id != 'failure' && $arr_search_result != 'failure'){
+                              
+                            foreach($arr_search_result as $arr_search){
+                                array_push($arr_search_result_list,$arr_search);
+                            }
+                        }
+
+                    }
                     
+                    //  print_r($arr_search_result_list);
+                    // exit; 
                     
                     //Check whether any SP is available, if yes process the details
                     // $arr_search_result_list = $misc_model->get_search_results($keyword_id,$city,$json->user_lat,$json->user_long,$json->users_id,$subcat_id);
@@ -227,7 +260,7 @@ class SearchProvider extends ResourceController
                     $arr_temp_blocked = array();
                     $arr_slots_data = array();
                     $arr_slots_single_data = array();
-                    // $arr_search_result = array();
+                    $arr_search_result = array();
                     $CGST_amount = 0;
 					$SGST_amount = 0;
 					$arr_sp_key = array();
@@ -445,6 +478,7 @@ class SearchProvider extends ResourceController
                 		        }
                 		    }
                 		}
+
                         
                         if(count($ar_sp_id) > 0) {
                             foreach($ar_sp_id as $sp_id) {
@@ -458,19 +492,41 @@ class SearchProvider extends ResourceController
                         //echo "<pre>";
                         //print_r($arr_temp);
                         //print_r($arr_slots_data);
-                        //print_r($arr_temp_blocked);
-                        //echo "</pre>";
-                        //exit;
+                        // print_r($arr_search_result);
+                        // //echo "</pre>";
+                        // exit;
                     }
-                    
+
                     
                     //Save to search_results
                     //JSON Objects declared into variables
-                    foreach ($keyword_id as $keyword){
 
+                    // print_r($keyword_id);
+                    // exit;
+                    
+                    if(is_array($keyword_id)){
+                        foreach ($keyword_id as $keyword){
+
+                            $data = [
+                                'keywords_id' => ($keyword > 0) ? $keyword : 0,
+                                'search_query' => ($keyword > 0) ? "" : $keyword,
+                                'results_show' => ($arr_search_result != 'failure') ? count($arr_search_result) : 0,
+                                'latitude' => $json->user_lat,
+                                'longitude' => $json->user_long,
+                                'users_id' => $json->users_id,
+                                'city' => $city,
+                                'state' => $json->state,
+                                'country' => $json->country,
+                                'postal_code' => $json->postal_code,
+                                'address' => $json->address,
+                            ];
+                            $search_results_id = $common->insert_records_dynamically('search_results', $data);
+                            
+                        }
+                    }else{
                         $data = [
-                            'keywords_id' => ($keyword > 0) ? $keyword : 0,
-                            'search_query' => ($keyword > 0) ? "" : $keyword,
+                            'keywords_id' => ($keyword_id > 0) ? $keyword_id : 0,
+                            'search_query' => ($keyword_id > 0) ? "" : $keyword_id,
                             'results_show' => ($arr_search_result != 'failure') ? count($arr_search_result) : 0,
                             'latitude' => $json->user_lat,
                             'longitude' => $json->user_long,
@@ -482,10 +538,11 @@ class SearchProvider extends ResourceController
                             'address' => $json->address,
                         ];
                         $search_results_id = $common->insert_records_dynamically('search_results', $data);
+                        
                     }
+
                     
-                    
-                    if ($arr_search_result != 'failure') {
+                    if ($arr_search_result != 'failure' && !empty($arr_search_result)) {
                         return $this->respond([
             				"status" => 200,
             				"message" => "Success",
@@ -503,7 +560,7 @@ class SearchProvider extends ResourceController
             				"data" => array(),
             				"message" => "No Data to Show",
             				"slots_data" => array(),
-            				"search_results_id" => $search_results_id,
+            				"search_results_id" => (empty($search_results_id) ? "":$search_results_id),
             				"temp_address_id" => $temp_address_id,
             				"charges" => array()
             			]);
@@ -522,4 +579,437 @@ class SearchProvider extends ResourceController
     //-----------------------------------------------SEARCH RESULT ENDS------------------------------------------------------------
 
     
+
+public function get_sp_data(){
+
+    if ($this->request->getMethod() != 'post') {
+
+        $this->respond([
+            "status" => 405,
+            "message" => "Method Not Allowed"
+        ]);
+    } else {
+        //getting JSON data from API
+        $json = $this->request->getJSON();
+        
+        
+        if(!property_exists($json, 'city') || !property_exists($json, 'users_id') || !property_exists($json, 'key') || !property_exists($json, 'sp_id')
+            || !property_exists($json, 'offer_id') || !property_exists($json, 'state') || !property_exists($json, 'country') || !property_exists($json, 'postal_code')
+            || !property_exists($json, 'city') || !property_exists($json, 'address') || !property_exists($json, 'user_lat') || !property_exists($json, 'user_long')
+            || !property_exists($json, 'profession_id') || !property_exists($json, 'cat_id') 
+            ) {
+            return $this->respond([
+                    'status' => 403,
+                    'message' => 'Invalid Parameters'
+            ]);
+        }
+        else {
+            $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+            $apiconfig = new \Config\ApiConfig();
+    
+            $api_key = $apiconfig->user_key;
+            
+            if($key == $api_key) {
+                $common = new CommonModel();
+                $misc_model = new MiscModel();
+                
+                //JSON Objects declared into variables
+                 
+                $user_id = $json->users_id;
+                $sp_id = $json->sp_id;
+                $offer_id = $json->offer_id;
+                $value_type_id = 0;
+                $value = 0;
+                $CGST = 0;
+                $charge_per_km = 0;
+                $SGST = 0;
+                $GST = 0;
+                
+                //Get offer details
+                if($offer_id > 0) {
+                    $arr_offer_details = $common->get_details_dynamically('offer', 'id', $offer_id);
+                    if($arr_offer_details != 'failure') {
+                        $value_type_id = $arr_offer_details[0]['value_type_id'];
+                        $value = $arr_offer_details[0]['value'];
+                    }
+                }
+                
+                //Get Charges
+                $arr_charges = $common->get_table_details_dynamically('tax_cancel_charges');
+                if($arr_charges != 'failure') {
+                    foreach($arr_charges as $charge_data) {
+                        $name = $charge_data['name'];
+                        $amount = ($charge_data['amount'] > 0) ? $charge_data['amount'] : $charge_data['percentage'];
+                        
+                        // $charge_data['amount'] = (($charge_data['amount']) ? 0 : $charge_data['amount']);
+                        // $charge_data['percentage'] = (($charge_data['percentage'] < 0)  ? 0 : $charge_data['percentage']);
+                        
+                        if($name == "CGST") {
+                            $CGST = $amount;
+                        }
+                        if($name == "SGST") {
+                            $SGST = $amount;
+                        }
+                        if($name == "charge_per_km") {
+                            $charge_per_km = $amount;
+                        }
+                    }
+                }
+
+                // print_r($arr_charges);
+                // exit;
+
+                $GST = $CGST + $SGST;
+                
+                $city = $json->city;
+                
+                $zip_model = new ZipcodeModel();
+                $city_model = new CityModel();
+                $state_model = new StateModel();
+                $country_model = new CountryModel();
+                
+                $country_id = $country_model->search_by_country($json->country);
+                $state_id = $state_model->search_by_state($json->state);
+                $city_id = $city_model->search_by_city($json->city);
+                $zip_id = $zip_model->search_by_zipcode($json->postal_code);
+    
+                if ($country_id == 0) {
+                    $country_id = $country_model->create_country($json->country);
+                }
+                if ($state_id == 0) {
+                    $state_id = $state_model->create_state($json->state, $country_id);
+                }
+                if ($city_id == 0) {
+                    $city_id = $city_model->create_city($json->city, $state_id);
+                }
+                if ($zip_id == 0) {
+                    $zip_id = $zip_model->create_zip($json->postal_code, $city_id);
+                }
+                //JSON Objects declared into variables
+                $temp = $misc_model->get_temp_address($json->user_lat,$json->user_long,$json->users_id);
+                
+                if($temp == 'failure'){
+
+                    $data = [
+                        'locality' => $json->address,
+                        'latitude' => $json->user_lat,
+                        'longitude' => $json->user_long,
+                        'city_id' => $city_id,
+                        'state_id' => $state_id,
+                        'country_id' => $country_id,
+                        'zipcode_id' => $zip_id,
+                        'users_id' => $json->users_id
+                    ];
+                    
+                    $temp_address_id = $common->insert_records_dynamically('user_temp_address', $data);
+
+                 }else{
+
+                    $temp_address_id = $temp['id'];
+                 }
+
+                                    
+                
+                //User Wallet Balance
+                
+                $arr_wallet_details = $common->get_details_dynamically('wallet_balance', 'users_id', $json->users_id);
+                            
+                            if($arr_wallet_details != 'failure') {
+                                //Get total amount and blocked amount
+                                $wallet_amount = intval($arr_wallet_details[0]['amount']);
+                                                                                                       
+                            }else{
+                                
+                                $wallet_amount = "0";
+                            }
+                
+                
+                $arr_search_result = $misc_model->get_search_results_by_sp_id($json->user_lat,$json->user_long,$json->profession_id,$sp_id, $json->cat_id);
+
+                                  
+                // print_r($arr_search_result[0]["min_charges"]);
+                // exit; 
+                
+                //Check whether any SP is available, if yes process the details
+                // $arr_search_result_list = $misc_model->get_search_results($keyword_id,$city,$json->user_lat,$json->user_long,$json->users_id,$subcat_id);
+                
+                // $arr_search_result_list = $misc_model->get_search_results($keyword_id,$city,$json->user_lat,$json->user_long,$json->users_id);
+
+                if($arr_search_result != 'failure'){
+
+                    $ar_sp_id = array();
+                    $arr_preferred_time_slots = array();
+                    $arr_temp = array();
+                    $arr_temp_blocked = array();
+                    $arr_slots_data = array();
+                    $arr_slots_single_data = array();
+                    $CGST_amount = 0;
+                    $SGST_amount = 0;
+                    $arr_sp_key = array();
+                    $arr_sp_ranking_key = array();
+                    
+                   
+                    $arr_search_result[0]["SGST_percentage"] = $SGST;
+                    $arr_search_result[0]["CGST_percentage"] = $CGST;
+                    $arr_search_result[0]["rank"] = 0;
+                    $arr_search_result[0]["rating"] = 0;
+                    $arr_search_result[0]["total_people"] = 0;
+                    $arr_search_result[0]["jobs_count"] = 0;
+                            
+                    $minimum_charges = $arr_search_result[0]["min_charges"];
+                    $amount = 0;
+                    $calc_per_km_charge = 0;
+                        
+                        if($arr_search_result[0]["category_id"] == 3) { //Multimove
+                            //Calculate cost
+                            $calc_per_km_charge = $charge_per_km * $arr_search_result[0]["distance_kms"];
+                            
+                            //$total_charge = $minimum_charges + $calc_per_km_charge; 
+                            $total_charge = round($minimum_charges < $calc_per_km_charge ? $calc_per_km_charge : $minimum_charges,2);
+                            
+                            $CGST_amount = round(($total_charge * $CGST)/100,2);
+                            $SGST_amount = round(($total_charge * $SGST)/100,2);
+                            
+                            //$gst = ($total_charge * $GST)/100;
+                            //$amount = $total_charge + $gst;
+                            $amount = number_format($total_charge + $CGST_amount + $SGST_amount,2,'.','');
+                            if($value_type_id == 2) { // %
+                                $discount = round(($total_charge * $value)/100,2); 
+                            } 
+                            else {
+                               $discount = $value; 
+                            }
+                            
+                        }
+                        else { //Single move/Blue Collar
+                            //Calculate cost
+                            
+                            $CGST_amount = number_format(round(($minimum_charges * $CGST/100),2),2,'.','');
+                            $CGST_amount = ($CGST_amount < 1 ? "1.00" : $CGST_amount);
+                            $SGST_amount = number_format(round(($minimum_charges * $SGST/100),2),2,'.','');
+                            $SGST_amount = ($SGST_amount < 1 ? "1.00" : $SGST_amount);
+                            
+                            //$gst = ($minimum_charges * $GST)/100;
+                            //$amount = $minimum_charges + $gst;
+                            
+                            $total_charge = $minimum_charges;
+                            $amount = number_format($total_charge + $CGST_amount + $SGST_amount,2,'.','');
+                            if($value_type_id == 2) { // %
+                                $discount = round(($minimum_charges * $value)/100,2); 
+                            } 
+                            else {
+                               $discount = $value; 
+                            }
+                            
+                        }
+
+                        $arr_search_result[0]["minimum_amount"] =  intval($total_charge);
+                        $arr_search_result[0]["SGST_amount"] = $SGST_amount;
+                        $arr_search_result[0]["CGST_amount"] = $CGST_amount;
+                        $arr_search_result[0]["discount"] =  $discount;
+                        $arr_search_result[0]["final_amount"] =  (($amount > $discount) ? intval($amount - $discount) : 0);
+                        
+                        
+                        $arr_sp_key = 0;
+
+                        $ar_sp_id = $arr_search_result[0]['users_id'];
+                        
+                        $arr_sp_ranking_key[$arr_search_result[0]['users_id']] = $arr_search_result[0]['users_id'];
+                
+                    
+                    $rank_key = 0;
+                    
+                    $res = $misc_model->get_sp_search_ranking_details_by_profession($city_id,$json->profession_id);
+                    if($res != 'failure') {
+                        foreach($res as $key => $rdata) {
+                            if(isset($arr_sp_key[$rdata['users_id']])) {
+                                $sp_key = $arr_sp_key[$rdata['users_id']];
+                                
+                                $arr_search_result[0]["points_count"] = $rdata["points_count"];
+                                $arr_search_result[0]["rank"] = ($key + 1);
+                                $rank_key++;
+                                
+                                unset($arr_sp_ranking_key[$rdata['users_id']]);
+                            }
+                        }
+                    }
+                    
+                    //Assign ranks even though points is 0
+                                        
+                    if(count($arr_sp_ranking_key) > 0) {
+                        
+                            // $sp_key = $arr_sp_key[$arr_sp_ranking_key];
+                            
+                            $arr_search_result[0]["rank"] = ($rank_key + 1);
+                            // unset($arr_sp_ranking_key[$arr_sp_ranking_key]);
+                        
+                    }
+                    
+                    //Get reviews
+                    
+                    $arr_reviews = $misc_model->get_sp_review_data($ar_sp_id);
+                    
+                    if($arr_reviews != 'failure') {
+                        foreach($arr_reviews as $rev_data) {
+                            $rating = $rev_data['sum_average_review']/$rev_data['total_people'];
+                                                            
+                            if(isset($arr_sp_key[$rev_data['sp_id']])) {
+                                $sp_key = $arr_sp_key[$rev_data['sp_id']];
+                                
+                                $arr_search_result[0]["rating"] = number_format($rating,1,'.','')."";
+                                $arr_search_result[0]["total_people"] = number_format($rev_data['total_people'],1,'.','');
+                                $arr_search_result[0]["professionalism"] = number_format($rev_data['avg_professionalism'],1,'.','');
+                                $arr_search_result[0]["skill"] = number_format($rev_data['avg_skill'],1,'.','');
+                                $arr_search_result[0]["behaviour"] = number_format($rev_data['avg_behaviour'],1,'.','');
+                                $arr_search_result[0]["satisfaction"] = number_format($rev_data['avg_satisfaction'],1,'.','');
+
+                            }
+                        }
+                    }
+                    
+                    //Get Sp's keywords
+                    $arr_keywords_list = $misc_model->get_sp_keywords($ar_sp_id);
+                    
+                    
+                    if($arr_keywords_list != 'failure') {
+                        if(count($arr_keywords_list) > 0){
+                         
+                            foreach($arr_keywords_list as $key => $keyword_data) {
+                                //Get Sp key 
+                                $sp_key = $keyword_data['users_id'];
+                                
+                                $arr_search_result[0]["keywords"] = $keyword_data['keywords'];
+                            }
+
+                        }else{
+                            
+                                //Get Sp key 
+                                $sp_key = $arr_sp_key[$arr_keywords_list['users_id']];
+                                
+                                $arr_search_result[0]["keywords"] = $arr_keywords_list['keywords'];
+                            
+                        }
+                        
+                    }
+                    
+                    //Get SP's preferred day/timeslot data
+                    $arr_preferred_time_slots_list = $misc_model->get_sp_preferred_time_slot($ar_sp_id);
+                    if($arr_preferred_time_slots_list != 'failure') {
+                        $i = 0;
+                        foreach($arr_preferred_time_slots_list as $key => $slot_data) {
+                            if(!isset($arr_temp[$slot_data['users_id']])) {
+                                $i = 0;
+                            }
+                            
+                            $arr_temp[$slot_data['users_id']][$i]['day_slot'] = $slot_data['day_slot'];
+                            $arr_temp[$slot_data['users_id']][$i]['time_slot_from'] = $slot_data['time_slot_from'];
+                            $arr_temp[$slot_data['users_id']][$i]['time_slot_to'] = $slot_data['time_slot_to'];
+                            $i++;
+                        }
+                    }
+                    
+                    //Get SP's blocked data
+                    $arr_blocked_time_slots_list = $misc_model->get_sp_blocked_time_slot($ar_sp_id);
+                    /*echo "<pre>";
+                    print_r($arr_blocked_time_slots_list);
+                    echo "</pre>";
+                    exit;*/
+                    if($arr_blocked_time_slots_list != 'failure') {
+                        $j = 0;
+                        foreach($arr_blocked_time_slots_list as $key => $blocked_data) {
+                            if(!isset($arr_temp_blocked[$blocked_data['users_id']])) {
+                                $j = 0;
+                            }
+                            
+                            $arr_temp_blocked[$blocked_data['users_id']][$j]['time_slot_from'] = $blocked_data['from'];
+                            $arr_temp_blocked[$blocked_data['users_id']][$j]['date'] = $blocked_data['date'];
+                            $j++;
+                        }
+                    }
+                    
+                    //Get SP completed jobs count
+                    $arr_completed_jobs = $misc_model->get_sp_jobs_booking_completed($ar_sp_id);
+                    if($arr_completed_jobs != 'failure') {
+                        foreach($arr_completed_jobs as $comp_data) {
+                            if(isset($arr_sp_key[$comp_data['sp_id']])) {
+                                $sp_key = $arr_sp_key[$comp_data['sp_id']];
+                                $arr_search_result[$sp_key]["jobs_count"] = $comp_data['jobs_count'];
+                            }
+                        }
+                    }
+
+                    
+                    if(isset($arr_temp[$sp_id])) {
+                        // array_push($arr_slots_data,array("user_id" => $sp_id,"preferred_time_slots" => $arr_temp[$sp_id],
+                        //                                     "blocked_time_slots" => (isset($arr_temp_blocked[$sp_id])) ? $arr_temp_blocked[$sp_id] : array()));
+
+                        $arr_slots_data = array("user_id" => $sp_id,"preferred_time_slots" => $arr_temp[$sp_id],
+                            "blocked_time_slots" => (isset($arr_temp_blocked[$sp_id])) ? $arr_temp_blocked[$sp_id] : array());
+
+                    }
+                                        
+                    $arr = [];
+                                                           
+                    foreach($arr_search_result as $arr_result){
+                        array_push($arr,$arr_result);
+                    } 
+                    //echo "<pre>";
+                    //print_r($arr_temp);
+                    //print_r($arr_slots_data);
+                    // print_r($arr);
+                    // //echo "</pre>";
+                    // exit;
+              
+                    //Save to search_results
+                //JSON Objects declared into variables
+
+                
+                if ($arr_search_result != 'failure' && !empty($arr_search_result)) {
+                    return $this->respond([
+                        "status" => 200,
+                        "message" => "Success",
+                        "wallet_balance" => $wallet_amount,
+                        "data" => $arr,
+                        //"sp_ids" => $ar_sp_id,
+                        "slots_data" => $arr_slots_data,
+                        "search_results_id" => 0,
+                        "temp_address_id" => $temp_address_id,
+                        "charges" => ($arr_charges != 'failure') ? $arr_charges : array()
+                    ]);
+                } else {
+                    return $this->respond([
+                        "status" => 200,
+                        "data" => array(),
+                        "message" => "No Data to Show",
+                        "slots_data" => array(),
+                        "search_results_id" => (empty($search_results_id) ? "":$search_results_id),
+                        "temp_address_id" => $temp_address_id,
+                        "charges" => array()
+                    ]);
+                }
+
+                }else{
+
+                    return $this->respond([
+                        'status' => 404,
+                        'message' => 'No Service Provider Found with this QR Code'
+                    ]);
+
+                }
+
+                
+                }
+
+                else {
+                    return $this->respond([
+                            'status' => 403,
+                            'message' => 'Access Denied ! Authentication Failed'
+                        ]);
+                }  
+                
+            }
+            
+        }
+    }   
+
 }

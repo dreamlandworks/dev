@@ -70,10 +70,11 @@ class Activation extends ResourceController
 
                     //Check whether Profession exists in list_profession, if not create
 
-                    /*echo "<pre>";
-    		        print_r($json['profession_responses']);
-    		        echo "</pre>";
-    		        exit;*/
+                    // echo "<pre>";
+    		        // print_r($json['profession_responses']);
+    		        // echo "</pre>";
+    		        // exit;
+
                     if (count($json['profession_responses']) > 0) {
                         //Delete the old professions
                         $common->delete_records_dynamically('sp_profession', 'users_id', $json['user_id']);
@@ -81,6 +82,7 @@ class Activation extends ResourceController
                         $common->delete_records_dynamically('tariff', 'users_id', $json['user_id']);
 
                         foreach ($json['profession_responses'] as $pkey => $arr_prof_data) {
+
                             $prof_id = $arr_prof_data['prof_id'];
                             $name = $arr_prof_data['name'];
                             $exp_id = $arr_prof_data['experience'];
@@ -95,8 +97,8 @@ class Activation extends ResourceController
                             if ($prof_id == 0) {
                                 $arr_ins_profession_det = array(
                                     'name' => $name,
-                                    'subcategory_id' => $subcategory_id,
-                                    'category_id' => $category_id
+                                    'subcategory_id' => 0,
+                                    'category_id' => 0
                                 );
 
                                 $prof_id = $common->insert_records_dynamically('list_profession', $arr_ins_profession_det);
@@ -360,8 +362,8 @@ class Activation extends ResourceController
             // $file->move("./videos/", $name);
             $s3_file = generateS3Video($name,$file);
 
-            print_r($s3_file);
-            exit;
+            // print_r($s3_file);
+            // exit;
             
             $arr_update = array('video_record_' . $video_no => $s3_file);
 
@@ -496,15 +498,22 @@ class Activation extends ResourceController
                         }
                     }
 
+                    // print_r($arr_skills_list);exit;
+                    
                     /*echo "<pre>";
 	                print_r($arr_skills_details);
 	                echo "</pre>";*/
 
                     $arr_professional_list = $sp->get_sp_professional_details($sp_id);
+
+                    // print_r($arr_professional_list);
+	                // exit;
+
                     if ($arr_professional_list != 'failure') {
                         foreach ($arr_professional_list as $key => $prof_data) {
                             $arr_professional_details[$key]['profession_id'] = $prof_data['profession_id'];
                             $arr_professional_details[$key]['category_id'] = $prof_data['category_id'];
+                            $arr_professional_details[$key]['subcategory_id'] = $prof_data['subcategory_id'];
                             $arr_professional_details[$key]['tariff_id'] = $prof_data['tariff_id'];
                             $arr_professional_details[$key]['profession_name'] = $prof_data['profession_name'];
                             $arr_professional_details[$key]['exp'] = $prof_data['exp'];
@@ -513,16 +522,16 @@ class Activation extends ResourceController
                             $arr_professional_details[$key]['tariff_min_charges'] = $prof_data['tariff_min_charges'];
                             $arr_professional_details[$key]['tariff_extra_charges'] = $prof_data['tariff_extra_charges'];
                             $arr_professional_details[$key]['skills'] = array();
-
+                            
                             if (array_key_exists($prof_data['profession_id'], $arr_skills_details)) {
                                 foreach ($arr_skills_details[$prof_data['profession_id']] as $keywords_id => $keyword) {
                                     $arr_professional_details[$key]['skills'][] = array('keywords_id' => $keywords_id, 'keyword' => $keyword);
                                 }
 
-                                /*echo "<br> profession_id ".$prof_data['profession_id'];
-	                            echo "<pre>";
-            	                print_r($arr_skills_details[$prof_data['profession_id']]);
-            	                echo "</pre>";*/
+                                // echo "<br> profession_id ".$prof_data['profession_id'];
+	                            // echo "<pre>";
+            	                // print_r($arr_skills_details[$prof_data['profession_id']]);
+            	                // echo "</pre>";
                             }
                         }
                     }
@@ -583,7 +592,7 @@ class Activation extends ResourceController
 
                     if ($sp_details != 'failure') {
                         return $this->respond([
-                            "sp_details" => $sp_details[0],
+                            "sp_details" => $sp_details,
                             "profession" => $arr_professional_details,
                             //"skills" => ($arr_skills_details != 'failure') ? $arr_skills_details : array(),
                             "language" => ($arr_language_details != 'failure') ? $arr_language_details : array(),
@@ -602,6 +611,8 @@ class Activation extends ResourceController
             }
         }
     }
+
+
 
     public function update_sp_prof_details()
     {
@@ -844,10 +855,10 @@ class Activation extends ResourceController
             $json = $this->request->getJSON(true);
 
             if (
-                !property_exists($json, 'user_id')
+                !isset($json['user_id'])
                 /*|| !array_key_exists('tariff_per_hour',$json) || !array_key_exists('tariff_per_day',$json) || !array_key_exists('tariff_min_charges',$json)
                             || !array_key_exists('tariff_extra_charges',$json)*/
-                || !property_exists($json, 'timeslot_responses') || !property_exists($json, 'key')
+                || !isset($json['timeslot_responses']) || !isset($json['key'])
             ) {
                 return $this->respond([
                     'status' => 403,

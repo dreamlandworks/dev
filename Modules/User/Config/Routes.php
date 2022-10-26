@@ -4,10 +4,11 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
 
     //Routes pertaining to User Login/ Registration Functionality
     $routes->post("login", "LoginController::login"); // User Login API   
-    $routes->post("logout", "LoginController::logout"); // User Logout API   
-    
+    $routes->post("logout", "LoginController::logout"); // User Logout API  
+        
     $routes->post("newuser", "UsersController::new_user"); //For New User Registration API
     $routes->post("changepwd", "UsersController::update_pass"); //For Change Password API
+    $routes->post("search_user", "UsersController::search_user"); //Check User Exits or Not
     $routes->post("verify", "LoginController::verify"); // User Verification API   
     
     //Routes pertaining to User Profile, Updation and Address Deletion
@@ -41,6 +42,7 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     //Routes pertaining to Search
     $routes->post("search_result","SearchProvider::search_result");// Get List of SP matching the keyword and city
     $routes->post("search_provider","SearchProvider::search_provider");// Temp
+    $routes->post("search_sp", "SearchProvider::get_sp_data"); //Get Sp Data for QR Code
     
     //Routes pertaining to FAQ
     $routes->get("user_faq", "MiscController::user_faq"); //Get all the User related Faq
@@ -85,6 +87,7 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     $routes->get("get_goals_installments_requested_list", "BookingController::get_goals_installments_requested_list"); //Get all the Goals List 
     $routes->get("get_booking_status_list", "BookingController::get_booking_status_list"); //Booking Status/History list 
 	$routes->post("complete_booking","BookingController::complete_booking"); // Complete the booking
+    $routes->post("get_txn","BookingController::get_txn"); // Get the Txn for Payment Gateway
     $routes->get("verify_txn/(.*)","BookingController::verify_txn/$1"); // Get status with Order ID
     $routes->post("process_txn","BookingController::process_txn"); // Get Deep Link for UPI
     
@@ -135,6 +138,8 @@ $routes->group("user", ["namespace" => "\Modules\User\Controllers\api"], functio
     $routes->post("get_file", "MiscController::convertFiles");//files to be uploaded to server in blue collar
     $routes->get("view_files", "MiscController::view_files_user");
     $routes->post("send_fcm","MiscController::send_fcm"); //Send FCM Messages
+    $routes->post("send_multi_fcm","MiscController::send_multi_fcm"); //Send FCM Message to Multiple Tokens
+    $routes->post("upload_image","MiscController::uploadImage"); //Upload Images to Amazon S3
  
 	
 });

@@ -23,7 +23,51 @@ use function PHPUnit\Framework\isEmpty;
 
 class UsersController extends ResourceController
 {
+    //------------------------------------------------------USER SEARCH STARTS----------------------------------------------------------
+    //-----------------------------------------------****************************----------------------------------------------------------
 
+    public function search_user(){
+
+        $json = $this->request->getJSON();
+            
+            if(!property_exists($json, 'mobile')  || !property_exists($json, 'key')) {
+    		    return $this->respond([
+        				'status' => 403,
+                        'message' => 'Invalid Parameters'
+        		]);
+    		}
+            else {
+                $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+                
+                $users_model = new UsersModel();
+    		    $api_key = $apiconfig->user_key;
+    		    
+    		    if($key == $api_key) {
+                   
+                    $validate_user_result = $users_model->search_by_mobile($json->mobile);
+                    // echo "<br> str ".$users_model->getLastQuery();exit;
+                    
+                    if($validate_user_result != 'failure'){
+
+                        return $this->respond([
+                            'status' => 200,
+                            'message' => 'User Exists with this Mobile Number or Email'
+                        ]);
+
+                    }else{
+
+                        return $this->respond([
+                            'status' => 404,
+                            'message' => 'User Details not found'
+                        ]);
+
+                    }
+                }
+            }
+    }
+    
+    
     //-----------------------------------------------NEW USER REGISTRATION STARTS----------------------------------------------------------
     //-----------------------------------------------****************************----------------------------------------------------------
 
@@ -90,7 +134,7 @@ class UsersController extends ResourceController
                     $facebook_id = $json->facebook_id;
                     $twitter_id = $json->twitter_id;
                     $google_id = $json->google_id;
-                    $password = $json->password;
+                    $password = password_hash($json->password,PASSWORD_BCRYPT);
                     $city = $json->city;
                     $state = $json->state;
                     $country = $json->country;
@@ -112,20 +156,22 @@ class UsersController extends ResourceController
 						}
                     
                     $validate_user_result = $users_model->search_by_email_mobile($email,$mobile);
-                    //echo "<br> str ".$users_model->getLastQuery();exit;
+                    // echo "<br> str ".$users_model->getLastQuery();exit;
                     
-                    $existing_mobile = "";
-                    $existing_email = "";
+                    $existing_mobile = 0;
+                    $existing_email = 0;
                     
                     if($validate_user_result != 'failure') {
                         $existing_mobile = $validate_user_result->userid;
                         $existing_email = $validate_user_result->email;
                     }
                     
-                    /*echo "<pre>";
-                    print_r($validate_user_result);
-                    echo "</pre>";*/
-                    /*exit;*/
+                    // print_r(($email != "") ? "True" : "False");
+                    // exit;
+                    // echo "<pre>";
+                    // print_r($validate_user_result);
+                    // echo "</pre>";
+                    // exit;
                     //$re = $users_model->search_mobile($mobile);
         
                     if ($existing_mobile != $mobile) {
@@ -376,7 +422,7 @@ class UsersController extends ResourceController
 		}
 		else {
 		    $id = $json->id;
-    		$pass = $json->password;
+    		$pass = password_hash($json->password,PASSWORD_BCRYPT);;
     		$key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
 		    
 		    $apiconfig = new \Config\ApiConfig();

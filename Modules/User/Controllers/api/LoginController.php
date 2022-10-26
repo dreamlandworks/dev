@@ -42,7 +42,7 @@ class LoginController extends ResourceController
 
                 $log = new UsersModel();
                 $var = $log->login_user($id, $type, $pass);
-                //print_r($var);exit;
+                // print_r($var);exit;
 
                 if ($var != null) {
 
@@ -53,7 +53,22 @@ class LoginController extends ResourceController
                     $misc = new MiscModel();
 
                     $dat = $misc->user_info($var['id']);
+                    
+                    // $pass_hash = password_hash($json->password,PASSWORD_BCRYPT);
+                    // // print_r($pass_hash);
+                    // exit;
+                                        
+                    // if (password_verify($json->password, $var['password'])) {
+                    //     echo 'Password is valid!';
+                    // } else {
+                    //     echo 'Invalid password.';
+                    // }
 
+                    // // print_r($res);
+                    // exit;
+
+                    // print_r($dat);exit;
+                    
                     //Insert into alert_regular_user table
                     $date = date('Y-m-s H:i:s');
                     $arr_alerts = array(
@@ -70,7 +85,7 @@ class LoginController extends ResourceController
 
                     if($type != "login"){
 
-                        if($type == "gmail"){
+                        if($type == "gmail" || $type == "google"){
                             
                             return $this->respond([
                                 'status' => 200,
@@ -90,13 +105,24 @@ class LoginController extends ResourceController
                                 'lname' => $dat[0]['lname']
                             ]);
 
+                        }elseif($type == 'truecaller'){
+
+                            return $this->respond([
+                                'status' => 200,
+                                'user_id' => $var['id'],
+                                'profile_image' => $dat[0]['profile_pic'],
+                                'fname' => $dat[0]['fname'],
+                                'lname' => $dat[0]['lname']
+                            ]);
+                            
                         }
 
                     }else{
 
                         //Check Password
-                        $user_password = $var['password'];
-                        if ($pass == $user_password) {
+                        $user_password = password_verify($json->password, $var['password']);
+                        if ($user_password) {
+                            // print_r($var);exit;
                             return $this->respond([
                                 'status' => 200,
                                 'user_id' => $var['id'],
@@ -107,7 +133,7 @@ class LoginController extends ResourceController
 
                         } else {
                             return $this->respond([
-                                "status" => 404,
+                                "status" => 401,
                                 "message" => "Mobile Number and Password don't match. Please try again",
                                 "user id" => $var['id']
                             ]);

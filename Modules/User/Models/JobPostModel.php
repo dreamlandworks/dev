@@ -206,12 +206,15 @@ class JobPostModel extends Model
     {
 
         $builder = $this->db->table('bid_det');
-        $builder->select('bid_det.*,booking_status_code.name as status, estimate_type.name,user_details.fname,user_details.lname,user_details.mobile,fcm_token,profile_pic,sp_det.about_me');
+        $builder->select('bid_det.*,booking_status_code.name as status, estimate_type.name,user_details.fname,user_details.lname,
+                            user_details.mobile,fcm_token,profile_pic,sp_det.about_me,booking.users_id as posted_by_id');
         $builder->join('estimate_type', 'estimate_type.id = bid_det.estimate_type_id');
         $builder->join('user_details', 'user_details.id = bid_det.users_id');
         $builder->join('users', 'users.users_id = bid_det.users_id');
         $builder->join('sp_det', 'sp_det.users_id = bid_det.users_id AND sp_det.users_id = user_details.id');
         $builder->join('booking_status_code', 'booking_status_code.id = bid_det.status_id');
+        $builder->join('post_job', 'post_job.id = bid_det.post_job_id');
+        $builder->join('booking', 'booking.id = post_job.booking_id');
         $builder->where('bid_det.post_job_id', $post_job_id);
         $result = $builder->get()->getResultArray();
         // echo "<br> str ".$this->db->getLastQuery();exit;    
@@ -373,13 +376,13 @@ class JobPostModel extends Model
     {
 
         $builder = $this->db->table('installment_det');
-        $builder->select('installment_det.*,description, booking_status_code.name as status');
+        $builder->select('installment_det.*,description, booking_status_code.name as status, inst_status_id as status_id');
         $builder->join('goals', 'goals.goal_id = installment_det.goal_id');
         $builder->join('booking_status_code', 'booking_status_code.id = installment_det.inst_status_id');
         $builder->whereIn('installment_det.inst_status_id', ['32','33','34','35','36']);
         $builder->where('installment_det.post_job_id', $post_job_id);
         $result = $builder->get()->getResultArray();
-        //echo "<br> str ".$this->db->getLastQuery();exit;    
+        // echo "<br> str ".$this->db->getLastQuery();exit;    
         $count = count($result);
 
         if ($count > 0) {
@@ -810,7 +813,7 @@ class JobPostModel extends Model
         $builder->groupBy('sp_skill.users_id,sp_profession.users_id');
 
         $result = $builder->get()->getResultArray();
-        //echo "<br> str ".$this->db->getLastQuery();exit;    
+        // echo "<br> str ".$this->db->getLastQuery();exit;    
         $count = count($result);
 
         if ($count > 0) {
@@ -931,7 +934,7 @@ class JobPostModel extends Model
         $builder->groupBy('booking.id');
 
         $result = $builder->get()->getResultArray();
-        //echo "<br> str-- ".$this->db->getLastQuery();exit;    
+        // echo "<br> str-- ".$this->db->getLastQuery();exit;    
         $count = count($result);
 
         if ($count > 0) {
@@ -988,7 +991,7 @@ class JobPostModel extends Model
         $builder->where('DATE_ADD(post_job.created_dts, INTERVAL bids_period DAY) > NOW()');
         $builder->where('post_job.id not in(SELECT distinct post_job_id FROM bid_det where users_id = ' . $sp_id . ')');
         $result = $builder->get()->getResultArray();
-        //echo "<br> str ".$this->db->getLastQuery();exit;    
+        // echo "<br> str ".$this->db->getLastQuery();exit;    
         $count = count($result);
 
         if ($count > 0) {
@@ -1041,5 +1044,25 @@ class JobPostModel extends Model
     }
     //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
 
+    //---------------------------------------------------GET USER WALLET BALANCE BY POST JOB ID-----------------------------------------------------
+    //-----------------------------------------------------------***************------------------------------------------------------------    
+    function get_user_wallet_balance_by_post_id($post_job_id)
+    {
+        $builder = $this->db->table('post_job');
+        $builder->select('booking.users_id,wallet_balance.amount,wallet_balance.amount_blocked');
+        $builder->join('booking', 'booking.id = post_job.booking_id');
+        $builder->join('wallet_balance', 'wallet_balance.users_id = booking.users_id');
+        $builder->where('post_job.id', $post_job_id);
+        $result = $builder->get()->getRowArray();
+        // echo "<br> str ".$this->db->getLastQuery();exit;
+        
+        if(!is_null($result) && count($result) > 0) {
+            return $result; 
+        }
+        else {
+            return 'failure'; 
+        }
+    }
+    //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
 
 }

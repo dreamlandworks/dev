@@ -327,8 +327,25 @@
   gtag('config', 'UA-224110753-1');
 </script>
 
+<!-- Fresh works Chat Widget Start -->
+<!-- <script
+src='//in.fw-cdn.com/30543745/300064.js'
+chat='true'>
+</script> -->
 
+<!-- Fresh works Chat Widget Ends -->
 
+<!-- ZOHO Integrations -->
+
+<script type="text/javascript" id="zsiqchat">
+var $zoho=$zoho || {};$zoho.salesiq = $zoho.salesiq || {widgetcode: "08bbfb051657252500f5e3edbb4a4c3e0f626342fb548edc158b525443e73a60394c0367f9a145a40269b2398862ec7e", values:{},ready:function(){}};
+var d=document;s=d.createElement("script");
+s.type="text/javascript";
+s.id="zsiqscript";
+s.defer=true;s.src="https://salesiq.zoho.in/widget";
+t=d.getElementsByTagName("script")[0];
+t.parentNode.insertBefore(s,t);
+</script>
 
 </body>
 

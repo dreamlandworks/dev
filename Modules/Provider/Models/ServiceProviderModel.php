@@ -42,6 +42,8 @@ class ServiceProviderModel extends Model
         $builder->where('users.id', $user_id);
         $result = $builder->get()->getResultArray();
         $count = $builder->countAllResults();
+
+        // echo "<br> str ".$this->db->getLastQuery();exit;  
                 
         if($count > 0) {
             return $result; 
@@ -51,18 +53,19 @@ class ServiceProviderModel extends Model
 	    }
     }
     
+    
     public function get_sp_professional_details($user_id) {
 	    $db      = \Config\Database::connect();
 	    
 	    $builder = $db->table('sp_profession');
-        $builder->select('sp_profession.profession_id,category_id,tariff.id as tariff_id,list_profession.name as profession_name,sp_exp.exp,
+        $builder->select('sp_profession.profession_id,category_id,tariff.id as tariff_id,list_profession.name as profession_name,list_profession.subcategory_id as subcategory_id,sp_exp.exp,
                             per_hour as tariff_per_hour,per_day as tariff_per_day,min_charges as tariff_min_charges,extra_charge as tariff_extra_charges');
         $builder->join('tariff', 'tariff.users_id = sp_profession.users_id AND tariff.profession_id = sp_profession.profession_id','LEFT');
         $builder->join('list_profession', 'list_profession.id = sp_profession.profession_id');
         $builder->join('sp_exp', 'sp_exp.id = sp_profession.exp_id');
         $builder->where('sp_profession.users_id', $user_id);
         $result = $builder->get()->getResultArray();
-        //echo "<br> str ".$this->db->getLastQuery();exit;  
+        // echo "<br> str ".$this->db->getLastQuery();exit;  
         $count = $builder->countAllResults();
                 
         if($count > 0) {
@@ -77,13 +80,14 @@ class ServiceProviderModel extends Model
 	    $db      = \Config\Database::connect();
 	    
 	    $builder = $db->table('sp_profession');
-        $builder->select('sp_profession.profession_id,sp_skill.keywords_id,keyword');
-        $builder->join('sp_skill', 'sp_skill.profession_id = sp_profession.profession_id');
-        $builder->join('keywords', 'keywords.id = sp_skill.keywords_id'); 
-        
+        $builder->select('sp_profession.profession_id,keywords.id as keywords_id,keyword');
+        $builder->join('list_profession','list_profession.id = sp_profession.profession_id');
+        $builder->join('sp_skill', 'sp_skill.users_id = sp_profession.users_id');
+        $builder->join('keywords', 'keywords.profession_id = sp_profession.profession_id AND keywords.status="active"'); 
         $builder->where('sp_profession.users_id', $user_id);
+        $builder->groupBy('keywords.id');
         $result = $builder->get()->getResultArray();
-        //echo "<br> str ".$this->db->getLastQuery();exit;  
+        // echo "<br> str ".$this->db->getLastQuery();exit;  
         $count = $builder->countAllResults();
                 
         if($count > 0) {

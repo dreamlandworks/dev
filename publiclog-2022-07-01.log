@@ -1,0 +1,57 @@
+INFO - 2022-07-01 00:49:36 --> Used the default controller.
+INFO - 2022-07-01 00:49:38 --> Used the default controller.
+INFO - 2022-07-01 01:07:58 --> Used the default controller.
+INFO - 2022-07-01 01:11:14 --> Used the default controller.
+INFO - 2022-07-01 01:15:19 --> Used the default controller.
+INFO - 2022-07-01 02:44:37 --> Used the default controller.
+INFO - 2022-07-01 02:45:12 --> Used the default controller.
+INFO - 2022-07-01 04:14:58 --> Used the default controller.
+INFO - 2022-07-01 04:23:18 --> Used the default controller.
+INFO - 2022-07-01 05:27:08 --> Used the default controller.
+INFO - 2022-07-01 05:44:24 --> Used the default controller.
+INFO - 2022-07-01 05:59:38 --> Used the default controller.
+INFO - 2022-07-01 07:15:12 --> Used the default controller.
+INFO - 2022-07-01 07:35:25 --> Used the default controller.
+INFO - 2022-07-01 08:20:20 --> Used the default controller.
+INFO - 2022-07-01 08:45:36 --> Used the default controller.
+INFO - 2022-07-01 09:11:03 --> Used the default controller.
+INFO - 2022-07-01 10:14:34 --> Used the default controller.
+INFO - 2022-07-01 10:46:44 --> Used the default controller.
+INFO - 2022-07-01 11:39:11 --> Used the default controller.
+INFO - 2022-07-01 11:45:47 --> Used the default controller.
+INFO - 2022-07-01 13:15:19 --> Used the default controller.
+INFO - 2022-07-01 13:26:55 --> Used the default controller.
+INFO - 2022-07-01 14:45:54 --> Used the default controller.
+INFO - 2022-07-01 15:05:06 --> Used the default controller.
+INFO - 2022-07-01 15:43:02 --> Used the default controller.
+INFO - 2022-07-01 16:41:52 --> Used the default controller.
+INFO - 2022-07-01 17:25:24 --> Used the default controller.
+INFO - 2022-07-01 17:25:31 --> Used the default controller.
+INFO - 2022-07-01 17:46:47 --> Used the default controller.
+INFO - 2022-07-01 18:18:11 --> Used the default controller.
+ERROR - 2022-07-01 18:56:47 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-01 18:56:47 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+INFO - 2022-07-01 19:15:22 --> Used the default controller.
+ERROR - 2022-07-01 19:18:01 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-01 19:18:01 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-01 19:18:16 --> Expression #2 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.booking.users_id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-01 19:18:16 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-01 19:18:16 --> Expression #4 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.users.fcm_token' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-01 19:18:16 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-01 19:18:16 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.sp_location.city' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-01 19:18:20 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-01 19:18:20 --> Expression #2 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.booking.users_id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-01 19:18:20 --> Expression #4 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.users.fcm_token' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-01 19:18:20 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-01 19:18:20 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.sp_location.city' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-01 19:19:08 --> Incorrect DATETIME value: '0000-00-00 00:00:00'
+ERROR - 2022-07-01 19:19:22 --> Incorrect DATETIME value: '0000-00-00 00:00:00'
+ERROR - 2022-07-01 19:20:42 --> Incorrect DATETIME value: '0000-00-00 00:00:00'
+INFO - 2022-07-01 19:54:01 --> Used the default controller.
+INFO - 2022-07-01 20:03:19 --> Used the default controller.
+INFO - 2022-07-01 20:45:58 --> Used the default controller.
+INFO - 2022-07-01 21:30:41 --> Used the default controller.
+INFO - 2022-07-01 21:38:10 --> Used the default controller.
+INFO - 2022-07-01 22:16:08 --> Used the default controller.
+INFO - 2022-07-01 23:04:31 --> Used the default controller.
+INFO - 2022-07-01 23:44:54 --> Used the default controller.

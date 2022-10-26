@@ -41,9 +41,11 @@ class MiscModel extends Model
 
         $builder = $this->db->table('user_details');
         $builder->select('*');
-        $builder->join('users', 'users.users_id = user_details.id');
+        $builder->join('users', 'users.id = user_details.id');
         $builder->where('user_details.id', $id);
         $query = $builder->get(1);
+
+        // echo "<br> str ".$this->db->getLastQuery();exit;
 
         if ($query->getResult() != null) {
             return $query->getResultArray();
@@ -97,13 +99,14 @@ class MiscModel extends Model
         $builder->join('time_slot', 'time_slot.id = booking.time_slot_id');
         $builder->where(['booking.id' => $booking_id]);
         $query = $builder->get(1);
-
+        
         if ($query->getResult() != null) {
             return $query->getResultArray();
         } else {
             return null;
         }
     }
+    
     //---------------------------------------------------GET Search Results STARTS-----------------------------------------------------
     //-----------------------------------------------------------***************------------------------------------------------------------    
     function get_search_results($keyword_id, $city, $current_lat, $current_lng, $users_id, $cat)
@@ -135,12 +138,17 @@ class MiscModel extends Model
         // } else { //pick using subcat id
         //     $builder->where('list_profession.subcategory_id', $subcat_id);
         // }
-        $builder->whereIn('keywords_id', $keyword_id);
+        if(is_array($keyword_id)){
+            $builder->whereIn('keywords_id', $keyword_id);
+        }else{
+            $builder->where('keywords_id', $keyword_id);
+        }
+        
         
         if($cat == 1){
-            $builder->where("sp_location.latitude BETWEEN '".$current_lat-0.2."' AND '".$current_lat+0.2."'");
-            $builder->where("sp_location.longitude BETWEEN '".$current_lng-0.2."' AND '".$current_lng+0.2."'");
-        }
+                $builder->where("sp_location.latitude BETWEEN '".$current_lat-0.2."' AND '".$current_lat+0.2."'");
+                $builder->where("sp_location.longitude BETWEEN '".$current_lng-0.2."' AND '".$current_lng+0.2."'");
+            }
         
         $builder->where('sp_activated', 3);
         $builder->where('online_status_id', 1);
@@ -159,6 +167,60 @@ class MiscModel extends Model
     //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
       
     
+//---------------------------------------------------GET Search Results STARTS-----------------------------------------------------
+    //-----------------------------------------------------------***************------------------------------------------------------------    
+    function get_search_results_by_sp_id($current_lat, $current_lng, $profession_id, $sp_id, $cat)
+    {
+
+        $builder = $this->db->table('sp_location');
+        $builder->select('sp_location.*, user_details.*,sp_det.about_me,qualification,list_profession.id as profession_id,list_profession.name as profession,exp,GROUP_CONCAT(distinct language.name) as "languages_known", 
+                      per_hour,per_day,min_charges,extra_charge,list_profession.category_id,list_profession.subcategory_id,fcm_token,
+                      (3959 * acos (cos ( radians(' . $current_lat . ') ) * cos( radians( sp_location.latitude ) ) * cos( radians( sp_location.longitude ) - radians(' . $current_lng . ') )
+                          + sin ( radians(' . $current_lat . ') ) * sin( radians( sp_location.latitude ) ) )) AS distance_miles');
+        $builder->join('user_details', 'user_details.id = sp_location.users_id');
+        $builder->join('users', 'users.users_id = user_details.id AND users.users_id = sp_location.users_id');
+        $builder->join('sp_det', 'sp_det.users_id = sp_location.users_id AND sp_det.users_id = user_details.id');
+        $builder->join('sp_skill', 'sp_skill.users_id = sp_location.users_id AND sp_skill.users_id = user_details.id');
+        $builder->join('sp_qual', 'sp_qual.id = sp_det.qual_id');
+        $builder->join('sp_profession', 'sp_profession.users_id = sp_location.users_id AND sp_profession.profession_id = sp_skill.profession_id');
+        $builder->join('list_profession', 'list_profession.id = sp_profession.profession_id');
+        $builder->join('tariff', 'tariff.users_id = sp_location.users_id AND tariff.users_id = user_details.id AND tariff.profession_id = sp_profession.profession_id');
+        //$builder->join('subcategories', 'subcategories.id = list_profession.subcategory_id');
+        $builder->join('sp_exp', 'sp_exp.id = sp_profession.exp_id');
+        $builder->join('city', 'city.id = sp_location.city');
+        $builder->join('user_lang_list', 'user_lang_list.users_id = sp_location.users_id');
+        $builder->join('language', 'language.id = user_lang_list.language_id');
+        $builder->where('sp_location.id in (select max(id) from sp_location where users_id = ' . $sp_id . ' group by users_id)');
+        $builder->where('users.online_status_id', 1);
+        // if ($keyword_id > 0) {
+        //     $builder->where('keywords_id', $keyword_id);
+            
+        // } else { //pick using subcat id
+        //     $builder->where('list_profession.subcategory_id', $subcat_id);
+        // }
+        $builder->where('sp_profession.profession_id', $profession_id);
+        
+        // if($cat == 1){
+        //         $builder->where("sp_location.latitude BETWEEN '".$current_lat-0.2."' AND '".$current_lat+0.2."'");
+        //         $builder->where("sp_location.longitude BETWEEN '".$current_lng-0.2."' AND '".$current_lng+0.2."'");
+        //     }
+        
+        $builder->where('sp_activated', 3);
+        $builder->groupBy("sp_location.users_id");
+        $builder->orderBy("distance_miles", "ASC");
+        $result = $builder->get()->getResultArray();
+        // echo "<br> str ".$this->db->getLastQuery();exit;
+        $count = count($result);
+
+        if ($count > 0) {
+            return $result;
+        } else {
+            return 'failure';
+        }
+    }
+    //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+      
+
     //Get Keywords ID by search String
 
     function get_keyword_by_search_string($search_string)
@@ -167,7 +229,11 @@ class MiscModel extends Model
         $builder->select('keywords.keyword,GROUP_CONCAT(DISTINCT keywords.id) AS id,GROUP_CONCAT(DISTINCT list_profession.subcategory_id) 
                             AS subcategory_id,GROUP_CONCAT(DISTINCT list_profession.category_id) AS category_id');
         $builder->join('list_profession','list_profession.id = keywords.profession_id');
-        $builder->where("MATCH(keyword) AGAINST ('".$search_string."' IN NATURAL LANGUAGE MODE)");
+        $builder->join('subcategories','subcategories.id = list_profession.subcategory_id');
+        $builder->where("MATCH(keyword) AGAINST ('".$search_string."' IN NATURAL LANGUAGE MODE) OR 
+        MATCH(list_profession.name) AGAINST ('".$search_string."' IN NATURAL LANGUAGE MODE) OR
+        MATCH(subcategories.sub_name) AGAINST ('".$search_string."' IN NATURAL LANGUAGE MODE)");
+
         $builder->groupBy('list_profession.category_id');
         $result = $builder->get()->getResultArray();
         // echo "<br> str ".$this->db->getLastQuery();exit;
@@ -182,6 +248,7 @@ class MiscModel extends Model
 
     //Function Ends here       
     
+      
     //Get Keywords ID by subcat_id
 
     function get_keyword_by_subcat_id($subcat_id)
@@ -203,11 +270,8 @@ class MiscModel extends Model
         }
     }
 
-    //Function Ends here       
     
-
-
-    
+    //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
     //Function to search Address by user ID
     //Returns address if available or else '0' if not available
     public function get_temp_address_by_user_id($id)
@@ -303,7 +367,12 @@ class MiscModel extends Model
         $builder = $this->db->table('user_time_slot');
         $builder->select('*');
         // $builder->select('users_id,time_slot_id,min(time_slot_from) as time_slot_from, max(time_slot_from) as time_slot_to,day_slot');
-        $builder->whereIn('users_id', $ar_sp_id);
+        if(is_array($ar_sp_id)){
+            $builder->whereIn('users_id', $ar_sp_id);
+        }else{
+            $builder->where('users_id', $ar_sp_id);
+        }
+        
         // $builder->groupBy("users_id,day_slot");
         $builder->orderBy('users_id,day_slot,time_slot_from', 'ASC');
         $result = $builder->get()->getResultArray();
@@ -317,12 +386,17 @@ class MiscModel extends Model
         }
     }
 
+ //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
     function get_sp_blocked_time_slot($ar_sp_id)
     {
 
         $builder = $this->db->table('sp_busy_slot');
         $builder->join('time_slot', 'time_slot.id = sp_busy_slot.time_slot_id');
-        $builder->whereIn('users_id', $ar_sp_id);
+        if(is_array($ar_sp_id)){
+            $builder->whereIn('users_id', $ar_sp_id);
+        }else{
+            $builder->where('users_id', $ar_sp_id);
+        }
         $builder->where('date >=', date('Y-m-d'));
         $builder->orderBy('users_id,date,time_slot_id', 'ASC');
         $result = $builder->get()->getResultArray();
@@ -360,8 +434,8 @@ class MiscModel extends Model
 
         $builder = $this->db->table('booking');
         $builder->select('booking.*, user_details.fname,user_details.lname,user_details.mobile,user_details.profile_pic,fcm_token,
-                    time_slot.from,estimate_type.name as estimate_type,extra_demand.amount as extra_demand_total_amount,material_advance,technician_charges,
-                    expenditure_incurred,extra_demand.status as extra_demand_status,post_job.id as post_job_id, list_profession.name as profession');
+                    time_slot.from,estimate_type.name as estimate_type,SUM(extra_demand.amount) as extra_demand_total_amount,SUM(material_advance) as material_advance,
+                    SUM(technician_charges) as technician_charges,SUM(expenditure_incurred) as expenditure_incurred,extra_demand.status as extra_demand_status,post_job.id as post_job_id, list_profession.name as profession');
         $builder->join('user_details', 'user_details.id = booking.users_id');
         $builder->join('users', 'users.users_id = booking.users_id');
         $builder->join('time_slot', 'time_slot.id = booking.time_slot_id');
@@ -371,8 +445,9 @@ class MiscModel extends Model
         $builder->join('list_profession', 'list_profession.id = booking.profession_id', 'LEFT');
         $builder->where('booking.id', $booking_id);
         $builder->where('booking.users_id', $users_id);
+        $builder->groupBy('booking.id');
         $result = $builder->get()->getResultArray();
-        //echo "<br> str ".$this->db->getLastQuery();exit;    
+        // echo "<br> str ".$this->db->getLastQuery();exit;    
         $count = count($result);
 
         if ($count > 0) {
@@ -554,8 +629,8 @@ class MiscModel extends Model
         $builder->join('zipcode', 'zipcode.id = address.zipcode_id');
         $builder->join('extra_demand', 'extra_demand.booking_id = booking.id', 'LEFT');
         $builder->join('transaction', 'transaction.booking_id = booking.id');
-        $builder->where('payment_status', 'Success');
-        $builder->where('name_id', 2); //Booking Amount
+        $builder->whereIn('payment_status', ['Success','TXN_SUCCESS']);
+        $builder->whereIn('name_id', [2,12]); //Booking Amount
 
         if ($users_id > 0) {
             $builder->join('user_details', 'user_details.id = booking.sp_id', 'LEFT');
@@ -614,8 +689,8 @@ class MiscModel extends Model
             $builder->where('booking.sp_id', $sp_id);
         }
         $builder->where('booking.category_id', 2);
-        $builder->where('payment_status', 'Success');
-        $builder->where('name_id', 2); //Booking Amount
+        $builder->whereIn('payment_status', ['Success','TXN_SUCCESS']);
+        $builder->whereIn('name_id', [2,12]); //Booking Amount
         $builder->groupBy('booking.id');
         $builder->orderBy('booking.completed_at', 'DESC');
         $builder->orderBy('booking.scheduled_date', 'DESC');
@@ -928,10 +1003,10 @@ class MiscModel extends Model
             $builder->join('transaction', 'transaction.booking_id = booking.id', 'LEFT');
             $builder->join('wallet_balance', 'wallet_balance.users_id = booking.users_id', 'LEFT');
             $builder->where('booking.id', $booking_id);
-            $builder->where('payment_status', 'Success');
+            $builder->whereIn('payment_status', ['Success','TXN_SUCCESS']);
             $builder->groupBy('booking.id');
             $result = $builder->get()->getResultArray();
-            //echo "<br> str ".$this->db->getLastQuery();exit;    
+            // echo "<br> str ".$this->db->getLastQuery();exit;    
             $count = count($result);
 
             if ($count > 0) {
@@ -948,7 +1023,7 @@ class MiscModel extends Model
             $builder->join('transaction', 'transaction.booking_id = booking.id', 'LEFT');
             $builder->join('wallet_balance', 'wallet_balance.users_id = booking.users_id', 'LEFT');
             $builder->where('booking.id', $booking_id);
-            $builder->where('payment_status', 'Success');
+            $builder->whereIn('payment_status', ['Success','TXN_SUCCESS']);
             $builder->groupBy('booking.id');
             $result = $builder->get()->getResultArray();
             //echo "<br> str ".$this->db->getLastQuery();exit;    
@@ -994,10 +1069,10 @@ class MiscModel extends Model
         $builder->select('*');
         $builder->join('booking_status_code', 'booking_status_code.id = booking_status.status_id');
         $builder->where('booking_id', $booking_id);
-        //$builder->WhereIn('status_id', [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 37, 38, 39, 42]);
-        $builder->WhereIn('status_id', [13, 22, 23, 37, 38, 39]);
+        $builder->WhereIn('status_id', [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 37, 38, 39, 42]);
+        // $builder->WhereIn('status_id', [13, 22, 23, 37, 38, 39]);
         $builder->orderBy('booking_status_id', 'ASC');
-        $builder->groupBy('status_id');
+        // $builder->groupBy('status_id');
         $result = $builder->get()->getResultArray();
         // echo "<br> str ".$this->db->getLastQuery();exit;    
         $count = count($result);
@@ -1423,7 +1498,12 @@ class MiscModel extends Model
         $builder = $this->db->table('sp_skill');
         $builder->select('users_id, GROUP_CONCAT(distinct keyword) as keywords');
         $builder->join('keywords', 'keywords.id = sp_skill.keywords_id');
-        $builder->whereIn('users_id', $ar_sp_id);
+        if(is_array($ar_sp_id)){
+            $builder->whereIn('users_id', $ar_sp_id);
+        }else{
+            $builder->where('users_id', $ar_sp_id);
+        }
+        
         $builder->groupBy("sp_skill.users_id");
         $builder->orderBy('users_id', 'ASC');
         $result = $builder->get()->getResultArray();
@@ -1567,7 +1647,13 @@ class MiscModel extends Model
         AVG(skill) as avg_skill, 
         AVG(behaviour) as avg_behaviour, 
         AVG(satisfaction) as avg_satisfaction');
-        $builder->whereIn('sp_id', $arr_sp_id);
+        
+        if(is_array($arr_sp_id)){
+            $builder->whereIn('sp_id', $arr_sp_id);
+        }else{
+            $builder->where('sp_id', $arr_sp_id);
+        }
+        
         $builder->groupBy("sp_id");
         $result = $builder->get()->getResultArray();
         // echo "<br> str ".$this->db->getLastQuery();exit;
@@ -1819,6 +1905,41 @@ class MiscModel extends Model
     }
     //-----------------------------------------------------------***************------------------------------------------------------------ 
 
+     //--------------------------------------------------------------FUNCTION ENDS-----------------------------------------------------------
+     function get_sp_search_ranking_details_by_profession($city_id, $profession_id)
+     {
+ 
+         $builder = $this->db->table('sp_location');
+         $builder->select('sp_location.*, user_details.*,city.city,users.online_status_id,GROUP_CONCAT(list_profession.name) as profession');
+         $builder->join('user_details', 'user_details.id = sp_location.users_id');
+         $builder->join('users', 'users.users_id = user_details.id AND users.users_id = sp_location.users_id');
+         $builder->join('sp_profession', 'sp_profession.users_id = sp_location.users_id');
+         $builder->join('list_profession', 'list_profession.id = sp_profession.profession_id');
+         $builder->join('city', 'city.id = sp_location.city');
+         $builder->join('sp_skill', 'sp_skill.users_id = sp_location.users_id AND sp_skill.users_id = user_details.id');
+         $builder->where('sp_location.id in (select max(id) from sp_location group by users_id)');
+         $builder->where('city.id', $city_id);
+         $builder->where('sp_activated', 3);
+         $builder->where('points_count >', 0);
+         // if ($keyword_id > 0) {
+         $builder->where('sp_profession.profession_id', $profession_id);
+         // } else { //pick using subcat id
+         //     $builder->where('list_profession.subcategory_id', $subcat_id);
+         // }
+         $builder->groupBy("sp_location.users_id");
+         $builder->orderBy("points_count", "DESC");
+         $result = $builder->get()->getResultArray();
+        //  echo "<br> str ".$this->db->getLastQuery();exit;
+         $count = count($result);
+ 
+         if ($count > 0) {
+             return $result;
+         } else {
+             return 'failure';
+         }
+     }
+     //-----------------------------------------------------------***************------------------------------------------------------------ 
+
     function get_successful_transactions($booking_id)
     {
 
@@ -1865,7 +1986,11 @@ class MiscModel extends Model
         $builder = $this->db->table('booking');
         $builder->select('count(booking.id) as jobs_count,sp_id');
         $builder->join('post_job', 'post_job.booking_id = booking.id');
-        $builder->whereIn('sp_id', $arr_sp_id);
+        if(is_array($arr_sp_id)){
+            $builder->whereIn('sp_id', $arr_sp_id);
+        }else{
+            $builder->where('sp_id', $arr_sp_id);
+        }        
         $builder->where('completed_at != "0000-00-00 00:00:00"');
         $builder->groupBy("sp_id");
         $result = $builder->get()->getResultArray();
@@ -1956,13 +2081,16 @@ class MiscModel extends Model
     //---------------------------------------------------Get Commission by User ID-----------------------------------------------------
     //-----------------------------------------------------------***************------------------------------------------------------------    
 
-    public function get_commission($user_id)
+    public function get_commission($user_id,$str_date = Null,$end_date=Null)
     {
 
         $where = ['users_id' => $user_id, 'method_id' => 3, 'type_id' => 1, 'name_id' => 13];
         $builder = $this->db->table('transaction');
         $builder->select('sum(amount) as amount');
         $builder->where($where);
+        if($str_date != Null && $end_date != Null){
+        $builder->where("date BETWEEN '".$str_date."' AND '".$end_date."'");    
+        }
         $builder->groupBy('users_id');
 
         $result = $builder->get()->getResultArray();
@@ -2043,7 +2171,29 @@ class MiscModel extends Model
     }
 
 
+    //---------------------------------------------------View cities of user----------------------------------------------------------------------------------
+    //-----------------------------------------------------------***************------------------------------------------------------------------------------ 
+    public function get_cities_by_user($user_id){
 
+        $builder = $this->db->table('sp_location');
+        $builder->select('city.id,city.city,sp_location.state as state_id');
+        $builder->join('city', 'city.id = sp_location.city');
+        $builder->where('users_id',$user_id);
+        $builder->groupBy('sp_location.city');
+        
+        $res = $builder->get()->getResultArray();
+        // echo "<br> str ".$this->db->getLastQuery();exit;
+
+        if(isset($res) && count($res) > 0){
+            return $res;
+        }else{
+            return 'failure';
+        }
+
+    }    
+
+
+    
 
     
 }

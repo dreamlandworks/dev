@@ -1343,9 +1343,13 @@ class PostjobController extends ResourceController
                     //Get Bids
                     $arr_bid_details = $job_post_model->get_job_post_bid_details($users_id, $post_job_id);
 
-                    if ($arr_bid_details != 'failure') {
+                    // print_r($arr_bid_details[0]);
+                    // exit;
+
+                    if ($arr_bid_details != 'failure' && count($arr_bid_details) > 1) {
                         foreach ($arr_bid_details as $bid_data) {
-                            if (!property_exists($bid_data['post_job_id'], $arr_job_post_bids)) {
+                    
+                            if (!isset($arr_job_post_bids[$bid_data['post_job_id']])) {
                                 $arr_job_post_bids[$bid_data['post_job_id']]['bids'] = 1;
                                 $arr_job_post_bids[$bid_data['post_job_id']]['bid_amount'] = $bid_data['amount'];
                             } else {
@@ -1353,6 +1357,19 @@ class PostjobController extends ResourceController
                                 $arr_job_post_bids[$bid_data['post_job_id']]['bid_amount'] += $bid_data['amount'];
                             }
                         }
+                    }elseif($arr_bid_details != 'failure' && count($arr_bid_details) == 1){
+                    
+                        $bid_data = $arr_bid_details;
+                        
+                        if (!isset($bid_data['post_job_id'], $arr_job_post_bids)) {
+                    
+                            $arr_job_post_bids[$bid_data[0]['post_job_id']]['bids'] = 1;
+                            $arr_job_post_bids[$bid_data[0]['post_job_id']]['bid_amount'] = $bid_data[0]['amount'];
+                        } else {
+                            $arr_job_post_bids[$bid_data[0]['post_job_id']]['bids']++;
+                            $arr_job_post_bids[$bid_data[0]['post_job_id']]['bid_amount'] += $bid_data[0]['amount'];
+                        }
+                    
                     }
 
                     
@@ -1405,9 +1422,9 @@ class PostjobController extends ResourceController
                         //Get Name of Awarded Bidder
                         if ($status == "Awarded") {
                             $details = $job_post_model->get_sp_details_bid_awarded($arr_booking['post_job_id']);
-
-                            $arr_booking['awarded_to'] = $details[0]['fname'] . " " . $details[0]['lname'];
-                            $arr_booking['awarded_to_sp_profile_pic'] = $details[0]['profile_pic'];
+                            
+                            $arr_booking['awarded_to'] = $details['fname'] . " " . $details['lname'];
+                            $arr_booking['awarded_to_sp_profile_pic'] = $details['profile_pic'];
                         } else {
                             $arr_booking['awarded_to'] = "";
                             $arr_booking['awarded_to_sp_profile_pic'] = "";
@@ -1576,6 +1593,9 @@ class PostjobController extends ResourceController
 
                     //Get Bids
                     $arr_bid_details = $job_post_model->get_job_post_bid_details_by_jobpost_id($post_job_id);
+                    // print_r($arr_bid_details);
+                    // exit;
+
 
                     if ($arr_bid_details != 'failure') {
                         foreach ($arr_bid_details as $bid_data) {
@@ -1583,6 +1603,7 @@ class PostjobController extends ResourceController
                                 'bid_id' => $bid_data['id'],
                                 'bid_type' => $bid_data['bid_type'],
                                 'sp_id' => $bid_data['users_id'],
+                                'users_id' => $bid_data['posted_by_id'],
                                 'sp_fname' => $bid_data['fname'],
                                 'sp_lname' => $bid_data['lname'],
                                 'sp_mobile' => $bid_data['mobile'],
@@ -1696,7 +1717,16 @@ class PostjobController extends ResourceController
                                 $arr_attachment_details = $job_post_model->get_bid_attachment_details($bid_id);
                                 if ($arr_attachment_details != 'failure') {
                                     foreach ($arr_attachment_details as $attach_data) {
-                                        $arr_attachments[] = array('bid_attach_id' => $attach_data['id'], 'file_name' => $attach_data['file_name'], 'file_location' => $attach_data['file_location']);
+                                        
+                                        $f = explode('.',$attach_data['file_name']);
+                                                                                
+                                        $arr_attachments[] = array(
+                                            'id' => $attach_data['id'],
+                                            'bid_attach_id' => $attach_data['id'], 
+                                            'file_name' => $attach_data['file_name'], 
+                                            'file_location' => $attach_data['file_location'],
+                                            'file_type' => end($f)
+                                        );
                                     }
                                 }
                             }
@@ -1783,7 +1813,7 @@ class PostjobController extends ResourceController
 
                 if ($key == $api_key) {
                     $common = new CommonModel();
-
+                    $job_post_model = new JobPostModel();
                     //Delete Previous Records erroneously entered
                     $common->delete_records_dynamically('installment_det', 'post_job_id', $json->post_job_id);
 
@@ -1811,10 +1841,23 @@ class PostjobController extends ResourceController
                         }
                     }
 
+                    
+                    $bal = $job_post_model->get_user_wallet_balance_by_post_id($json->post_job_id);
+                    
+                    if($bal != 'failure'){
+                        $wal_bal = $bal['amount'];
+                        $wal_bal_blocked = $bal['amount_blocked'];
+                    }else{
+                        $wal_bal = 0;
+                        $wal_bal_blocked = 0;
+                    }
+
                     if (count($arr_data) == $total_rows) {
                         return $this->respond([
                             "status" => 200,
                             "message" => "Success",
+                            "wallet_balance" => $wal_bal,
+                            "wallet_balance_blocked" => $wal_bal_blocked
                         ]);
                     } else {
                         return $this->respond([
@@ -2964,6 +3007,7 @@ class PostjobController extends ResourceController
                     $arr_installment_det = array(
                         'inst_status_id' => $json->status_id, //34 - approved,35 - rejected
                     );
+                    
                     $common->update_records_dynamically('installment_det', $arr_installment_det, 'id', $json->inst_id);
 
                     //Insert into booking status
@@ -2992,6 +3036,9 @@ class PostjobController extends ResourceController
                         $amount = $arr_inst_details[0]['amount'];
                     }
 
+                    // print_r($arr_inst_details);
+                    // exit;
+
                     $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
 
                     if ($json->status_id == 34) { //approved
@@ -2999,7 +3046,7 @@ class PostjobController extends ResourceController
                         $arr_wallet_details = $common->get_details_dynamically('wallet_balance', 'users_id', $json->users_id);
                         if ($arr_wallet_details != 'failure') {
                             //Get total amount and blocked amount
-                            $wallet_amount = $arr_wallet_details[0]['amount'] - $amount;
+                            $wallet_amount = $arr_wallet_details[0]['amount'];
                             $wallet_amount_blocked = $arr_wallet_details[0]['amount_blocked'] - $amount;
 
                             $arr_update_wallet_data = array(
@@ -3059,6 +3106,7 @@ class PostjobController extends ResourceController
                         );
 
                         $common->insert_records_dynamically('alert_regular_sp', $arr_alerts1);
+                        
                     }
 
                     if ($json->status_id == 35) { //rejected

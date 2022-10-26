@@ -76,8 +76,9 @@ class UserProfileController extends ResourceController
                         $ref_id = $res['referral_id'];
                     } else {
                         return $this->respond([
-                            "status" => 400,
-                            "message" => "Failed to Retrieve User Details"
+                            "status" => 200,
+                            "message" => "Success",
+                            "data" => []
                         ]);
                     }
 
@@ -195,7 +196,16 @@ class UserProfileController extends ResourceController
                 $gender = $json->gender;
                 $file = $json->image;
                 $image = '';
-                if (!is_null($file)) {
+                
+                // if($file){
+                //     print_r('Good');
+                // }else{
+                //     print_r('bad');
+                // }
+                // exit;
+                
+                                
+                if (($file)) {
 
                    //$image = generateImage($file);
                    $image = generateS3Object("images",$file,"png"); 

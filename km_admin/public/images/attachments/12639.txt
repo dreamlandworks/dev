@@ -1,0 +1,109 @@
+->HR MANAGEMENT
+
+-->CREATE DESIGNATION AND PAY DETAILS
+
+	Add a text field with label 'Pay'. Make necessary amendments in db also.
+
+-->CREATE EMPLOYEE ATTENDANCE
+	
+	Date field should be selectable with default today date.
+	If already any data is there like employee 1 is present and employee is absent on that date, it should also be reflected.
+
+--> CREATE EMPLOYEE PERFORMANCE REPORT
+
+	Only Employee ID/ Employee Name should be on drop down or autocomplete and rest of the data should be automatically fetchable.
+	Add Two fields with label 'Period From' & 'Period To' and make necessary amendments in db also.
+	If the same employee is selected whose performance report for the same 'period from and period to' is already submitted, show an alert saying 'Report already submitted. You can modify it VIEW section'
+	Reviewer Name can be automatically generated and the field is not necessary since reviewer will login with his credentials and submit the report.
+	Add another Text Area with label 'Performance in brief'
+
+--> RELIEVE EMPLOYEE
+
+	Only Employee ID/ Employee Name should be on drop down or autocomplete and rest of the data should be automatically fetchable.
+	'Reviewer Name' should be removed.
+	Date of review should be 'Date of Relieving'
+	'Behaviours' label should be 'Reasons for Relieving'
+	Need a file attachment with label 'Resignation Letter' which is optional.
+
+-> MARKETING PLAN
+
+--> CREATING MARKETING PLAN
+
+	These fields are required:-
+	
+	Name of Ad Campaign, Period (1 Week, 2 Weeks, 3 Weeks, 1 Month, 2 Months, 3 Months, 6 Months), Campaign Type (SMS/EMAIL/WHATSAPP/FACEBOOK/INSTAGRAM/QUORA/TWITTER/YOUTUBE/OTHERS),
+	Target Age Group (Below 13, 13 - 20, 21 - 30, 31 - 40, 41 - 50, Above 50), Gender (MALE/FEMALE/ALL), Date of Start, Targeted User Group (User/ Service Provider)
+	CONTENT (Required Text Area with Text Editor), Attachments (File Attachments which is optional), Budget Estimated
+
+--> VIEW MARKETING PLAN
+
+	S.No., Name, Period, Started On, Ends in (__ Days __ Hours), Budget, Targeted User Group, Status
+
+--> VIEW MARKETING STATISTICS
+
+	S.No., Name of Campaign, Ends In (__ Days __ Hours), Leads Generated, Leads Converted, Projected Budget, Expenditure Till Date, CAC (Customer Acquistion Cost)
+	
+--> CREATE LEADS
+	
+	Age Group (Below 13, 13 - 20, 21 - 30, 31 - 40, 41 - 50, Above 50) is required.
+
+--> VIEW LIST OF LEADS
+
+	Add a column with 'SMS, MAIL, WHATSAPP, CALL' ICONS. I will later on add APIs
+
+--> CREATE MODULE LIST/ VIEW MODULE LIST 
+
+	These are not required. If you can modify them into any other requisites from the above and I forgot to mention, you can do it.
+
+
+
+-> VIEW RECEIPTS
+
+	Don't fetch all data. Just show ten to fifteen recent transactions only initially.	
+	Need option to fetch data based on (Date, From & To dates)
+	Date, On Account of (Booking Amount, Invoice Amount, Cancellation Charges etc.,), Amount, Order ID, Status
+
+-> VIEW RECEIPTS BY BOOKING ID
+
+	Need to fetch data based on Booking ID
+	Date, On Account of (Booking Amount, Invoice Amount, Cancellation Charges etc.,), Amount, Order ID, Status
+
+-> VIEW PAYMENTS
+
+	Don't fetch all data. Just show ten to fifteen recent transactions only initially.	
+	Need option to fetch data based on (Date, From & To dates)
+	Date, On Account of (Booking Amount, Payments to Service Provider, Refunds to User, Withdrawl to Bank etc.,), Amount, Transaction ID, Status
+
+-> CREATE WITHDRAWL REQUEST
+	
+	Need to fetch wallet balance based on User ID
+	Amount, To Bank Account (Select from list of accounts available in his account), Option to Add New Bank Account Details
+
+-> APPROVE/ REJECT WITHDRAWL REQUESTS
+
+	S.No, Date, Request ID, User ID, Amount, Approve/ Reject 
+
+-> VIEW/ UPDATE WITHDRAWL REQUESTS
+	
+	S.No, Date, Request ID, User ID, Amount, Status (Approved/ Not Approved), Edit (Only for Approved)
+	
+	--> IN EDIT 
+
+	Fields Required to update:-
+	
+	Transaction ID, Credited On, Status (TXN_SUCCESS, TXN_FAILURE)
+	
+	
+-> CREATE/ EDIT NEW BID PACKS
+
+	Package Name, Bids, Amount, Validity (1 Week, 2 Weeks, 3 Weeks, 1 Month, 2 Months, 3 Months, 6 Months, No Validity)
+
+-> VIEW BID PACKS
+
+	Package Name, Bids, Amount, Validity
+
+	
+
+
+
+

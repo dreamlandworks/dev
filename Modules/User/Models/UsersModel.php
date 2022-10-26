@@ -56,6 +56,10 @@ class UsersModel extends Model
 			case 'login':
 				$user = $this->where('userid', $id)->first();
 				break;
+			case 'truecaller':
+				$user = $this->where('userid', $id)->first();
+				break;
+	
 		}
 			return $user;
 	}
@@ -146,6 +150,24 @@ class UsersModel extends Model
                 ->where('email', $email)
                 ->orWhere('userid', $mobile)
                  ->get();
+		
+        if($query->getRow() != '') {
+            return $query->getRow(); 
+        }
+	    else {
+	        return 'failure'; 
+	    }
+    }
+
+
+	public function search_by_mobile($mobile){
+	    $db      = \Config\Database::connect();
+	    
+        $builder = $db->table('users');
+        $query = $builder->select('*')
+                ->where('userid', $mobile)
+                ->get();
+		
         if($query->getRow() != '') {
             return $query->getRow(); 
         }

@@ -59,7 +59,32 @@ class MyAccount extends ResourceController
 		       $total_bookings = $misc_model->get_total_bookings($users_id);
 		       $total_job_posts = $misc_model->get_total_job_posts($users_id);
 		       $total_referrals = $misc_model->get_total_referrals($users_id);
-		       $commission_earned = array('this_month' => 0, 'prev_month' => 0, 'change' => 0);
+
+			   //Getting Commissions Earned
+			   			 
+			   $lm = date('m')-1;
+			   $lm_dt = date('Y-'.$lm.'-d');
+			   $str_date_lm = date("Y-m-01", strtotime($lm_dt));
+			   $end_date_lm = date("Y-m-t", strtotime($lm_dt));
+			  
+
+			   $dt = date('Y-m-d');
+			   $str_date = date("Y-m-01", strtotime($dt));
+			   $end_date = date("Y-m-t", strtotime($dt)); 
+
+			   $commission_earned_this_month = $misc_model->get_commission($users_id,$str_date,$end_date);
+			   $commission_earned_last_month = $misc_model->get_commission($users_id,$str_date_lm,$end_date_lm);
+			   
+			   $commission_earned_this_month = ($commission_earned_this_month != 'failure' ? $commission_earned_this_month : 0);
+			   $commission_earned_last_month = ($commission_earned_last_month != 'failure' ? $commission_earned_last_month : 0);
+			   $change_in_commission = $commission_earned_last_month - $commission_earned_this_month;
+
+			   $commission_earned = [
+				   'this_month' => $commission_earned_this_month, 
+				   'prev_month' => $commission_earned_last_month, 
+				   'change' => $change_in_commission
+				];
+
 		       $res_plan = $misc_model->get_user_plan_details($users_id);
 		       
 	           return $this->respond([

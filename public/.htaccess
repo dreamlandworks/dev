@@ -66,3 +66,8 @@ ExpiresByType image/x-icon "access 1 year"
 ExpiresDefault "access 1 month"
 </IfModule>
 ## EXPIRES CACHING ##
+
+<IfModule mod_mime.c>
+    AddType image/avif                                  avif
+    AddType image/avif-sequence                         avifs
+</IfModule>

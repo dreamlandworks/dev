@@ -44,6 +44,10 @@ class SPBookingController extends ResourceController
 
                 $api_key = $apiconfig->provider_key;
                 $date = $json->created_on;
+                $json->material_advance = (empty($json->material_advance) ? '0' : $json->material_advance);
+                $json->technician_charges = (empty($json->technician_charges) ? '0' : $json->technician_charges);
+                
+                
                 $demand = $json->material_advance + $json->technician_charges;
 
                 if ($key == $api_key) {
@@ -58,6 +62,7 @@ class SPBookingController extends ResourceController
                     $arr_extra_demand = array();
 
                     $arr_sp_details = $misc_model->get_sp_name_by_booking($json->booking_id);
+                    
                     if ($arr_sp_details != "failure") {
                         $sp_name = $arr_sp_details['fname'] . " " . $arr_sp_details['lname'];
                         $sp_id = $arr_sp_details['sp_id'];
@@ -65,6 +70,7 @@ class SPBookingController extends ResourceController
                     }
 
                     $arr_extra_demand_details =  $common->get_details_dynamically('extra_demand', 'booking_id', $json->booking_id);
+                    
                     if ($arr_extra_demand_details == 'failure') {
                         $arr_extra_demand = array(
                             'booking_id' => $json->booking_id,
@@ -90,8 +96,10 @@ class SPBookingController extends ResourceController
                             $common->insert_records_dynamically('booking_status', $arr_booking_status);
                         }
 
+                        
+                        
                         //Insert into alert_regular_sp table
-
+                        
                         $arr_alerts = array(
                             'type_id' => 7,
                             'description' => "You have succesfully raised Extra Demand of Rs." . $demand . "/- for Booking ID: " . $booking_ref_id . " on" . $date,
@@ -123,20 +131,82 @@ class SPBookingController extends ResourceController
                             'status_code_id' => 37,
                             'created_on' => $date,
                             'updated_on' => $date,
-                            'expiry' => $date('Y-m-d H:i:s',strtotime('+30 Days'))
+                            'expiry' => date('Y-m-d H:i:s',strtotime('+30 Days'))
                         );
 
                         $common->insert_records_dynamically('alert_action_user', $arr_alerts1);
+
                     } else {
+                        
+                        $material_advance = $json->material_advance+$arr_extra_demand_details[0]['material_advance'];
+                        $technician_charges= $json->technician_charges+$arr_extra_demand_details[0]['technician_charges'];
+                        $amount= $json->amount + $arr_extra_demand_details[0]['amount'];
+                                                
                         $arr_extra_demand = array(
-                            'amount' => $json->amount,
-                            'material_advance' => $json->material_advance,
-                            'technician_charges' => $json->technician_charges,
+                            'amount' => $amount,
+                            'material_advance' => $material_advance,
+                            'technician_charges' => $technician_charges,
                             'status' => 0,
                         );
                         $common->update_records_dynamically('extra_demand', $arr_extra_demand, 'booking_id', $json->booking_id);
 
                         $extra_demand_id = $arr_extra_demand_details[0]['id'];
+
+                        //Insert into booking status
+                        $arr_booking_status = array(
+                            'booking_id' => $json->booking_id,
+                            'status_id' => 37, //Extra demand added
+                            'description' => "Extra Demand Raised",
+                            'created_on' => $date
+                        );
+
+                        if (($common->get_details_with_multiple_where('booking_status', $arr_booking_status)) == 'failure') {
+                            $common->insert_records_dynamically('booking_status', $arr_booking_status);
+                        }
+
+
+                        //delete old actionable_alerts
+
+                        $old_alert_delete = $common->delete_records_dynamically('alert_action_user','booking_id',$json->booking_id);
+
+                        //Insert into alert_regular_sp table
+
+                        $arr_alerts = array(
+                            'type_id' => 7,
+                            'description' => "You have succesfully raised total Extra Demand of Rs." . $amount . "/- for Booking ID: " . $booking_ref_id . " on" . $date,
+                            'user_id' => $sp_id,
+                            'profile_pic_id' => $sp_id,
+                            'status' => 2,
+                            'created_on' => $date,
+                            'updated_on' => $date
+                        );
+
+                        $common->insert_records_dynamically('alert_regular_sp', $arr_alerts);
+
+                        //Insert into alert_action_user
+                        $arr_alerts1 = array(
+                            'type_id' => 7,
+                            'description' => $sp_name . " raised total Extra Demand of Rs." . $amount . "/- for Booking ID: " . $booking_ref_id . " on" . $date,
+                            'user_id' => $user_id,
+                            'profile_pic_id' => $sp_id,
+                            'status' => 2,
+                            'created_on' => $date,
+                            'api' => 'user/update_extra_demand_status',
+                            'accept_text' => 'Acccept',
+                            'reject_text' => 'Reject',
+                            'accept_response' => 38,
+                            'reject_response' => 39,
+                            'updated_on' => $date,
+                            'booking_id' => $booking_ref_id,
+                            'post_id' => 0,
+                            'status_code_id' => 37,
+                            'created_on' => $date,
+                            'updated_on' => $date,
+                            'expiry' => date('Y-m-d H:i:s',strtotime('+30 Days'))
+                        );
+
+                        $common->insert_records_dynamically('alert_action_user', $arr_alerts1);
+
                     }
 
                     if ($extra_demand_id > 0) {
@@ -221,8 +291,6 @@ class SPBookingController extends ResourceController
                             $status = "";
                             if ($status_id == '24' || $status_id == '25') { //Cancelled by user/sp
                                 $status = "Cancelled";
-                            } else if ($started_at == "0000-00-00 00:00:00" && $current_date > $booking_end_date) {
-                                $status = "Expired";
                             } else {
                                 if ($started_at == "" || $started_at == "0000-00-00 00:00:00") {
                                     $status = "Pending";
@@ -352,9 +420,11 @@ class SPBookingController extends ResourceController
                             $status = "";
                             if ($status_id == '24' || $status_id == '25') { //Cancelled by user/sp
                                 $status = "Cancelled";
-                            } else if ($started_at == "0000-00-00 00:00:00" && $current_date > $booking_end_date) {
-                                $status = "Expired";
-                            } else {
+                            } 
+                            // else if ($started_at == "0000-00-00 00:00:00" && $current_date > $booking_end_date) {
+                            //     $status = "Expired";
+                            // }
+                             else {
                                 if ($started_at == "" || $started_at == "0000-00-00 00:00:00") {
                                     $status = "Pending";
                                 } else {
@@ -615,6 +685,7 @@ class SPBookingController extends ResourceController
                 $arr_extra_demand = array(
                     'expenditure_incurred' => $expenditure_incurred,
                 );
+                
                 $common->update_records_dynamically('extra_demand', $arr_extra_demand, 'booking_id', $booking_id);
 
                 return $this->respond([
@@ -691,7 +762,7 @@ class SPBookingController extends ResourceController
                         $arr_booking['wallet_balance'] = intval($arr_booking_details['w_balance']) . "";
                         $arr_booking['order_id'] = "FNL_" . date('Ymd_his_U');
                         
-
+                        
                         //Time Interval Calculation					  
                         $started = new DateTime($arr_booking['started_at']);
                         $end = new DateTime($arr_booking['completed_at']);
@@ -713,7 +784,8 @@ class SPBookingController extends ResourceController
 
                         //Charges Calculation
                         $sp_tariff = $misc_model->get_sp_tariff($arr_booking_details['sp_id'], $arr_booking_details['category_id']);
-
+                        
+                        
                         if ($sp_tariff != 'failure') {
 
                             if ($minutes > 0) {
@@ -730,9 +802,12 @@ class SPBookingController extends ResourceController
                                 $charges = $sp_tariff[0]['min_charges'];
                             }
                         }
+                        
 
+                        // print_r($arr_booking_details);
+                        // exit;
 
-
+                       
                         //Tax Calculation
                         $sgst = $common->get_details_dynamically('tax_cancel_charges', 'id', 3);
                         $sgst_percentage = $sgst[0]['percentage'];
@@ -741,9 +816,18 @@ class SPBookingController extends ResourceController
                         $cgst_percentage = $cgst[0]['percentage'];
 
                         if ($extra_demand == 1 && $arr_booking_details['extra_status'] != 2) {
+                            
+                            //Value if technician charges are 0
+                            $arr_booking_details['technician_charges'] = ($arr_booking_details['technician_charges'] == 0 ? number_format($charges, 2, '.', '') : $arr_booking_details['technician_charges']);
+                            
                             $sgst_amount = number_format(($arr_booking_details['technician_charges'] * $sgst_percentage / 100), 2, '.', '');
                             $cgst_amount = number_format(($arr_booking_details['technician_charges'] * $cgst_percentage / 100), 2, '.', '');
+
                         } else {
+
+                            //Value if technician charges are 0
+                            $arr_booking_details['technician_charges'] = number_format($charges, 2, '.', '');
+
                             $sgst_amount = number_format(($charges * $sgst_percentage / 100), 2, '.', '');
                             $cgst_amount = number_format(($charges * $cgst_percentage / 100), 2, '.', '');
                         }
@@ -777,13 +861,13 @@ class SPBookingController extends ResourceController
                         $arr_booking['final_dues'] = number_format(($arr_booking['dues'] - $paid_amount), 0, '.', '');
 
                         //Get Paytm TxnNo
-                        $result = $paytm->gettxn($arr_booking['order_id'],$arr_booking['final_dues'],$arr_booking['users_id']);
-                        $result = json_decode($result,true);
+                        // $result = $paytm->gettxn($arr_booking['order_id'],$arr_booking['final_dues'],$arr_booking['users_id']);
+                        // $result = json_decode($result,true);
 
                         // print_r($result);
                         // exit;
 
-                        $arr_booking['txn_id'] = $result['body']['txnToken'];
+                        // $arr_booking['txn_id'] = $result['body']['txnToken'];
 
                     }
                     return $this->respond([
@@ -914,7 +998,7 @@ class SPBookingController extends ResourceController
                     ]);
                 } else {
                     return $this->respond([
-                        "booking_id" => $booking_id,
+                        "goals_installments_details" => [],
                         "status" => 404,
                         "message" => "No Goals/Installments found"
                     ]);
@@ -968,11 +1052,13 @@ class SPBookingController extends ResourceController
 
                     $inst_no = 0;
 
-                    $arr_inst_details = $common->get_details_dynamically('installment_det', 'id', $json->inst_id);
+                    $arr_inst_details = $common->get_details_with_multiple_where('installment_det', ['inst_no' => $json->inst_id, 'booking_id' => $json->booking_id]);
                     if ($arr_inst_details != 'failure') {
                         $inst_no = $arr_inst_details[0]['inst_no'];
-                    }
 
+                        // print_r($arr_inst_details);
+                    // exit;
+                    
                     $arr_user_details = $common->get_details_dynamically('users', 'users_id', $json->users_id);
                     $booking_ref_id = str_pad($json->booking_id, 6, "0", STR_PAD_LEFT);
 
@@ -1024,14 +1110,14 @@ class SPBookingController extends ResourceController
                         'profile_pic_id' => $sp_id,
                         'status' => 2,
                         'created_on' => $date,
-                        'api' => 'user/user/job_post_approve_reject_installment',
+                        'api' => 'user/job_post_approve_reject_installment',
                         'accept_text' => 'Acccept',
                         'reject_text' => 'Reject',
                         'accept_response' => 34,
                         'reject_response' => 35,
                         'updated_on' => $date,
                         'booking_id' => $booking_ref_id,
-                        'post_id' => 'Null',
+                        'post_id' => $arr_inst_details[0]['post_job_id'],
                         'status_code_id' => 33,
                         'expiry' => date('Y-m-d H:i:s',strtotime('+30 Days'))
                     );
@@ -1043,6 +1129,20 @@ class SPBookingController extends ResourceController
                         "status" => 200,
                         "message" => "Installment request sent Successfully",
                     ]);
+
+
+
+
+
+                    }else{
+
+                        return $this->respond([
+                            'status' => 404,
+                            'message' => 'Booking ID or Installment ID Mismatch'
+                        ]);
+                    }
+
+                    
                 } else {
                     return $this->respond([
                         'status' => 403,
@@ -1546,7 +1646,9 @@ class SPBookingController extends ResourceController
                         $sp_longitude = $arr_sp_details[0]['longitude'];
                     }
 
-                    
+                    // print_r($arr_sp_details);
+                    // exit;
+
                     $arr_job_post_bids = array();
                     $arr_multimove_details = array();
 
@@ -1589,6 +1691,7 @@ class SPBookingController extends ResourceController
                             case 0:
                                 $arr_booking = 'failure';
                                 break;
+                                
                         }
 
                                                
@@ -2567,10 +2670,10 @@ class SPBookingController extends ResourceController
 
                     //echo " category_id ".$category_id;exit;
                     //echo "<pre>";
-                    //print_r($arr_sp_details);
-                    //print_r($arr_bid_details);
+                    // print_r($arr_sp_details);
+                    // print_r($arr_bid_details);
                     //echo "</pre>";
-                    //exit;
+                    // exit;
                     if ($arr_bid_details != 'failure') {
                         foreach ($arr_bid_details as $bid_data) {
                             if (!array_key_exists($bid_data['post_job_id'], $arr_job_post_bids)) {
@@ -2605,18 +2708,39 @@ class SPBookingController extends ResourceController
                         }
                     }
 
-                    //Get Booking Details
-                    $arr_booking_list = $job_post_model->get_job_new_post_list($sp_id, $category_id, $arr_sp_profession_id, $arr_sp_keywords_id, $sp_city, $sp_latitude, $sp_longitude);
+                    $arr_booking_list = array();
+
+                    $category_id = explode(",",$category_id);
+
+                    if(!is_array($category_id)){
+                        
+                        //Get Booking Details
+                        $arr_booking_list = $job_post_model->get_job_new_post_list($sp_id, $category_id, $arr_sp_profession_id, $arr_sp_keywords_id, $sp_city, $sp_latitude, $sp_longitude);
+                        
+                    }else{
+                    
+                        foreach ($category_id as $cat){
+                            
+                            //Get Booking Details
+                            $arr_booking = $job_post_model->get_job_new_post_list($sp_id, $cat, $arr_sp_profession_id, $arr_sp_keywords_id, $sp_city, $sp_latitude, $sp_longitude);
+                            if($arr_booking !='failure'){
+                                foreach($arr_booking as $arr_list){
+                                    array_push($arr_booking_list,$arr_list);
+                                } 
+                            }
+                            }   
+                    }
+                    
 
                     $arr_response = array();
                     $arr_booking = array();
                     $current_date = date('Y-m-d H:i:s');
 
                     //echo "<pre>";
-                    //print_r($arr_booking_list);
+                    // print_r($arr_booking_list);
                     //print_r($arr_multi_move_list);
                     //echo "</pre>";
-                    //exit;
+                    // exit;
 
                     if ($arr_booking_list != 'failure') {
                         foreach ($arr_booking_list as $key => $arr_booking_details) {

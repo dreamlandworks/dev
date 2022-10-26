@@ -1,0 +1,63 @@
+INFO - 2022-07-17 00:22:48 --> Used the default controller.
+INFO - 2022-07-17 00:37:50 --> Used the default controller.
+INFO - 2022-07-17 01:19:57 --> Used the default controller.
+INFO - 2022-07-17 01:57:50 --> Used the default controller.
+INFO - 2022-07-17 02:49:55 --> Used the default controller.
+INFO - 2022-07-17 03:29:08 --> Used the default controller.
+INFO - 2022-07-17 04:18:58 --> Used the default controller.
+INFO - 2022-07-17 05:00:29 --> Used the default controller.
+INFO - 2022-07-17 05:48:28 --> Used the default controller.
+INFO - 2022-07-17 05:49:44 --> Used the default controller.
+INFO - 2022-07-17 06:32:22 --> Used the default controller.
+INFO - 2022-07-17 07:20:07 --> Used the default controller.
+INFO - 2022-07-17 08:03:52 --> Used the default controller.
+INFO - 2022-07-17 08:50:33 --> Used the default controller.
+INFO - 2022-07-17 09:04:49 --> Used the default controller.
+INFO - 2022-07-17 09:34:07 --> Used the default controller.
+INFO - 2022-07-17 09:40:33 --> Used the default controller.
+INFO - 2022-07-17 09:44:03 --> Used the default controller.
+INFO - 2022-07-17 09:56:58 --> Used the default controller.
+INFO - 2022-07-17 10:20:00 --> Used the default controller.
+INFO - 2022-07-17 11:04:37 --> Used the default controller.
+INFO - 2022-07-17 11:19:11 --> Used the default controller.
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:13 --> Error connecting to the database: No such file or directory
+ERROR - 2022-07-17 11:25:24 --> Expression #4 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.booking.scheduled_date' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-17 11:25:27 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-17 11:25:27 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-17 11:25:41 --> Expression #4 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.booking.scheduled_date' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-17 11:25:48 --> Expression #4 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.booking.scheduled_date' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+INFO - 2022-07-17 11:50:14 --> Used the default controller.
+INFO - 2022-07-17 12:01:34 --> Used the default controller.
+ERROR - 2022-07-17 12:32:41 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-17 12:32:41 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+ERROR - 2022-07-17 12:33:06 --> Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'squill_app.address.id' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+INFO - 2022-07-17 13:19:56 --> Used the default controller.
+ERROR - 2022-07-17 14:19:32 --> Operand should contain 1 column(s)
+ERROR - 2022-07-17 14:22:09 --> Operand should contain 1 column(s)
+ERROR - 2022-07-17 14:22:19 --> Operand should contain 1 column(s)
+ERROR - 2022-07-17 14:22:42 --> Operand should contain 1 column(s)
+INFO - 2022-07-17 14:51:04 --> Used the default controller.
+INFO - 2022-07-17 15:26:57 --> Used the default controller.
+INFO - 2022-07-17 15:26:59 --> Used the default controller.
+INFO - 2022-07-17 16:20:53 --> Used the default controller.
+INFO - 2022-07-17 17:50:41 --> Used the default controller.
+INFO - 2022-07-17 19:20:35 --> Used the default controller.
+INFO - 2022-07-17 20:50:40 --> Used the default controller.
+INFO - 2022-07-17 22:19:04 --> Used the default controller.
+INFO - 2022-07-17 22:26:28 --> Used the default controller.
+INFO - 2022-07-17 23:49:47 --> Used the default controller.

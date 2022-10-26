@@ -62,4 +62,5 @@ $routes->group("provider", ["namespace" => "\Modules\Provider\Controllers\api"],
     $routes->get("get_leaderboard_list", "LeaderboardController::get_leaderboard_list"); //Get Leaderboard List
     $routes->get("get_training_list", "MiscController::get_training_list"); //Get Training Videos List
     $routes->get("update_sp_watched_video", "MiscController::update_sp_watched_video"); //Update watched video
+    
 });

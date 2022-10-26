@@ -1,0 +1,8 @@
+INFO - 2022-10-20 00:54:06 --> Used the default controller.
+INFO - 2022-10-20 03:15:13 --> Used the default controller.
+INFO - 2022-10-20 03:42:21 --> Used the default controller.
+INFO - 2022-10-20 04:09:13 --> Used the default controller.
+INFO - 2022-10-20 05:13:32 --> Used the default controller.
+ERROR - 2022-10-20 05:36:58 --> Cannot add or update a child row: a foreign key constraint fails (`squill_app`.`sp_profession`, CONSTRAINT `fk_sp_profession_users_id` FOREIGN KEY (`users_id`) REFERENCES `user_details` (`id`))
+INFO - 2022-10-20 06:34:49 --> Used the default controller.
+INFO - 2022-10-20 06:48:04 --> Used the default controller.

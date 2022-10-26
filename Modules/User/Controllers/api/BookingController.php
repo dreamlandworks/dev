@@ -49,7 +49,7 @@ class BookingController extends ResourceController
                 !property_exists($json, 'scheduled_date') || !property_exists($json, 'time_slot_from')
                 || !property_exists($json, 'started_at') || !property_exists($json, 'job_description')
                 || !property_exists($json, 'address_id') || !property_exists($json, 'temp_address_id')
-                || !property_exists($json, 'city')
+                || !property_exists($json, 'city') 
                 || !property_exists($json, 'state') || !property_exists($json, 'country') || !property_exists($json, 'postal_code')
                 || !property_exists($json, 'address') || !property_exists($json, 'user_lat') || !property_exists($json, 'user_long')
                 || !property_exists($json, 'amount') || !property_exists($json, 'sp_id') || !property_exists($json, 'created_on')
@@ -69,6 +69,7 @@ class BookingController extends ResourceController
                 $api_key = $apiconfig->user_key;
 
                 if ($key == $api_key) {
+                    
                     $attachments = $json->attachments;
 
                     $common = new CommonModel();
@@ -228,7 +229,7 @@ class BookingController extends ResourceController
                         $otp = $this->get_otp_token();
                         $booking_ref_id = str_pad($booking_id, 6, "0", STR_PAD_LEFT);
                         $users_id = $json->users_id;
-                        $order_id = "BKN_" . date('Ymd_his_U');
+                        // $order_id = "BKN_" . date('Ymd_his_U');
 
                         $arr_booking_update = array(
                             'otp' => $otp,
@@ -237,8 +238,8 @@ class BookingController extends ResourceController
                         $common->update_records_dynamically('booking', $arr_booking_update, 'id', $booking_id);
 
                         //Get Paytm TXNNo for the Booking
-                        $result = $paytm->gettxn($order_id, $json->amount, $json->users_id);
-                        $result = json_decode($result, true);
+                        // $result = $paytm->gettxn($order_id, $json->amount, $json->users_id);
+                        // $result = json_decode($result, true);
 
                         // echo "<pre>";
                         // print_r($result);
@@ -249,8 +250,8 @@ class BookingController extends ResourceController
                         return $this->respond([
                             "booking_id" => $booking_id,
                             "booking_ref_id" => str_pad($booking_id, 6, "0", STR_PAD_LEFT),
-                            "order_id" => $order_id,
-                            "txn_id" => (!isset($result['body']['txnToken']) ? "" : $result['body']['txnToken']),
+                            // "order_id" => $order_id,
+                            // "txn_id" => (!isset($result['body']['txnToken']) ? "" : $result['body']['txnToken']),
                             "status" => 200,
                             "message" => "Success",
                         ]);
@@ -269,6 +270,60 @@ class BookingController extends ResourceController
             }
         }
     }
+    //-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
+    
+    
+    //---------------------------------------------------------Get TXN No. --------------------------------------------------------------
+    //-------------------------------------------------------------**************** -----------------------------------------------------
+    public function get_txn(){
+
+        $json = $this->request->getJSON();
+        
+        $key = md5($json->key); //BbJOTPWmcOaAJdnvCda74vDFtiJQCSYL
+                $apiconfig = new \Config\ApiConfig();
+
+                $api_key = $apiconfig->user_key;
+
+        if ($key == $api_key) {
+        
+        
+
+        $paytm = new PaytmModel();
+
+        if($json->type == 1){ //Booking Amount
+            $order_id = "BKN_" . date('Ymd_his_U');
+        }elseif($json->type == 2){ //Final Amount of Booking
+            $order_id = "FNL_" . date('Ymd_his_U');
+        }elseif($json->type == 3){ //User Plan
+            $order_id = "PLNU_" . date('Ymd_his_U');
+        }elseif($json->type == 4){ // SP Plan
+            $order_id = "PLNS_" . date('Ymd_his_U');
+        }elseif($json->type == 5){ // JOB Post Installment
+            $order_id = "JOB_" . date('Ymd_his_U');
+        }
+        
+
+        //Get Paytm TXN Code
+        $result = $paytm->gettxn($order_id, $json->amount, $json->users_id);
+        $result = json_decode($result, true);
+
+        return $this->respond([
+            
+            "order_id" => $order_id,
+            "txn_id" => (!isset($result['body']['txnToken']) ? "" : $result['body']['txnToken']),
+            "status" => 200,
+            "message" => "Success",
+        ]);
+    }else{
+
+        return $this->respond([
+            'status' => 403,
+            'message' => 'Access Denied ! Authentication Failed'
+        ]);
+
+    }
+}
+
     //-------------------------------------------------------------FUNCTION ENDS---------------------------------------------------------
     //---------------------------------------------------------Blue Collar booking-------------------------------------------------
     //-------------------------------------------------------------**************** -----------------------------------------------------
@@ -420,7 +475,7 @@ class BookingController extends ResourceController
                         $otp = $this->get_otp_token();
                         $booking_ref_id = str_pad($booking_id, 6, "0", STR_PAD_LEFT);
                         $users_id = $json->users_id;
-                        $order_id = "BKN_" . date('Ymd_his_U');
+                        // $order_id = "BKN_" . date('Ymd_his_U');
 
                         $arr_booking_update = array(
                             'otp' => $otp,
@@ -432,8 +487,8 @@ class BookingController extends ResourceController
                         $common->update_records_dynamically('booking', $arr_booking_update, 'id', $booking_id);
 
                         //Get Paytm TXNNo for the Booking
-                        $result = $paytm->gettxn($order_id, $json->amount, $json->users_id);
-                        $result = json_decode($result, true);
+                        // $result = $paytm->gettxn($order_id, $json->amount, $json->users_id);
+                        // $result = json_decode($result, true);
 
                         // echo "<pre>";
                         // print_r($result);
@@ -444,8 +499,8 @@ class BookingController extends ResourceController
                         return $this->respond([
                             "booking_id" => $booking_id,
                             "booking_ref_id" => str_pad($booking_id, 6, "0", STR_PAD_LEFT),
-                            "order_id" => $order_id,
-                            "txn_id" => (!isset($result['body']['txnToken']) ? "" : $result['body']['txnToken']),
+                            // "order_id" => $order_id,
+                            // "txn_id" => (!isset($result['body']['txnToken']) ? "" : $result['body']['txnToken']),
                             "status" => 200,
                             "message" => "Success",
                         ]);
@@ -671,11 +726,11 @@ class BookingController extends ResourceController
                         $otp = $this->get_otp_token();
                         $booking_ref_id = str_pad($booking_id, 6, "0", STR_PAD_LEFT);
                         $users_id = $json->users_id;
-                        $order_id = "BKN_" . date('Ymd_his_U');
+                        // $order_id = "BKN_" . date('Ymd_his_U');
 
                         //Get Paytm TXNNo for the Booking
-                        $result = $paytm->gettxn($order_id, $json->amount, $json->users_id);
-                        $result = json_decode($result, true);
+                        // $result = $paytm->gettxn($order_id, $json->amount, $json->users_id);
+                        // $result = json_decode($result, true);
 
 
                         $arr_booking_update = array(
@@ -690,8 +745,8 @@ class BookingController extends ResourceController
                         return $this->respond([
                             "booking_id" => $booking_id,
                             "booking_ref_id" => str_pad($booking_id, 6, "0", STR_PAD_LEFT),
-                            "order_id" => $order_id,
-                            "txn_id" => (!isset($result['body']['txnToken']) ? "" : $result['body']['txnToken']),
+                            // "order_id" => $order_id,
+                            // "txn_id" => (!isset($result['body']['txnToken']) ? "" : $result['body']['txnToken']),
                             "status" => 200,
                             "message" => "Success"
                         ]);
@@ -760,12 +815,13 @@ class BookingController extends ResourceController
 
 
                     $check = $common->get_details_dynamically('transaction', 'order_id', $json->order_id);
-                    if ($check != 'failure' && $check[0]['payment_status'] != "TXN_FAILURE") {
-                        return $this->respond([
-                            'status' => 404,
-                            'message' => 'Order ID already Used'
-                        ]);
-                    } else {
+                                        
+                    // if ($check != 'failure' && $check[0]['payment_status'] != "TXN_FAILURE") {
+                    //     return $this->respond([
+                    //         'status' => 404,
+                    //         'message' => 'Order ID already Used'
+                    //     ]);
+                    // } else {
 
 
                         $result = $paytm->verify_txn($json->order_id);
@@ -777,6 +833,9 @@ class BookingController extends ResourceController
                             $payment_status = "TXN_SUCCESS";
                         }
 
+
+                        // print_r($result);
+                        // exit;
 
                         $arr_transaction = array();
 
@@ -1030,7 +1089,7 @@ class BookingController extends ResourceController
                                 ]);
                             } //Action after Payment Success
                         }
-                    }
+                    // }
                 }
             }
         }
@@ -1083,6 +1142,10 @@ class BookingController extends ResourceController
                     $arr_booking = array();
                     $sp_fcm_token = "";
 
+
+                    // print_r($arr_booking_details);
+                    // exit;
+
                     if ($arr_booking_details != 'failure') {
                         $started_at = $arr_booking_details['started_at'];
                         $completed_at = $arr_booking_details['completed_at'];
@@ -1121,6 +1184,13 @@ class BookingController extends ResourceController
                             $reschedule_status = "Reschedule Requested";
                         }
 
+                        // print_r($arr_booking_details['completed_at']);
+                        // exit;
+
+                        $arr_booking_details['completed_at'] = (is_null($arr_booking_details['completed_at']) ? "0000-00-00 00:00:00" : $arr_booking_details['completed_at']);
+                        $arr_booking_details['profile_pic'] = (is_null($arr_booking_details['profile_pic']) ? "" : $arr_booking_details['profile_pic']);
+                        
+
                         $arr_booking['booking_id'] = $booking_id;
                         $arr_booking['fname'] = $arr_booking_details['fname'];
                         $arr_booking['lname'] = $arr_booking_details['lname'];
@@ -1128,7 +1198,7 @@ class BookingController extends ResourceController
                         $arr_booking['scheduled_date'] = $arr_booking_details['scheduled_date'];
                         $arr_booking['time_slot_id'] = $arr_booking_details['time_slot_id'];
                         $arr_booking['started_at'] = ($arr_booking_details['started_at'] == '0000-00-00 00:00:00') ? "00-00-0000 00:00:00"  : date('d-m-Y h:i:sa', strtotime($arr_booking_details['started_at']));
-                        $arr_booking['completed_at'] = ($arr_booking_details['completed_at'] == '0000-00-00 00:00:00') ? date('d-m-Y h:i:sa') : date('d-m-Y h:i:sa', strtotime($arr_booking_details['completed_at']));
+                        $arr_booking['completed_at'] = ($arr_booking_details['completed_at'] == '0000-00-00 00:00:00') ? $arr_booking_details['completed_at'] : date('d-m-Y h:i:sa', strtotime($arr_booking_details['completed_at']));
                         $arr_booking['from'] = $arr_booking_details['from'];
                         $arr_booking['estimate_time'] = $arr_booking_details['estimate_time'];
                         $arr_booking['estimate_type'] = $arr_booking_details['estimate_type'];
@@ -1212,7 +1282,7 @@ class BookingController extends ResourceController
                             $arr_booking['sp_fname'] = $user_info[0]['fname'];
                             $arr_booking['sp_lname'] = $user_info[0]['lname'];
                             $arr_booking['sp_fcm_token'] = $user_info[0]['fcm_token'];
-                            $arr_booking['sp_profile_pic'] = $user_info[0]['profile_pic'];
+                            $arr_booking['sp_profile_pic'] = (is_null($user_info[0]['profile_pic']) ? "" : $user_info[0]['profile_pic']);
                         }
 
                         $attachment_count = $arr_booking_details['attachment_count'];
@@ -1354,6 +1424,9 @@ class BookingController extends ResourceController
                     //Get Single Move Booking Details
                     $arr_single_move_booking_details = $misc_model->get_user_single_move_booking_details($users_id);
                    
+                //    print_r($arr_single_move_booking_details);
+                //    exit;
+
                                     
                     $arr_booking = array();
                     $arr_booking_response = array();
@@ -1368,6 +1441,15 @@ class BookingController extends ResourceController
                             $remaining_days = 0;
                             $remaining_hours = 0;
                             $remaining_minutes = 0;
+
+                            //Check if this booking is created from Post Job
+                            $post_job = $common->get_details_dynamically('post_job','booking_id',$book_data['id']);
+                            if($post_job != 'failure'){
+                                $post_job_id = $post_job[0]['id'];
+                            }else{
+                                $post_job_id = "0";
+                            }
+                            $arr_booking[$key]['post_job_id'] = $post_job_id;
 
                             if ($current_date_time < $scheduled_date) {
 
@@ -1388,9 +1470,7 @@ class BookingController extends ResourceController
 
                             if ($status_id == '24' || $status_id == '25') { //Cancelled by user/sp
                                 $status = "Cancelled";
-                            } else if ($started_at == "0000-00-00 00:00:00" && $current_date > $booking_end_date) {
-                                $status = "Expired";
-                            } else {
+                            }  else {
                                 if ($started_at == "" || $started_at == "0000-00-00 00:00:00") {
                                     $status = "Pending";
                                 } else {
@@ -1442,6 +1522,7 @@ class BookingController extends ResourceController
                             $arr_booking[$key]['sp_lname'] = $sp_details[0]['lname'];
                             $arr_booking[$key]['sp_mobile'] = $sp_details[0]['mobile'];
                             $arr_booking[$key]['sp_profile_pic'] = $sp_details[0]['profile_pic'];
+                            $arr_booking[$key]['pause_status'] = ($book_data['status_id'] == 15) ? "Yes" : "No";
                                                             
 
                             $arr_booking[$key]['booking_status'] = $status;
@@ -1518,9 +1599,11 @@ class BookingController extends ResourceController
 
                             if ($status_id == '24' || $status_id == '25') { //Cancelled by user/sp
                                 $status = "Cancelled";
-                            } else if ($started_at == "0000-00-00 00:00:00" && $current_date > $booking_end_date) {
-                                $status = "Expired";
-                            } else {
+                            } 
+                            // else if ($started_at == "0000-00-00 00:00:00" && $current_date > $booking_end_date) {
+                            //     $status = "Expired";
+                            // } 
+                            else {
                                 if ($started_at == "" || $started_at == "0000-00-00 00:00:00") {
                                     $status = "Pending";
                                 } else {
@@ -1531,6 +1614,16 @@ class BookingController extends ResourceController
                                     }
                                 }
                             }
+
+                            //Check if this booking is created from Post Job
+                            $post_job = $common->get_details_dynamically('post_job','booking_id',$book_data['id']);
+                            if($post_job != 'failure'){
+                                $post_job_id = $post_job[0]['id'];
+                            }else{
+                                $post_job_id = "0";
+                            }
+                            $arr_booking[$booking_count]['post_job_id'] = $post_job_id;
+
 
                             $bc_reschedule_id = $bc_book_data['reschedule_id'];
                             $bc_reschedule_status = $bc_book_data['reschedule_status_id'];
@@ -1567,6 +1660,8 @@ class BookingController extends ResourceController
                             $arr_booking[$booking_count]['sp_lname'] = $sp_details[0]['lname'];
                             $arr_booking[$booking_count]['sp_mobile'] = $sp_details[0]['mobile'];
                             $arr_booking[$booking_count]['sp_profile_pic'] = $sp_details[0]['profile_pic'];
+                            $arr_booking[$booking_count]['pause_status'] = ($bc_book_data['status_id'] == 15) ? "Yes" : "No";
+                            
 
 
                             $arr_booking[$booking_count]['booking_status'] = $status;
@@ -1659,6 +1754,15 @@ class BookingController extends ResourceController
                                     }
                                 }
 
+                                //Check if this booking is created from Post Job
+                                $post_job = $common->get_details_dynamically('post_job','booking_id',$book_data['id']);
+                                if($post_job != 'failure'){
+                                    $post_job_id = $post_job[0]['id'];
+                                }else{
+                                    $post_job_id = "0";
+                                }
+                                $arr_booking[$booking_count]['post_job_id'] = $post_job_id;
+
                                 $mm_reschedule_id = $mm_book_data['reschedule_id'];
                                 $mm_reschedule_status = $mm_book_data['reschedule_status_id'];
 
@@ -1694,6 +1798,7 @@ class BookingController extends ResourceController
                                 $arr_booking[$booking_count]['sp_lname'] = $sp_details[0]['lname'];
                                 $arr_booking[$booking_count]['sp_mobile'] = $sp_details[0]['mobile'];
                                 $arr_booking[$booking_count]['sp_profile_pic'] = $sp_details[0]['profile_pic'];
+                                $arr_booking[$booking_count]['pause_status'] = ($mm_book_data['status_id'] == 15) ? "Yes" : "No";
                                 
                                 $arr_booking[$booking_count]['booking_status'] = $status;
 
@@ -1791,6 +1896,8 @@ class BookingController extends ResourceController
                 $api_key = $apiconfig->user_key;
 
                 if ($key == $api_key) {
+
+                    
                     $common = new CommonModel();
                     $misc = new MiscModel();
 
@@ -1819,6 +1926,56 @@ class BookingController extends ResourceController
                     if ($booking_id > 0) {
 
                         $booking_details = $misc->get_booking_details($booking_id, $users_id);
+                        
+                        // print_r($booking_details);
+                        // exit;
+
+                        if($booking_details['sp_id'] == 0){
+
+                            $tax = $common->get_table_details_dynamically('tax_cancel_charges');
+                            $sgst_percentage = 0;
+                            $cgst_percentage = 0;
+                                                        
+                            foreach($tax as $t){
+
+                                if($t['id'] == 1){
+                                    $cgst_percentage = $t['percentage'];
+                                }elseif($t['id'] == 3){
+                                    $sgst_percentage = $t['percentage'];
+                                }
+                            }
+                            
+                            $profession_id = $booking_details['profession_id'];
+                            
+                            $tariff = $common->get_details_with_multiple_where('tariff',['users_id' => $json->sp_id,'profession_id'=>$profession_id]);
+
+                            if($tariff == 'failure'){
+
+                                return $this->respond([
+                                    
+                                    "status" => 404,
+                                    "message" => "Tariff Not Found",
+                                ]);
+
+                            }else{
+                            
+                            $amount = $tariff[0]['min_charges'];
+                            $cgst = round($amount * $cgst_percentage/100);
+                            $sgst = round($amount * $sgst_percentage/100);
+
+                            $total = $amount + $sgst + $cgst;
+
+                            $arr_update = [
+                                'amount' => $total,
+                                'sgst' => $sgst,
+                                'cgst' => $cgst,
+                                'sp_id' => $json->sp_id
+                            ];
+
+                            $update_amount = $common->update_records_dynamically('booking',$arr_update,'id',$json->booking_id);
+                        }
+
+                        }
 
                         if ($status_id == 5) { //'accept'
 
@@ -1869,8 +2026,8 @@ class BookingController extends ResourceController
                             $sms_model->sms_api_url($data['name'], $data['mobile'], $data['dat']);
 
                             $arr_booking_update = array(
-                                'amount' => $json->amount,
-                                'sp_id' => $json->sp_id,
+                                // 'amount' => $json->amount,
+                                // 'sp_id' => $json->sp_id,
                                 'status_id' => $status_id,
                             );
                         } elseif ($status_id == 6) { //Not Responded
@@ -1891,8 +2048,8 @@ class BookingController extends ResourceController
                             $common->insert_records_dynamically('alert_regular_sp', $arr_alerts);
 
                             $arr_booking_update = array(
-                                'amount' => $json->amount,
-                                'sp_id' => $json->sp_id,
+                                // 'amount' => $json->amount,
+                                // 'sp_id' => $json->sp_id,
                                 'status_id' => $status_id,
                             );
                         } else { //'reject'
@@ -2880,8 +3037,8 @@ class BookingController extends ResourceController
                     $schedule_on = new DateTime($sch_date . ' ' . $sch_time);
                     $now = new DateTime(date('Y-m-d H:i:s'));
 
+                    
                     //Difference between created and Scheduled Times
-
                     $diff = $created_on->diff($schedule_on);
                     $diff_days = $diff->format('%a');
                     $diff_hr = $diff->format('%H');
@@ -2891,6 +3048,7 @@ class BookingController extends ResourceController
                     $diff1 = $schedule_on->diff($now);
                     $hr_diff = $diff1->format('%H');
                     $min_diff = $diff1->format('%I');
+                    
 
 
                     $ch = $common->get_table_details_dynamically('tax_cancel_charges');
@@ -2908,17 +3066,21 @@ class BookingController extends ResourceController
                         }
                     }
 
-                    if ($diff_days == 0 && $diff_hr <= 2) {
+
+                    if (($diff_days > 0) || ($diff_days == 0 && $diff_hr >= 1)) {
+                        
                         if ($status_id == 24) {
                             //cancel_charges_common to user wallet	
-                            $cancel_charges = ($ch_percentage == 0 || ($ch_percentage * $booking_amount / 100) > $ch_amount ? $ch_amount : ($ch_percentage * $booking_amount / 100));
-                        }
-
-                        if ($status_id == 25) {
+                            // $cancel_charges = ($ch_percentage == 0 || ($ch_percentage * $booking_amount / 100) > $ch_amount ? $ch_amount : ($ch_percentage * $booking_amount / 100));
+                            $cancel_charges = 0;
+                        }elseif ($status_id == 25) {
                             //cancel_charges_common to sp wallet
                             $cancel_charges = ($ch_percentage == 0 || ($ch_percentage * $booking_amount / 100) > $ch_amount ? $ch_amount : ($ch_percentage * $booking_amount / 100));
+                            
                         }
+
                     } else {
+                        
                         if ($status_id == 24) {
                             //Charges based on time difference to user wallet	
                             if ($min_diff < 15) {
@@ -2928,7 +3090,6 @@ class BookingController extends ResourceController
 
                                 $cancel_charges = ($ch_percentage_30 == 0 || ($ch_percentage_30 * $booking_amount / 100) > $ch_amount_30 ? $ch_amount_30 : ($ch_percentage_30 * $booking_amount / 100));
                             } else {
-
                                 $cancel_charges = ($ch_percentage == 0 || ($ch_percentage * $booking_amount / 100) > $ch_amount ? $ch_amount : ($ch_percentage * $booking_amount / 100));
                             }
                         }
@@ -3380,6 +3541,7 @@ class BookingController extends ResourceController
                     ];
 
                     $al = $common->get_details_with_multiple_where('alert_action_user', $where);
+                    
                     $alert_id = $al[0]['id'];
 
                     $common->update_records_dynamically('alert_action_user', ['status' => 1, 'updated_on' => $date], 'id', $alert_id);
@@ -3501,9 +3663,9 @@ class BookingController extends ResourceController
                     ]);
                 } else {
                     return $this->respond([
-                        "booking_id" => $booking_id,
-                        "status" => 404,
-                        "message" => "No Status found"
+                        "booking_status_details" => [],
+                        "status" => 200,
+                        "message" => "Success",
                     ]);
                 }
             } else {
@@ -3557,8 +3719,10 @@ class BookingController extends ResourceController
 
                     //Booking Completion code starts here
 
-                    //update Booking table
+                    //Check whether Order ID is not Empty
+                    if(!empty($json->order_id) && $json->amount != 0){
 
+                        //update Booking table
                     $check = $common->get_details_dynamically('transaction', 'order_id', $json->order_id);
 
                     if ($check != 'failure' && $check[0]['payment_status'] != "TXN_FAILURE") {
@@ -3591,12 +3755,13 @@ class BookingController extends ResourceController
                             $arr_refundAmt = "";
                         } elseif ($json->amount != 0 && $result['body']['resultInfo']['resultStatus'] == 'TXN_SUCCESS') {
 
+                            
                             $arr_payment_status = $result['body']['resultInfo']['resultStatus'];
                             $arr_txnId = $result['body']['txnId'];
                             $arr_bankTxnId =  $result['body']['bankTxnId'];
                             $arr_txnType = $result['body']['txnType'];
                             $arr_gatewayName =  $result['body']['gatewayName'];
-                            $arr_bankName = (property_exists('bankName', $result['body']) ? $result['body']['bankName'] : "");
+                            $arr_bankName = (isset($result['body']['bankName']) ? $result['body']['bankName'] : "");
                             $arr_paymentMode = $result['body']['paymentMode'];
                             $arr_refundAmt = $result['body']['refundAmt'];
                         }
@@ -3605,7 +3770,7 @@ class BookingController extends ResourceController
 
 
                             $booking_data = $common->get_details_dynamically('booking', 'id', $booking_id);
-
+                            
                             if ($booking_data != "failure" && $booking_data[0]['status_id'] != 23) {
 
                                 $cgst = $booking_data[0]['cgst'] + $json->cgst;
@@ -4005,6 +4170,354 @@ class BookingController extends ResourceController
                             }
                         }
                     }
+                    }else{
+
+                        //If Order ID is Empty
+
+                        $booking_data = $common->get_details_dynamically('booking', 'id', $json->booking_id);
+
+                        // print_r($booking_data);
+                        // exit;
+
+                            if ($booking_data != "failure" && $booking_data[0]['status_id'] != 23) {
+
+                                $cgst = $booking_data[0]['cgst'] + $json->cgst;
+                                $sgst = $booking_data[0]['sgst'] + $json->sgst;
+                                $amount = $booking_data[0]['amount'] + $json->amount + $json->w_amount - $sgst - $cgst;
+                                $inv_amount = $amount + $cgst + $sgst;
+
+                                $arr = array(
+
+                                    'completed_at' => $date,
+                                    'amount' => $inv_amount,
+                                    'sgst' => $sgst,
+                                    'cgst' => $cgst,
+                                    'status_id' => 23
+                                );
+
+                                $common->update_records_dynamically('booking', $arr, 'id', $booking_id);
+
+                                //Booking Status table update
+
+                                $arr1 = array(
+                                    'booking_id' => $booking_id,
+                                    'status_id' => 23,
+                                    'sp_id' => $json->sp_id
+                                );
+
+                                $arr2 = array(
+                                    'booking_id' => $booking_id,
+                                    'status_id' => 23,
+                                    'sp_id' => $json->sp_id,
+                                    'created_on' => $date,
+                                    'description' => "Booking Completed"
+                                );
+
+
+
+                                if (($common->get_details_with_multiple_where('booking_status', $arr1)) == 'failure') {
+
+                                    $common->insert_records_dynamically('booking_status', $arr2);
+                                }
+
+
+                                //Platform Fees & SP Amount Calculation
+
+                                $fees = $common->get_table_details_dynamically('tax_cancel_charges');
+                                foreach ($fees as $fe) {
+                                    if ($fe['id'] == 7) {
+                                        $tds_percentage = $fe['percentage'];
+                                    }
+                                    if ($fe['id'] == 8) {
+                                        $platform_fee_percentage = $fe['percentage'];
+                                    }
+                                    if ($fe['id'] == 9) {
+                                        $commission_percentage = $fe['percentage'];
+                                    }
+                                }
+
+                                $platform_fees = ceil($amount * $platform_fee_percentage / 100);
+                                $commission_ref = ceil($platform_fees * $commission_percentage / 100);
+                                $sp_ref = $amount - $platform_fees;
+                                $tds_amount = ceil($sp_ref * $tds_percentage / 100);
+                                $sp_amount = $sp_ref - $tds_amount;
+
+                                //Get referral of user & sp
+                                $ref1 = $common->get_details_dynamically('referral', 'user_id', $json->users_id);
+                                $user_ref = $ref1[0]['referred_by'];
+
+                                $ref2 = $common->get_details_dynamically('referral', 'user_id', $json->sp_id);
+                                $sp_ref = $ref2[0]['referred_by'];
+
+                                //Transaction table update
+                                $arr2 = [
+                                    
+                                    [
+                                        'name_id' => 3, //Invoice Amount remove from User Wallet
+                                        'date' => date('Y-m-d'),
+                                        'amount' => $inv_amount,
+                                        'type_id' => 2, //Payments
+                                        'users_id' => $json->users_id,
+                                        'method_id' => 2, //Wallet Transfer
+                                        'reference_id' => "W-" . rand(1, 999999),
+                                        'booking_id' => $booking_id,
+                                        'order_id' => $json->order_id,
+                                        'payment_status' => 'TXN_SUCCESS',
+                                        'created_dts' => $date,
+                                        'txnId' => "",
+                                        'bankTxnId' => "",
+                                        'txnType' => "",
+                                        'gatewayName' => "",
+                                        'bankName' => "",
+                                        'paymentMode' => "",
+                                        'refundAmt' => ""
+                                    ],
+                                    [
+                                        'name_id' => 10, //Add to wallet SP
+                                        'date' => date('Y-m-d'),
+                                        'amount' => $sp_amount,
+                                        'type_id' => 2,
+                                        'users_id' => $json->sp_id,
+                                        'method_id' => 2,
+                                        'reference_id' => "W-" . rand(1, 999999),
+                                        'booking_id' => $booking_id,
+                                        'order_id' => $json->order_id,
+                                        'payment_status' => 'TXN_SUCCESS',
+                                        'created_dts' => $date,
+                                        'txnId' => "",
+                                        'bankTxnId' => "",
+                                        'txnType' => "",
+                                        'gatewayName' => "",
+                                        'bankName' => "",
+                                        'paymentMode' => "",
+                                        'refundAmt' => ""
+                                    ],
+                                    [
+                                        'name_id' => 13, //Add to sp ref
+                                        'date' => date('Y-m-d'),
+                                        'amount' => $commission_ref,
+                                        'type_id' => 1,
+                                        'users_id' => ($user_ref == 'NoRef' ? 0 : $user_ref),
+                                        'method_id' => 3, //Transfer Commission
+                                        'reference_id' => "W-" . rand(1, 999999),
+                                        'booking_id' => $booking_id,
+                                        'order_id' => $json->order_id,
+                                        'payment_status' => 'TXN_SUCCESS',
+                                        'created_dts' => $date,
+                                        'txnId' => "",
+                                        'bankTxnId' => "",
+                                        'txnType' => "",
+                                        'gatewayName' => "",
+                                        'bankName' => "",
+                                        'paymentMode' => "",
+                                        'refundAmt' => ""
+                                    ],
+                                    [
+                                        'name_id' => 13, //Add to sp ref
+                                        'date' => date('Y-m-d'),
+                                        'amount' => $commission_ref,
+                                        'type_id' => 1,
+                                        'users_id' => ($sp_ref == 'NoRef' ? 0 : $sp_ref),
+                                        'method_id' => 3, //Transfer Commission
+                                        'reference_id' => "W-" . rand(1, 999999),
+                                        'booking_id' => $booking_id,
+                                        'order_id' => $json->order_id,
+                                        'payment_status' => 'TXN_SUCCESS',
+                                        'created_dts' => $date,
+                                        'txnId' => "",
+                                        'bankTxnId' => "",
+                                        'txnType' => "",
+                                        'gatewayName' => "",
+                                        'bankName' => "",
+                                        'paymentMode' => "",
+                                        'refundAmt' => ""
+                                    ]
+                                ];
+
+                                $tra = $common->batch_insert_records_dynamically('transaction', $arr2);
+
+                                //Update Wallet Balances
+
+                                $wal1 = $common->get_details_dynamically('wallet_balance', 'users_id', $json->users_id);
+
+                                if ($wal1 != 'failure') {
+
+                                    $dat1 = array(
+                                        'amount' => $wal1[0]['amount'],
+                                        'amount_blocked' => $wal1[0]['amount_blocked'] + $json->w_amount + $json->amount - $inv_amount
+                                    );
+
+                                    $common->update_records_dynamically('wallet_balance', $dat1, 'users_id', $json->users_id);
+                                } else {
+                                    return $this->respond([
+                                        'status' => 404,
+                                        'message' => 'Unable to fetch users wallet balance'
+                                    ]);
+                                }
+
+
+                                $wal2 = $common->get_details_dynamically('wallet_balance', 'users_id', $json->sp_id);
+
+                                if ($wal2 != 'failure') {
+                                    $dat2 = array(
+                                        'amount' => $wal2[0]['amount'],
+                                        'amount_blocked' => $wal2[0]['amount_blocked'] + $sp_amount
+                                    );
+
+                                    $common->update_records_dynamically('wallet_balance', $dat2, 'users_id', $json->sp_id);
+                                } else {
+                                    return $this->respond([
+                                        'status' => 404,
+                                        'message' => 'Unable to fetch sp wallet balance'
+                                    ]);
+                                }
+
+
+                                $wal3 = $common->get_details_dynamically('wallet_balance', 'users_id', $user_ref);
+
+                                if ($wal3 != 'failure' &&  $user_ref != 0) {
+                                    $dat3 = array(
+                                        'amount' => $wal3[0]['amount'],
+                                        'amount_blocked' => $wal3[0]['amount_blocked'] + $commission_ref
+                                    );
+
+                                    $common->update_records_dynamically('wallet_balance', $dat3, 'users_id', $user_ref);
+                                } else {
+                                    return $this->respond([
+                                        'status' => 404,
+                                        'message' => 'Unable to fetch user ref wallet balance'
+                                    ]);
+                                }
+
+                                $wal4 = $common->get_details_dynamically('wallet_balance', 'users_id', $sp_ref);
+
+                                if ($wal4 != 'failure' && $sp_ref != 0) {
+                                    $dat4 = array(
+                                        'amount' => $wal4[0]['amount'],
+                                        'amount_blocked' => $wal4[0]['amount_blocked'] + $commission_ref
+                                    );
+
+                                    $common->update_records_dynamically('wallet_balance', $dat4, 'users_id', $sp_ref);
+                                }
+
+                                //Insert records into lien table
+
+                                // $lien_s = date_create('now');
+                                // date_add($lien_s, date_interval_create_from_date_string('24 Hours'));
+                                // $lien_e = date_format($lien_s, "Y-m-d H:i:s");
+
+                                // $lien_start = $lien_s->format('Y-m-d H:i:s');
+                                // $lien_end = $lien_e;
+
+                                $lien_start = $date;
+                                $lien_e = strtotime($date) + (24 * 60 * 60);
+                                $lien_end = date('Y-m-d H:i:s', $lien_e);
+
+                                $lien_data = [
+                                    [
+                                        'lien_start' => $lien_start,
+                                        'lien_end' => $lien_end,
+                                        'amount' => $sp_amount,
+                                        'user_id' => $json->sp_id,
+                                        'booking_id' => $booking_id,
+                                        'status' => 0
+                                    ],
+                                    [
+                                        'lien_start' => $lien_start,
+                                        'lien_end' => $lien_end,
+                                        'amount' => $commission_ref,
+                                        'user_id' => $user_ref,
+                                        'booking_id' => $booking_id,
+                                        'status' => 0
+                                    ],
+                                    [
+                                        'lien_start' => $lien_start,
+                                        'lien_end' => $lien_end,
+                                        'amount' => $commission_ref,
+                                        'user_id' => $sp_ref,
+                                        'booking_id' => $booking_id,
+                                        'status' => 0
+                                    ]
+                                ];
+
+                                $common->batch_insert_records_dynamically('lien_table', $lien_data);
+
+                                //update company account table
+
+                                $data5 = [
+
+                                    'platform_fees' => $platform_fees,
+                                    'user_plan_subs' => 0,
+                                    'sp_plan_subs' => 0,
+                                    'cancellation_charges' => 0,
+                                    'receipt_date' => date('Y-m-d'),
+                                    'transaction_id' => $tra
+
+                                ];
+
+                                $common->insert_records_dynamically('company_account', $data5);
+
+
+                                //update TDS table
+                                $data6 = [
+
+                                    'booking_id' => $booking_id,
+                                    'tds_amount' => $tds_amount,
+                                    'sp_id' => $json->sp_id,
+                                    'collected_on' => $date
+
+                                ];
+
+                                $common->insert_records_dynamically('tds_table', $data6);
+
+
+                                //Insert into alerts_regular_user
+
+                                $sp_profile = $misc_model->user_info($json->sp_id);
+
+                                $arr_alerts = array(
+                                    'type_id' => 1,
+                                    'description' => $sp_profile[0]['fname'] . " " . $sp_profile[0]['lname'] . "has succesfully Completed the Booking ID: " . $booking_id . " on " . $date,
+                                    'user_id' => $json->users_id,
+                                    'profile_pic_id' => $json->sp_id,
+                                    'status' => 2,
+                                    'created_on' => $date,
+                                    'updated_on' => $date
+                                );
+
+                                $common->insert_records_dynamically('alert_regular_user', $arr_alerts);
+
+
+                                //Insert into alerts_regular_sp
+                                $arr_alerts1 = array(
+                                    'type_id' => 1,
+                                    'description' => "You have succesfully Completed the Booking ID: " . $booking_id . " on " . $date,
+                                    'user_id' => $json->sp_id,
+                                    'profile_pic_id' => $json->sp_id,
+                                    'status' => 2,
+                                    'created_on' => $date,
+                                    'updated_on' => $date
+                                );
+
+                                $common->insert_records_dynamically('alert_regular_sp', $arr_alerts1);
+
+
+
+                                return $this->respond([
+                                    'status' => 200,
+                                    'message' => 'Booking Successfully Completed',
+                                ]);
+                            } else {
+
+                                return $this->respond([
+                                    'status' => 404,
+                                    'message' => 'Entry for failure status updated'
+                                ]);
+                            }
+
+
+                    }
+                        
                 } else {
 
                     return $this->respond([

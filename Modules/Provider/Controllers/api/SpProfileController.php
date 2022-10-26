@@ -42,7 +42,10 @@ class SpProfileController extends ResourceController
     		    $sp = new ServiceProviderModel();
     		    
         		$sp_dtails = $sp->get_sp_activation_details($json['sp_id']);
-        
+				
+				// print_r($sp_dtails);
+				// exit;
+
         		if ($res != 'failure') {
         			return $this->respond([
         				"status" => 200,

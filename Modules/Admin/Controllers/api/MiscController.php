@@ -17,7 +17,7 @@ class MiscController extends ResourceController
         $json = $this->request->getJSON();
 
         $model = new CommonModel;
-        if (!property_exists($json, 'id') || !property_exists($json, 'key')) {
+        if (!property_exists($json, 'mobile') || !property_exists($json, 'key')) {
             return $this->respond([
                 'status' => 403,
                 'message' => 'Invalid Parameters'
@@ -29,61 +29,79 @@ class MiscController extends ResourceController
 
             $api_key = $apiconfig->user_key;
 
-            $data = array(
-                ['login_activity', 'user_id'],
-                ['leader_board', 'sp_id'],
-                ['complaints', 'users_id'],
-                ['address', 'users_id'],
-                ['bid_det', 'users_id'],
-                ['alert_details', 'users_id'],
-                ['offer_used', 'users_id'],
-                ['referral', 'user_id'],
-                ['search_results', 'users_id'],
-                ['sp_det', 'users_id'],
-                ['sp_busy_slot', 'users_id'],
-                ['sp_location', 'users_id'],
-                ['sp_profession', 'users_id'],
-                ['sp_review', 'user_id'],
-                ['sp_skill', 'users_id'],
-                ['sp_subs_plan', 'users_id'],
-                ['subs_plan', 'users_id'],
-                ['sp_verify', 'users_id'],
-                ['suggestion', 'users_id'],
-                ['tariff', 'users_id'],
-                ['transaction', 'users_id'],
-                ['user_bank_details', 'users_id'],
-                ['user_lang_list', 'users_id'],
-                ['user_review', 'sp_id'],
-                ['user_temp_address', 'users_id'],
-                ['user_time_slot', 'users_id'],
-                ['video_watch', 'users_id'],
-                ['wallet_balance', 'users_id'],
-                ['user_details', 'id'],
-                ['users', 'id']
-            );
-
-
             if ($key == $api_key) {
+            $user_data = $model->get_details_dynamically('users','userid',$json->mobile);
+            
+            
+            if($user_data != 'failure'){
+
+                
+                $id = $user_data[0]['id'];
+                
+
+                $data = array(
+                    ['login_activity', 'user_id'],
+                    ['leader_board', 'sp_id'],
+                    ['complaints', 'users_id'],
+                    ['address', 'users_id'],
+                    ['bid_det', 'users_id'],
+                    ['alert_details', 'users_id'],
+                    ['offer_used', 'users_id'],
+                    ['referral', 'user_id'],
+                    ['search_results', 'users_id'],
+                    ['sp_det', 'users_id'],
+                    ['sp_busy_slot', 'users_id'],
+                    ['sp_location', 'users_id'],
+                    ['sp_profession', 'users_id'],
+                    ['sp_review', 'user_id'],
+                    ['sp_skill', 'users_id'],
+                    ['sp_subs_plan', 'users_id'],
+                    ['subs_plan', 'users_id'],
+                    ['sp_verify', 'users_id'],
+                    ['suggestion', 'users_id'],
+                    ['tariff', 'users_id'],
+                    ['transaction', 'users_id'],
+                    ['user_bank_details', 'users_id'],
+                    ['user_lang_list', 'users_id'],
+                    ['user_review', 'sp_id'],
+                    ['user_temp_address', 'users_id'],
+                    ['user_time_slot', 'users_id'],
+                    ['video_watch', 'users_id'],
+                    ['wallet_balance', 'users_id'],
+                    ['user_details', 'id'],
+                    ['users', 'id']
+                );
 
                 foreach ($data as $det) {
                     $i = 0;
 
                     if ($i < count($det)) {
-                        $model->delete_records_dynamically($det[$i], $det[$i + 1], $json->id);
+                        $model->delete_records_dynamically($det[$i], $det[$i + 1], $id);
                         $i++;
                     }
                 }
+
+                return $this->respond([
+                    'status' => 200,
+                    'message' => 'Successfully deleted'
+                ]);
+
+            }else{
+
+                return $this->respond([
+                    'status' => 404,
+                    'message' => 'User Not found with mobile number'
+                ]);
+
+            }
+                
             } else {
                 return $this->respond([
                     'status' => 403,
                     'message' => 'Access Denied ! Authentication Failed'
                 ]);
             }
-
-            return $this->respond([
-                'status' => 200,
-                'message' => 'Successfully deleted'
-            ]);
+   
         }
     }
 
